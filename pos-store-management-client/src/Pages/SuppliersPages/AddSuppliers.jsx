@@ -7,7 +7,7 @@ export const AddSuppliers = () => {
     { name: 'contactPerson', label: 'Contact Person', type: 'text', placeholder: 'e.g. Mr. Rahim', validation: { required: 'Contact person is required' } },
     { name: 'phone', label: 'Phone Number', type: 'text', placeholder: '01XXXXXXXXX', validation: { required: 'Phone number is required' } },
     { name: 'email', label: 'Email Address', type: 'text', placeholder: 'name@example.com', validation: { required: 'Email is required' } },
-    { name: 'address', label: 'Address', type: 'textarea', rows: 3, placeholder: 'Street, City, ZIP', validation: { required: 'Address is required' } },
+    { name: 'address', label: 'Address', type: 'text', placeholder: 'Street, City, ZIP', validation: { required: 'Address is required' } },
     {
       name: 'paymentTerms',
       label: 'Payment Terms',
@@ -19,7 +19,7 @@ export const AddSuppliers = () => {
         { value: 'custom', label: 'Custom' },
       ],
     },
-    { name: 'notes', label: 'Notes / Extra Info', type: 'textarea', rows: 3, placeholder: 'Any extra information' },
+    { name: 'notes', label: 'Notes / Extra Info', type: 'text', placeholder: 'Any extra information' },
     {
       name: 'status',
       label: 'Status',
@@ -50,14 +50,21 @@ export const AddSuppliers = () => {
 
   return (
     <div className='p-4'>
-      <h1 className='text-xl font-semibold mb-4'>Add Supplier</h1>
-      <InputFrom
-        fields={fields}
-        defaultValues={defaultValues}
-        submitLabel='Save'
-        columns={2}
-        onSubmit={onSubmit}
-      />
+      <div className='rounded-2xl p-5 bg-white shadow-sm'>
+        <div className='mb-4'>
+          <h1 className='text-xl font-bold'>Add Supplier</h1>
+          <p className='text-sm text-slate-500'>Create a new supplier profile</p>
+        </div>
+        <InputFrom
+          fields={fields}
+          defaultValues={defaultValues}
+          submitLabel='Save'
+          columns={2}
+          onSubmit={onSubmit}
+        />
+      </div>
     </div>
   )
 }
+
+export default AddSuppliers

@@ -50,16 +50,16 @@ export const SharedTable = ({
   })
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
         <input
           value={globalFilter ?? ''}
           onChange={e => setGlobalFilter(e.target.value)}
-          className="w-full sm:w-64 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full sm:w-72 rounded-xl border border-slate-300 hover:border-slate-400 transition px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           placeholder={filterPlaceholder}
         />
         <select
-          className="rounded-lg border border-slate-300 px-2 py-2 text-sm"
+          className="rounded-xl border border-slate-300 px-2.5 py-2.5 text-sm hover:border-slate-400 transition"
           value={table.getState().pagination.pageSize}
           onChange={e => table.setPageSize(Number(e.target.value))}
         >
@@ -69,16 +69,16 @@ export const SharedTable = ({
         </select>
       </div>
 
-      <div className="overflow-x-auto border rounded-xl">
+      <div className="overflow-x-auto rounded-2xl shadow-sm">
         <table className="min-w-full text-sm">
-          <thead className="bg-slate-50">
+          <thead className="bg-slate-50/80">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <th key={header.id} colSpan={header.colSpan} className="text-left font-semibold text-slate-700 px-3 py-2 border-b">
+                  <th key={header.id} colSpan={header.colSpan} className="text-left font-semibold text-slate-700 px-3.5 py-3 ">
                     {header.isPlaceholder ? null : (
                       <button
-                        className="inline-flex items-center gap-1 select-none"
+                        className="inline-flex items-center gap-1 select-none hover:text-indigo-700"
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
@@ -88,7 +88,7 @@ export const SharedTable = ({
                   </th>
                 ))}
                 {renderRowActions && (
-                  <th className="text-left font-semibold text-slate-700 px-3 py-2 border-b">
+                  <th className="text-left font-semibold text-slate-700 px-3.5 py-3 ">
                     {actionsHeader}
                   </th>
                 )}
@@ -98,18 +98,18 @@ export const SharedTable = ({
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={columns.length + (renderRowActions ? 1 : 0)} className="text-center py-8 text-slate-500">Loading...</td>
+                <td colSpan={columns.length + (renderRowActions ? 1 : 0)} className="text-center py-10 text-slate-500">Loading...</td>
               </tr>
             ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map(row => (
-                <tr key={row.id} className="odd:bg-white even:bg-slate-50/50">
+                <tr key={row.id} className="odd:bg-white even:bg-slate-50/60 hover:bg-indigo-50/40 transition">
                   {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className="px-3 py-2 border-b">
+                    <td key={cell.id} className="px-3.5 py-3 ">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
                   {renderRowActions && (
-                    <td className="px-3 py-2 border-b">
+                    <td className="px-3.5 py-3 ">
                       {renderRowActions(row.original)}
                     </td>
                   )}
@@ -117,7 +117,7 @@ export const SharedTable = ({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length + (renderRowActions ? 1 : 0)} className="text-center py-8 text-slate-500">No data</td>
+                <td colSpan={columns.length + (renderRowActions ? 1 : 0)} className="text-center py-10 text-slate-500">No data</td>
               </tr>
             )}
           </tbody>
@@ -130,14 +130,14 @@ export const SharedTable = ({
         </div>
         <div className="flex items-center gap-2">
           <button
-            className="rounded border px-2 py-1 text-sm disabled:opacity-50"
+            className="rounded-lg border px-2.5 py-1.5 text-sm hover:bg-slate-50 disabled:opacity-50"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             Prev
           </button>
           <button
-            className="rounded border px-2 py-1 text-sm disabled:opacity-50"
+            className="rounded-lg border px-2.5 py-1.5 text-sm hover:bg-slate-50 disabled:opacity-50"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >

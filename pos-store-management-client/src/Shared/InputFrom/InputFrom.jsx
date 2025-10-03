@@ -37,12 +37,12 @@ const InputFrom = ({
 
     const error = errors?.[name]
 
-    const baseInputClass = 'block w-full rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 text-sm placeholder-slate-400 disabled:bg-slate-50 disabled:text-slate-400'
+    const baseInputClass = 'block w-full rounded-xl border border-slate-300 hover:border-slate-400 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3.5 py-2.5 text-sm placeholder-slate-400 disabled:bg-slate-50 disabled:text-slate-400'
 
     if (type === 'select') {
       return (
         <div className="space-y-1" key={name}>
-          {label && <label className="text-sm font-medium text-slate-700" htmlFor={name}>{label}</label>}
+          {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>{label}</label>}
           <select id={name} className={baseInputClass} disabled={disabled} {...register(name, validation)}>
             <option value="" disabled={!!validation?.required}>Select...</option>
             {options.map(opt => (
@@ -57,7 +57,7 @@ const InputFrom = ({
     if (type === 'textarea') {
       return (
         <div className="space-y-1" key={name}>
-          {label && <label className="text-sm font-medium text-slate-700" htmlFor={name}>{label}</label>}
+          {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>{label}</label>}
           <textarea id={name} rows={rows} placeholder={placeholder} className={baseInputClass} disabled={disabled} {...register(name, validation)} />
           {error && <p className="text-xs text-red-600">{error.message || 'This field is required'}</p>}
         </div>
@@ -78,7 +78,7 @@ const InputFrom = ({
       // Simple currency input using Controller to preserve numeric value
       return (
         <div className="space-y-1" key={name}>
-          {label && <label className="text-sm font-medium text-slate-700" htmlFor={name}>{label}</label>}
+          {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>{label}</label>}
           <Controller
             control={control}
             name={name}
@@ -114,7 +114,7 @@ const InputFrom = ({
     // text | number | date
     return (
       <div className="space-y-1" key={name}>
-        {label && <label className="text-sm font-medium text-slate-700" htmlFor={name}>{label}</label>}
+        {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>{label}</label>}
         <div className="flex items-center gap-2">
           {prefix && <span className="text-sm text-slate-500">{prefix}</span>}
           <input
@@ -141,7 +141,7 @@ const InputFrom = ({
         {fields.map(renderField)}
       </div>
       <div className="flex items-center justify-end gap-3">
-        <button type="submit" disabled={isSubmitting} className="inline-flex items-center justify-center rounded-lg bg-indigo-600 text-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-indigo-700 disabled:opacity-60">
+        <button type="submit" disabled={isSubmitting} className="inline-flex items-center justify-center rounded-xl bg-indigo-600 text-white px-4 py-2.5 text-sm font-semibold shadow hover:shadow-md transition hover:bg-indigo-700 disabled:opacity-60">
           {isSubmitting ? 'Processing…' : submitLabel}
         </button>
       </div>
