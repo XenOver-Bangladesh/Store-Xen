@@ -39,8 +39,8 @@ const Sidebar = ({ isOpen, onClose }) => {
       icon: LayoutDashboard,
       path: '/dashboard',
       subItems: [
-        { title: 'Overview', path: '/dashboard/overview', description: 'Sales, Stock, Alerts, Payments' },
-        { title: 'Notifications', path: '/dashboard/notifications', description: 'Low stock, Expiry, Due payments' }
+        { title: 'Overview', path: '/dashboard/overview' },
+        { title: 'Notifications', path: '/dashboard/notifications' }
       ]
     },
     {
@@ -49,10 +49,10 @@ const Sidebar = ({ isOpen, onClose }) => {
       icon: Users,
       path: '/suppliers',
       subItems: [
-        { title: 'Add / Manage Suppliers', path: '/suppliers/manage' },
+        { title: 'Manage Suppliers', path: '/suppliers/manage' },
         { title: 'Purchase Orders (PO)', path: '/suppliers/purchase-orders' },
         { title: 'Goods Receive Note (GRN)', path: '/suppliers/grn' },
-        { title: 'Payments', path: '/suppliers/payments', description: 'Paid / Due / Partial' }
+        { title: 'Payments', path: '/suppliers/payments'}
       ]
     },
     {
@@ -64,7 +64,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { title: 'Stock In (from GRN)', path: '/warehouse/stock-in' },
         { title: 'Barcode / QR Assign', path: '/warehouse/barcode' },
         { title: 'Batch & Expiry Tracking', path: '/warehouse/batch-tracking' },
-        { title: 'Stock Transfer', path: '/warehouse/stock-transfer', description: 'Multi-location' },
+        { title: 'Stock Transfer', path: '/warehouse/stock-transfer' },
         { title: 'Warehouse List', path: '/warehouse/list' }
       ]
     },
@@ -74,11 +74,11 @@ const Sidebar = ({ isOpen, onClose }) => {
       icon: ShoppingCart,
       path: '/sales',
       subItems: [
-        { title: 'POS Terminal', path: '/sales/pos-terminal', description: 'Scan / Select product' },
-        { title: 'Discounts / Offers', path: '/sales/discounts', description: 'Loyalty Points' },
-        { title: 'Payments', path: '/sales/payments', description: 'Cash / Card / Mobile Banking' },
-        { title: 'Invoice / Receipt', path: '/sales/invoice', description: 'Print / SMS / Email' },
-        { title: 'Returns', path: '/sales/returns', description: 'Return Note + Stock Adjust' }
+        { title: 'POS Terminal', path: '/sales/pos-terminal'},
+        { title: 'Discounts / Offers', path: '/sales/discounts' },
+        { title: 'Payments', path: '/sales/payments'},
+        { title: 'Invoice / Receipt', path: '/sales/invoice'},
+        { title: 'Returns', path: '/sales/returns'}
       ]
     },
     {
@@ -91,7 +91,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { title: 'Low Stock Alerts', path: '/inventory/low-stock' },
         { title: 'Auto Reorder Suggestions', path: '/inventory/reorder' },
         { title: 'Inventory Valuation', path: '/inventory/valuation' },
-        { title: 'Sales Reports', path: '/inventory/sales-reports', description: 'Daily / Monthly / Custom' },
+        { title: 'Sales Reports', path: '/inventory/sales-reports'},
         { title: 'Profit & Loss Reports', path: '/inventory/profit-loss' },
         { title: 'Fast-moving & Dead Stock', path: '/inventory/stock-analysis' }
       ]
@@ -102,8 +102,8 @@ const Sidebar = ({ isOpen, onClose }) => {
       icon: Settings,
       path: '/settings',
       subItems: [
-        { title: 'User Management', path: '/settings/users', description: 'Admin, Cashier, Warehouse Staff' },
-        { title: 'System Setup', path: '/settings/system', description: 'Tax, Currency, Company Info' },
+        { title: 'User Management', path: '/settings/users'},
+        { title: 'System Setup', path: '/settings/system'},
         { title: 'Printer & Receipt Settings', path: '/settings/printer' }
       ]
     }
