@@ -23,7 +23,7 @@ const SupplierPages = () => {
 
   return (
     <div className="p-4">
-      <div className="bg-blue-100 p-5 rounded-sm shadow-md flex justify-between items-center">
+      <div className="bg-blue-50 p-5 rounded-sm shadow-sm border border-gray-100 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-semibold text-black">
             Suppliers Management

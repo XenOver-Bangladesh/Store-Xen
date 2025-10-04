@@ -10,10 +10,10 @@ const Button = ({
   ...props 
 }) => {
   const baseClasses = `
-    inline-flex items-center justify-center font-medium rounded-xl
+    inline-flex items-center justify-center font-medium rounded-md
     transition-all duration-300 ease-out
     transform hover:scale-105 active:scale-95
-    focus:outline-none focus:ring-4 focus:ring-opacity-50
+    focus:outline-none focus:ring-1 focus:ring-opacity-50
     relative overflow-hidden
     disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
     group
@@ -70,7 +70,7 @@ const Button = ({
       hover:before:opacity-10 before:transition-opacity before:duration-300
     `,
     edit: `
-      bg-gradient-to-r from-emerald-500 to-green-600 
+      bg-gradient-to-r from-emerald-500 to-green-500 
       text-white shadow-lg hover:shadow-xl
       hover:from-emerald-600 hover:to-green-700
       focus:ring-emerald-500/50
