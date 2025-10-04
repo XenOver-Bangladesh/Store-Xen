@@ -14,7 +14,6 @@ export const SharedTable = ({
   data = [],
   pageSize = 10,
   loading = false,
-  filterPlaceholder = 'Search...',
   renderRowActions,
   actionsHeader = 'Actions',
 }) => {
@@ -43,8 +42,6 @@ export const SharedTable = ({
 
   return (
     <div className="space-y-6">
-      {/* Search and Controls */}
-     
 
       {/* Table Container */}
       <div className="bg-white rounded-sm shadow-sm border border-gray-100 overflow-hidden">
@@ -108,7 +105,7 @@ export const SharedTable = ({
                   </td>
                 </tr>
               ) : table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row, index) => (
+                table.getRowModel().rows.map((row) => (
                   <tr 
                     key={row.id} 
                     className="bg-white hover:bg-blue-50/30 transition-all duration-200 group border-b border-gray-50 last:border-b-0"

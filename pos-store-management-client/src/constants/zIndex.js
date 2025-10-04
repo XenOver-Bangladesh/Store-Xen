@@ -13,12 +13,12 @@ export const Z_INDEX = {
   DROPDOWN: 9999,
   MOBILE_OVERLAY: 40,
   
-  // Modal layers (highest priority)
-  MODAL_OVERLAY: 10000,
-  MODAL_CONTENT: 10001,
+  // Modal layers (lower than SweetAlert2)
+  MODAL_OVERLAY: 1000,
+  MODAL_CONTENT: 1001,
   
   // Toast/notification layers (if needed in future)
-  TOAST: 10002,
+  TOAST: 1002,
   
   // Emergency/error overlays (highest)
   EMERGENCY: 99999

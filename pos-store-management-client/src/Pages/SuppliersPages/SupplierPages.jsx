@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import { AddSuppliers } from './AddSuppliers'
 import SuppliersList from "./SuppliersList";
 import Button from "../../Components/UI/Button";
 import AddSuppliersModal from "./AddSuppliersModal";
@@ -20,9 +19,6 @@ const SupplierPages = () => {
     console.log('New supplier added:', supplierData);
     // Trigger refresh of the suppliers list
     setRefreshKey(prev => prev + 1);
-    
-    // Show success message
-    alert('Supplier added successfully!');
   };
 
   return (

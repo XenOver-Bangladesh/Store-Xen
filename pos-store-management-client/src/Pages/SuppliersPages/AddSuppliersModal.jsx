@@ -3,6 +3,7 @@ import SharedModal from '../../Shared/SharedModal/SharedModal'
 import { AddSuppliersFrom } from './AddSuppliersFrom'
 import Button from '../../Components/UI/Button'
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 
 
@@ -17,6 +18,17 @@ const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
       const response = await axios.post("http://localhost:3000/suppliers", values);
       console.log("Add Supplier response:", response.data);
       
+      // Show success message with SweetAlert2
+      await Swal.fire({
+        title: 'Success!',
+        text: 'Supplier added successfully!',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3b82f6',
+        timer: 2000,
+        timerProgressBar: true
+      });
+      
       // Call success callback if provided
       if (onSuccess) {
         onSuccess(response.data)
@@ -26,8 +38,14 @@ const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
       onClose()
     } catch (error) {
       console.error('Error adding supplier:', error)
-      // Show error message to user
-      alert(`Error adding supplier: ${error.response?.data?.message || error.message}`)
+      // Show error message with SweetAlert2
+      await Swal.fire({
+        title: 'Error!',
+        text: error.response?.data?.message || error.message || 'Failed to add supplier',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#ef4444'
+      })
     } finally {
       setIsSubmitting(false)
     }

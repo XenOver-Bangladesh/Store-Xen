@@ -4,6 +4,7 @@ import Button from "../../Components/UI/Button";
 import { Edit, Trash2 } from "lucide-react";
 import { SuppliersFilter } from "./SuppliersFilter";
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 const SuppliersList = () => {
   const [suppliersData, setSuppliersData] = useState([]);
@@ -111,9 +112,102 @@ const SuppliersList = () => {
     });
   };
 
+  const handleEditSupplier = (supplier) => {
+    console.log('Edit supplier:', supplier);
+    // TODO: Implement edit functionality
+    Swal.fire({
+      title: 'Edit Supplier',
+      text: 'Edit functionality will be implemented soon!',
+      icon: 'info',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#3b82f6'
+    });
+  };
+
+  const handleDeleteSupplier = async (supplier) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete ${supplier.supplierName}. This action cannot be undone!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`http://localhost:3000/suppliers/${supplier.id}`);
+        
+        // Remove from local state
+        setSuppliersData(prev => prev.filter(s => s.id !== supplier.id));
+        
+        Swal.fire({
+          title: 'Deleted!',
+          text: 'Supplier has been deleted successfully.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#3b82f6',
+          timer: 2000,
+          timerProgressBar: true
+        });
+      } catch (error) {
+        console.error('Delete error:', error);
+        Swal.fire({
+          title: 'Error!',
+          text: error.response?.data?.message || 'Failed to delete supplier',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#ef4444'
+        });
+      }
+    }
+  };
+
   const handleExport = () => {
-    console.log('Exporting suppliers data...');
-    // TODO: Implement export functionality
+    try {
+      // Convert data to CSV format
+      const csvContent = [
+        ['Supplier Name', 'Contact Person', 'Phone', 'Email', 'Status', 'Payment Terms'],
+        ...filteredData.map(supplier => [
+          supplier.supplierName,
+          supplier.contactPerson,
+          supplier.phone,
+          supplier.email,
+          supplier.status,
+          supplier.paymentTerms
+        ])
+      ].map(row => row.join(',')).join('\n');
+      
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `suppliers-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      
+      Swal.fire({
+        title: 'Success!',
+        text: 'Suppliers data exported successfully!',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3b82f6',
+        timer: 2000,
+        timerProgressBar: true
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      Swal.fire({
+        title: 'Export Error!',
+        text: 'Failed to export suppliers data',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#ef4444'
+      });
+    }
   };
 
   return (
@@ -131,19 +225,34 @@ const SuppliersList = () => {
       {/* Error Message */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-sm p-4">
-          <div className="flex">
-            <div className="ml-3">
+          <div className="flex items-center justify-center text-center">
+            <div>
               <h3 className="text-sm font-medium text-red-800">
                 Error loading suppliers
               </h3>
-              <div className="mt-2 text-sm text-red-700">
+              <div className=" text-sm text-red-700">
                 <p>{error}</p>
               </div>
-              <div className="mt-4">
+              <div>
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => window.location.reload()}
+                  onClick={() => {
+                    Swal.fire({
+                      title: 'Retry?',
+                      text: 'Do you want to retry fetching suppliers?',
+                      icon: 'question',
+                      showCancelButton: true,
+                      confirmButtonText: 'Yes, retry',
+                      cancelButtonText: 'Cancel',
+                      confirmButtonColor: '#3b82f6',
+                      cancelButtonColor: '#6b7280'
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        window.location.reload();
+                      }
+                    });
+                  }}
                 >
                   Try Again
                 </Button>
@@ -158,16 +267,15 @@ const SuppliersList = () => {
         <SharedTable
           columns={columns}
           data={filteredData}
-          pageSize={10}
+          pageSize={50}
           loading={loading}
-          filterPlaceholder="Search suppliers..."
           actionsHeader="Actions"
           renderRowActions={(supplier) => (
             <div className="flex items-center gap-2">
               <Button 
                 variant="edit" 
                 size="sm"
-                onClick={() => console.log('Edit supplier:', supplier.id)}
+                onClick={() => handleEditSupplier(supplier)}
               >
                 <div className="flex items-center">
                   <Edit className="w-4 h-4 mr-1" />
@@ -177,7 +285,7 @@ const SuppliersList = () => {
               <Button 
                 variant="delete" 
                 size="sm"
-                onClick={() => console.log('Delete supplier:', supplier.id)}
+                onClick={() => handleDeleteSupplier(supplier)}
               >
                 <div className="flex items-center">
                   <Trash2 className="w-4 h-4 mr-1" />

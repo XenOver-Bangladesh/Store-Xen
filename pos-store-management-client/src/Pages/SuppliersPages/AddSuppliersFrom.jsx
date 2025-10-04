@@ -6,27 +6,28 @@ export const AddSuppliersFrom = forwardRef(({ onSubmit, hideSubmitButton = false
     { name: 'supplierName', label: 'Supplier Name', type: 'text', placeholder: 'e.g. ABC Traders', validation: { required: 'Supplier name is required' } },
     { name: 'contactPerson', label: 'Contact Person', type: 'text', placeholder: 'e.g. Mr. Rahim', validation: { required: 'Contact person is required' } },
     { name: 'phone', label: 'Phone Number', type: 'text', placeholder: '01XXXXXXXXX', validation: { required: 'Phone number is required' } },
-    { name: 'email', label: 'Email Address', type: 'text', placeholder: 'name@example.com', validation: { required: 'Email is required' } },
+    { name: 'email', label: 'Email Address', type: 'email', placeholder: 'name@example.com', validation: { required: 'Email is required' } },
     { name: 'address', label: 'Address', type: 'text', placeholder: 'Street, City, ZIP', validation: { required: 'Address is required' } },
     {
       name: 'paymentTerms',
       label: 'Payment Terms',
       type: 'select',
       options: [
-        { value: 'cash', label: 'Cash' },
-        { value: '7_days', label: '7 Days Credit' },
-        { value: '30_days', label: '30 Days Credit' },
-        { value: 'custom', label: 'Custom' },
+        { value: 'Cash', label: 'Cash' },
+        { value: '7 Days Credit', label: '7 Days Credit' },
+        { value: '15 Days Credit', label: '15 Days Credit' },
+        { value: '30 Days Credit', label: '30 Days Credit' },
       ],
+      validation: { required: 'Payment terms is required' },
     },
-    { name: 'notes', label: 'Notes / Extra Info', type: 'text', placeholder: 'Any extra information' },
+    { name: 'notes', label: 'Notes / Extra Info', type: 'textarea', placeholder: 'Any extra information' },
     {
       name: 'status',
       label: 'Status',
       type: 'select',
       options: [
-        { value: 'active', label: 'Active' },
-        { value: 'inactive', label: 'Inactive' },
+        { value: 'Active', label: 'Active' },
+        { value: 'Inactive', label: 'Inactive' },
       ],
       validation: { required: 'Status is required' },
     },
@@ -38,9 +39,9 @@ export const AddSuppliersFrom = forwardRef(({ onSubmit, hideSubmitButton = false
     phone: '',
     email: '',
     address: '',
-    paymentTerms: 'cash',
+    paymentTerms: 'Cash',
     notes: '',
-    status: 'active',
+    status: 'Active',
   }
 
   const handleSubmit = async (values) => {
