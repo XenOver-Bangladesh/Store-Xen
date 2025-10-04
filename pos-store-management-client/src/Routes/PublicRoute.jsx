@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { DashboardLayout } from "../Layouts/DashboardLayout";
 import { HomePage } from "../Pages/HomePage/HomePage";
-import  ManageSuppliers  from "../Pages/SuppliersPages/ManageSuppliers";
+import SupplierPages from "../Pages/SuppliersPages/SupplierPages";
 // Router config
 const router = createBrowserRouter([
   {
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/suppliers/manage",
-        element: <ManageSuppliers />
+        element: <SupplierPages />
       }
     ],
   },

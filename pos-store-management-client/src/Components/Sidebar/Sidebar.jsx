@@ -134,7 +134,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <aside className={`
-        fixed md:static inset-y-0 left-0 z-50
+        fixed md:static inset-y-0 left-0 z-30
         bg-white shadow-lg border-r border-gray-200
         transition-all duration-300 ease-in-out
         ${sidebarCollapsed ? 'w-16' : 'w-64'}
