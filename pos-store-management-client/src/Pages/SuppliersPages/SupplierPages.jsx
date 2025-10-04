@@ -23,12 +23,12 @@ const SupplierPages = () => {
 
   return (
     <div className="p-4">
-      <div className="bg-blue-100 p-6 rounded-xl shadow-md flex justify-between items-center">
+      <div className="bg-blue-100 p-5 rounded-sm shadow-md flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800">
+          <h1 className="text-2xl font-semibold text-black">
             Suppliers Management
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-900">
             Manage and track your suppliers easily.
           </p>
         </div>
