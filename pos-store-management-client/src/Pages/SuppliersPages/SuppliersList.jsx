@@ -1,85 +1,38 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { SharedTable } from "../../Shared/SharedTable/SharedTable";
 import Button from "../../Components/UI/Button";
 import { Edit, Trash2 } from "lucide-react";
 import { SuppliersFilter } from "./SuppliersFilter";
-
-// Static data - moved outside component to avoid re-creation on every render
-const suppliersData = [
-  {
-    id: 1,
-    supplierName: "ABC Traders",
-    contactPerson: "Mr. Rahim",
-    phone: "01711-000111",
-    email: "abc@shop.com",
-    status: "Active",
-    paymentTerms: "30 Days Credit",
-    address: "Dhaka, Bangladesh",
-    notes: "Reliable supplier for electronics"
-  },
-  {
-    id: 2,
-    supplierName: "City Wholesale",
-    contactPerson: "Ms. Rupa",
-    phone: "01822-111222",
-    email: "city@wholesale.com",
-    status: "Active",
-    paymentTerms: "Cash",
-    address: "Chittagong, Bangladesh",
-    notes: "Fast delivery, good quality"
-  },
-  {
-    id: 3,
-    supplierName: "Delta Distributors",
-    contactPerson: "Tanvir",
-    phone: "01633-222333",
-    email: "delta@distrib.com",
-    status: "Inactive",
-    paymentTerms: "7 Days Credit",
-    address: "Sylhet, Bangladesh",
-    notes: "Temporarily suspended"
-  },
-  {
-    id: 4,
-    supplierName: "North Supply Co",
-    contactPerson: "Imran",
-    phone: "01944-333444",
-    email: "north@supply.co",
-    status: "Active",
-    paymentTerms: "30 Days Credit",
-    address: "Rajshahi, Bangladesh",
-    notes: "Bulk orders preferred"
-  },
-  {
-    id: 5,
-    supplierName: "Tech Solutions Ltd",
-    contactPerson: "Sarah Ahmed",
-    phone: "01555-444555",
-    email: "sarah@techsolutions.com",
-    status: "Active",
-    paymentTerms: "15 Days Credit",
-    address: "Dhaka, Bangladesh",
-    notes: "IT equipment specialist"
-  },
-  {
-    id: 6,
-    supplierName: "Global Imports",
-    contactPerson: "John Smith",
-    phone: "01444-555666",
-    email: "john@globalimports.com",
-    status: "Inactive",
-    paymentTerms: "Cash",
-    address: "Chittagong, Bangladesh",
-    notes: "Under review"
-  }
-];
+import axios from "axios";
 
 const SuppliersList = () => {
+  const [suppliersData, setSuppliersData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     status: '',
     paymentTerms: '',
     search: ''
   });
+
+  // Fetch suppliers data from API
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await axios.get("http://localhost:3000/suppliers");
+        setSuppliersData(response.data);
+      } catch (err) {
+        console.error('Error fetching suppliers:', err);
+        setError(err.response?.data?.message || err.message || 'Failed to fetch suppliers');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSuppliers();
+  }, []);
 
   const columns = [
     { 
@@ -141,7 +94,7 @@ const SuppliersList = () => {
       
       return matchesStatus && matchesPaymentTerms && matchesSearch;
     });
-  }, [filters]);
+  }, [filters, suppliersData]);
 
   const handleFilterChange = (filterType, value) => {
     setFilters(prev => ({
@@ -175,12 +128,38 @@ const SuppliersList = () => {
         totalCount={suppliersData.length}
       />
 
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-sm p-4">
+          <div className="flex">
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">
+                Error loading suppliers
+              </h3>
+              <div className="mt-2 text-sm text-red-700">
+                <p>{error}</p>
+              </div>
+              <div className="mt-4">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => window.location.reload()}
+                >
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Suppliers Table */}
       <div className="bg-white rounded-sm shadow-sm border border-gray-100 overflow-hidden">
         <SharedTable
           columns={columns}
           data={filteredData}
           pageSize={10}
+          loading={loading}
           filterPlaceholder="Search suppliers..."
           actionsHeader="Actions"
           renderRowActions={(supplier) => (
@@ -188,23 +167,21 @@ const SuppliersList = () => {
               <Button 
                 variant="edit" 
                 size="sm"
-                
                 onClick={() => console.log('Edit supplier:', supplier.id)}
               >
                 <div className="flex items-center">
-                <Edit className="w-4 h-4 mr-1" />
-                Edit
+                  <Edit className="w-4 h-4 mr-1" />
+                  Edit
                 </div>
               </Button>
               <Button 
                 variant="delete" 
                 size="sm"
-                
                 onClick={() => console.log('Delete supplier:', supplier.id)}
               >
                 <div className="flex items-center">
-                <Trash2 className="w-4 h-4 mr-1" />
-                Delete
+                  <Trash2 className="w-4 h-4 mr-1" />
+                  Delete
                 </div>
               </Button>
             </div>
