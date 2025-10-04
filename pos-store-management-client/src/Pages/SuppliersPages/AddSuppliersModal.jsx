@@ -15,7 +15,7 @@ const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
     setIsSubmitting(true)
     try {
       // Post data to your API
-      const response = await axios.post("http://localhost:3000/suppliers", values);
+      const response = await axios.post("https://pos-system-management-server-20.vercel.app/suppliers", values);
       console.log("Add Supplier response:", response.data);
       
       // Show success message with SweetAlert2

@@ -25,7 +25,7 @@ const SuppliersList = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get("http://localhost:3000/suppliers");
+        const response = await axios.get("https://pos-system-management-server-20.vercel.app/suppliers");
         setSuppliersData(response.data);
       } catch (err) {
         console.error('Error fetching suppliers:', err);
@@ -177,7 +177,7 @@ const SuppliersList = () => {
       try {
         // Use the correct ID field - try both _id and id
         const supplierId = supplier._id || supplier.id;
-        await axios.delete(`http://localhost:3000/suppliers/${supplierId}`);
+        await axios.delete(`https://pos-system-management-server-20.vercel.app/suppliers/${supplierId}`);
         
         // Remove from local state using the same ID field
         setSuppliersData(prev => prev.filter(s => (s._id || s.id) !== supplierId));

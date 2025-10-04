@@ -21,7 +21,7 @@ const EditSuppliersModal = ({ isOpen, onClose, onSuccess, supplierData }) => {
       const supplierId = supplierData._id || supplierData.id;
       
       // Put data to your API
-      const response = await axios.put(`http://localhost:3000/suppliers/${supplierId}`, values);
+      const response = await axios.put(`https://pos-system-management-server-20.vercel.app/suppliers/${supplierId}`, values);
       console.log("Update Supplier response:", response.data);
       
       // Show success message with SweetAlert2
