@@ -1,11 +1,30 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Menu, Search, Bell, User, Settings, LogOut } from 'lucide-react'
 
 const Header = ({ onMenuClick }) => {
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const userMenuRef = useRef(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false)
+      }
+    }
+
+    if (showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside)
+      console.log('User menu opened, z-index should be 9999')
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showUserMenu])
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 py-4">
+    <header className="bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 py-4 relative">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           {/* Mobile menu button */}
@@ -42,7 +61,7 @@ const Header = ({ onMenuClick }) => {
           </button>
 
           {/* User Menu */}
-          <div className="relative">
+          <div className="relative" ref={userMenuRef}>
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100"
@@ -55,7 +74,7 @@ const Header = ({ onMenuClick }) => {
 
             {/* User Dropdown */}
             {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+              <div className="absolute right-0 mt-2 w-48 bg-blue-100 rounded-md shadow-xl z-[9999] transform translate-y-0 opacity-100">
                 <div className="py-1">
                   <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
                     <p className="font-medium">Admin User</p>

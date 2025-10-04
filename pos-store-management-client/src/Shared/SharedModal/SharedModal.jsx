@@ -1,5 +1,6 @@
 import React from 'react'
 import Modal from 'react-modal'
+import { Z_INDEX } from '../../constants/zIndex'
 
 // Set the app element for react-modal accessibility
 Modal.setAppElement('#root')
@@ -36,7 +37,7 @@ const SharedModal = ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      zIndex: 1000,
+      zIndex: Z_INDEX.MODAL_OVERLAY,
       ...customStyles.overlay
     },
     content: {

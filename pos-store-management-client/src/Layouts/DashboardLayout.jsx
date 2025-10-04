@@ -16,14 +16,14 @@ export const DashboardLayout = () => {
       />
       
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
         {/* Header (sticky) */}
-        <div className="sticky top-0 bg-white border-b border-gray-200">
+        <div className="sticky top-0 bg-white border-b border-gray-200 z-50">
           <Header onMenuClick={() => setSidebarOpen(true)} />
         </div>
         
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto relative">
           <div className="p-4 md:p-6 pb-20">
             <Outlet />
           </div>
