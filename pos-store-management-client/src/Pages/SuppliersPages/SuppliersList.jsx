@@ -3,6 +3,7 @@ import { SharedTable } from "../../Shared/SharedTable/SharedTable";
 import Button from "../../Components/UI/Button";
 import { Edit, Trash2 } from "lucide-react";
 import { SuppliersFilter } from "./SuppliersFilter";
+import EditSuppliersModal from "./EditSuppliersModal";
 import axios from "axios";
 import Swal from 'sweetalert2';
 
@@ -15,6 +16,8 @@ const SuppliersList = () => {
     paymentTerms: '',
     search: ''
   });
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
 
   // Fetch suppliers data from API
   useEffect(() => {
@@ -113,14 +116,48 @@ const SuppliersList = () => {
   };
 
   const handleEditSupplier = (supplier) => {
-    console.log('Edit supplier:', supplier);
-    // TODO: Implement edit functionality
-    Swal.fire({
-      title: 'Edit Supplier',
-      text: 'Edit functionality will be implemented soon!',
-      icon: 'info',
-      confirmButtonText: 'OK',
-      confirmButtonColor: '#3b82f6'
+    if (supplier && (supplier._id || supplier.id)) {
+      setSelectedSupplier(supplier);
+      setIsEditModalOpen(true);
+    } else {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Invalid supplier data. Cannot edit this supplier.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#ef4444'
+      });
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedSupplier(null);
+  };
+
+  const handleSupplierUpdated = (updatedSupplier) => {
+    console.log('Supplier updated:', updatedSupplier);
+    console.log('Current suppliers data before update:', suppliersData);
+    
+    // Update the supplier in the local state
+    setSuppliersData(prev => {
+      const updated = prev.map(supplier => {
+        const currentId = supplier._id || supplier.id;
+        const updatedId = updatedSupplier._id || updatedSupplier.id;
+        
+        console.log('Comparing IDs:', { currentId, updatedId, match: currentId === updatedId });
+        
+        if (currentId === updatedId) {
+          // Merge the updated data with existing data to preserve all fields
+          const merged = { ...supplier, ...updatedSupplier };
+          console.log('Merged supplier data:', merged);
+          return merged;
+        }
+        return supplier;
+      });
+      
+      console.log('Updated suppliers data:', updated);
+      return updated;
     });
   };
 
@@ -138,10 +175,12 @@ const SuppliersList = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/suppliers/${supplier.id}`);
+        // Use the correct ID field - try both _id and id
+        const supplierId = supplier._id || supplier.id;
+        await axios.delete(`http://localhost:3000/suppliers/${supplierId}`);
         
-        // Remove from local state
-        setSuppliersData(prev => prev.filter(s => s.id !== supplier.id));
+        // Remove from local state using the same ID field
+        setSuppliersData(prev => prev.filter(s => (s._id || s.id) !== supplierId));
         
         Swal.fire({
           title: 'Deleted!',
@@ -296,6 +335,14 @@ const SuppliersList = () => {
           )}
         />
       </div>
+
+      {/* Edit Supplier Modal */}
+      <EditSuppliersModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        onSuccess={handleSupplierUpdated}
+        supplierData={selectedSupplier}
+      />
     </div>
   );
 };
