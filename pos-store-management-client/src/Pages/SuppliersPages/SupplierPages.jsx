@@ -6,6 +6,7 @@ import AddSuppliersModal from "./AddSuppliersModal";
 
 const SupplierPages = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -17,8 +18,11 @@ const SupplierPages = () => {
 
   const handleSupplierAdded = (supplierData) => {
     console.log('New supplier added:', supplierData);
-    // TODO: Refresh the suppliers list or update state
-    // You can add logic here to refresh the SuppliersList component
+    // Trigger refresh of the suppliers list
+    setRefreshKey(prev => prev + 1);
+    
+    // Show success message
+    alert('Supplier added successfully!');
   };
 
   return (
@@ -45,7 +49,7 @@ const SupplierPages = () => {
       </div>
 
       {/* <AddSuppliers/> */}
-      <SuppliersList />
+      <SuppliersList key={refreshKey} />
       
       {/* AddSuppliersModal */}
       <AddSuppliersModal

@@ -2,6 +2,9 @@ import React, { useState, useRef } from 'react'
 import SharedModal from '../../Shared/SharedModal/SharedModal'
 import { AddSuppliersFrom } from './AddSuppliersFrom'
 import Button from '../../Components/UI/Button'
+import axios from "axios";
+
+
 
 const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -10,21 +13,21 @@ const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
   const handleFormSubmit = async (values) => {
     setIsSubmitting(true)
     try {
-      // TODO: integrate with API
-      console.log('Add Supplier submit:', values)
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Post data to your API
+      const response = await axios.post("http://localhost:3000/suppliers", values);
+      console.log("Add Supplier response:", response.data);
       
       // Call success callback if provided
       if (onSuccess) {
-        onSuccess(values)
+        onSuccess(response.data)
       }
       
       // Close modal after successful submission
       onClose()
     } catch (error) {
       console.error('Error adding supplier:', error)
+      // Show error message to user
+      alert(`Error adding supplier: ${error.response?.data?.message || error.message}`)
     } finally {
       setIsSubmitting(false)
     }

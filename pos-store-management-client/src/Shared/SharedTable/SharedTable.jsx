@@ -8,15 +8,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 
-/**
- * Reusable data table built on @tanstack/react-table
- * Props:
- * - columns: tanstack column definitions
- * - data: array of rows
- * - pageSize?: number (default 10)
- * - loading?: boolean
- * - filterPlaceholder?: string
- */
+
 export const SharedTable = ({
   columns = [],
   data = [],
@@ -128,7 +120,7 @@ export const SharedTable = ({
                     ))}
                     {renderRowActions && (
                       <td className="px-6 py-4 text-sm">
-                        <div className="flex items-center justify-end">
+                        <div className="flex items-center justify-start">
                           {renderRowActions(row.original)}
                         </div>
                       </td>
