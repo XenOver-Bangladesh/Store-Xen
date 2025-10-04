@@ -1,14 +1,15 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 
-const InputFrom = ({
+const InputFrom = forwardRef(({
   fields = [],
   defaultValues = {},
   onSubmit = () => {},
   submitLabel = 'Save',
   columns = 2,
-  className = ''
-}) => {
+  className = '',
+  hideSubmitButton = false
+}, ref) => {
   const { register, control, handleSubmit, formState: { errors, isSubmitting } } = useForm({ defaultValues })
 
   const gridCols = {
@@ -136,17 +137,19 @@ const InputFrom = ({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={`space-y-6 ${className}`}>
+    <form ref={ref} onSubmit={handleSubmit(onSubmit)} className={`space-y-6 ${className}`}>
       <div className={`grid ${gridCols} gap-4`}>
         {fields.map(renderField)}
       </div>
-      <div className="flex items-center justify-end gap-3">
-        <button type="submit" disabled={isSubmitting} className="inline-flex items-center justify-center rounded-xl bg-indigo-600 text-white px-4 py-2.5 text-sm font-semibold shadow hover:shadow-md transition hover:bg-indigo-700 disabled:opacity-60">
-          {isSubmitting ? 'Processing…' : submitLabel}
-        </button>
-      </div>
+      {!hideSubmitButton && (
+        <div className="flex items-center justify-end gap-3">
+          <button type="submit" disabled={isSubmitting} className="inline-flex items-center justify-center rounded-xl bg-indigo-600 text-white px-4 py-2.5 text-sm font-semibold shadow hover:shadow-md transition hover:bg-indigo-700 disabled:opacity-60">
+            {isSubmitting ? 'Processing…' : submitLabel}
+          </button>
+        </div>
+      )}
     </form>
   )
-}
+})
 
 export default InputFrom

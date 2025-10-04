@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import InputFrom from '../../Shared/InputFrom/InputFrom'
 
-export const AddSuppliers = () => {
+export const AddSuppliersFrom = forwardRef(({ onSubmit, hideSubmitButton = false }, ref) => {
   const fields = [
     { name: 'supplierName', label: 'Supplier Name', type: 'text', placeholder: 'e.g. ABC Traders', validation: { required: 'Supplier name is required' } },
     { name: 'contactPerson', label: 'Contact Person', type: 'text', placeholder: 'e.g. Mr. Rahim', validation: { required: 'Contact person is required' } },
@@ -43,28 +43,31 @@ export const AddSuppliers = () => {
     status: 'active',
   }
 
-  const onSubmit = async (values) => {
-    // TODO: integrate with API
-    console.log('Add Supplier submit:', values)
+  const handleSubmit = async (values) => {
+    if (onSubmit) {
+      await onSubmit(values)
+    } else {
+      // TODO: integrate with API
+      console.log('Add Supplier submit:', values)
+    }
   }
 
   return (
-    <div className='p-4'>
-      <div className='rounded-2xl p-5 bg-white shadow-sm'>
-        <div className='mb-4'>
-          <h1 className='text-xl font-bold'>Add Supplier</h1>
-          <p className='text-sm text-slate-500'>Create a new supplier profile</p>
-        </div>
-        <InputFrom
-          fields={fields}
-          defaultValues={defaultValues}
-          submitLabel='Save'
-          columns={2}
-          onSubmit={onSubmit}
-        />
+    <div className='space-y-4'>
+      <div className='mb-4'>
+        <p className='text-sm text-slate-500'>Fill in the supplier information below</p>
       </div>
+      <InputFrom
+        ref={ref}
+        fields={fields}
+        defaultValues={defaultValues}
+        submitLabel={hideSubmitButton ? '' : 'Save'}
+        columns={2}
+        onSubmit={handleSubmit}
+        hideSubmitButton={hideSubmitButton}
+      />
     </div>
   )
-}
+})
 
-export default AddSuppliers
+export default AddSuppliersFrom
