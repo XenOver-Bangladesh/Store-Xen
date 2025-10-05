@@ -33,10 +33,12 @@ const ProductAdd = () => {
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [allProducts, setAllProducts] = useState([])
 
-  // Fetch suppliers on component mount
+  // Fetch suppliers and products on component mount
   useEffect(() => {
     fetchSuppliers()
+    fetchAllProducts()
     generateQRCode()
   }, [])
 
@@ -52,6 +54,15 @@ const ProductAdd = () => {
         icon: 'warning',
         confirmButtonColor: '#3b82f6'
       })
+    }
+  }
+
+  const fetchAllProducts = async () => {
+    try {
+      const response = await axios.get('https://pos-system-management-server-20.vercel.app/Products')
+      setAllProducts(response.data)
+    } catch (error) {
+      console.error('Error fetching products:', error)
     }
   }
 
@@ -132,6 +143,14 @@ const ProductAdd = () => {
 
     if (!formData.category) {
       newErrors.category = 'Category is required'
+    }
+
+    // Check for duplicate QR code
+    if (formData.qrCode) {
+      const duplicateQR = allProducts.find(p => p.qrCode === formData.qrCode)
+      if (duplicateQR) {
+        newErrors.qrCode = 'This QR Code already exists. Please generate a new one.'
+      }
     }
 
     setErrors(newErrors)
