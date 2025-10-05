@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import Sidebar from '../Components/Sidebar/Sidebar'
 import Header from '../Components/Header/Header'
 import { Footer } from '../Components/Footer/Footer'
+import { Z_INDEX } from '../constants/zIndex'
 
 export const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -18,7 +19,7 @@ export const DashboardLayout = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
         {/* Header (sticky) */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 z-50">
+        <div className="sticky top-0 bg-white border-b border-gray-200" style={{ zIndex: Z_INDEX.HEADER }}>
           <Header onMenuClick={() => setSidebarOpen(true)} />
         </div>
         

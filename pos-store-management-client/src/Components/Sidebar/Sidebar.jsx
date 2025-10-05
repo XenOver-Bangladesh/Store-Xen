@@ -12,6 +12,7 @@ import {
   Store,
   PackageIcon
 } from 'lucide-react'
+import { Z_INDEX } from '../../constants/zIndex'
 
 const Sidebar = ({ isOpen, onClose }) => {
   const [activeDropdown, setActiveDropdown] = useState(null)
@@ -139,22 +140,31 @@ const Sidebar = ({ isOpen, onClose }) => {
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          className="fixed inset-0 bg-black/40 md:hidden"
+          style={{ zIndex: Z_INDEX.MOBILE_OVERLAY }}
           onClick={onClose}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`
-        fixed md:static inset-y-0 left-0 z-30
+      <aside 
+        className={`
+        fixed md:relative inset-y-0 left-0
         bg-white shadow-lg border-r border-gray-200
         transition-all duration-300 ease-in-out
         ${sidebarCollapsed ? 'w-16' : 'w-64'}
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         flex flex-col
-      `} role="navigation" aria-label="Primary">
+      `}
+        style={{ zIndex: Z_INDEX.SIDEBAR }}
+        role="navigation" 
+        aria-label="Primary"
+      >
         {/* Logo Section */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+        <div 
+          className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white"
+          style={{ zIndex: Z_INDEX.SIDEBAR_STICKY }}
+        >
           {!sidebarCollapsed && (
             <Link to="/" className="flex items-center space-x-2" onClick={handleLinkClick}>
               <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
