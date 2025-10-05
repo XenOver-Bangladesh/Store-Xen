@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Menu, Search, Bell, User, Settings, LogOut } from 'lucide-react'
+import { Z_INDEX } from '../../constants/zIndex'
 
 const Header = ({ onMenuClick }) => {
   const [showUserMenu, setShowUserMenu] = useState(false)
@@ -15,7 +16,6 @@ const Header = ({ onMenuClick }) => {
 
     if (showUserMenu) {
       document.addEventListener('mousedown', handleClickOutside)
-      console.log('User menu opened, z-index should be 9999')
     }
 
     return () => {
@@ -74,7 +74,10 @@ const Header = ({ onMenuClick }) => {
 
             {/* User Dropdown */}
             {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-blue-100 rounded-md shadow-xl z-[9999] transform translate-y-0 opacity-100">
+              <div 
+                className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl border border-gray-200 transform translate-y-0 opacity-100"
+                style={{ zIndex: Z_INDEX.DROPDOWN }}
+              >
                 <div className="py-1">
                   <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
                     <p className="font-medium">Admin User</p>
