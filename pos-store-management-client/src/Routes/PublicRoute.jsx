@@ -4,6 +4,7 @@ import { HomePage } from "../Pages/HomePage/HomePage";
 import SupplierPages from "../Pages/SuppliersPages/SupplierPages";
 import ProductAdd from "../Pages/ProductPages/ProductAdd";
 import ProductManage from "../Pages/ProductPages/ProductManage";
+import ManagePO from "../Pages/POPages/ManagePO";
 // Router config
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
         path: "/suppliers/manage",
         element: <SupplierPages />
       },
+      {
+        path: "/suppliers/purchase-orders",
+        element: <ManagePO />
+      },
       //products
       {
         path: "/products/manage",
@@ -32,8 +37,7 @@ const router = createBrowserRouter([
       {
         path: "/products/add",
         element: <ProductAdd />
-      }
-      
+      },
     ],
   },
 ]);

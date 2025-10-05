@@ -49,7 +49,7 @@ export const ReuseableFilter = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {filterConfig.map((config, index) => (
           <div key={index} className={config.span ? `lg:col-span-${config.span}` : ''}>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -82,6 +82,14 @@ export const ReuseableFilter = ({
                   </option>
                 ))}
               </select>
+            ) : config.type === 'date' ? (
+              <input
+                type="date"
+                value={filters[config.key] || ''}
+                onChange={(e) => onFilterChange(config.key, e.target.value)}
+                className="w-full px-3 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                placeholder={config.placeholder}
+              />
             ) : null}
           </div>
         ))}
