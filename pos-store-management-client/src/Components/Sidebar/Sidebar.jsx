@@ -9,7 +9,8 @@ import {
   Settings,
   ChevronDown,
   ChevronRight,
-  Store
+  Store,
+  PackageIcon
 } from 'lucide-react'
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -44,6 +45,16 @@ const Sidebar = ({ isOpen, onClose }) => {
       ]
     },
     {
+      id: 'products',
+      title: 'Products',
+      icon: PackageIcon,
+      path: '/products',
+      subItems: [
+        { title: 'Manage Products', path: '/products/manage' },
+        { title: 'Add New Product', path: '/products/add' }
+      ]
+    },
+    {
       id: 'suppliers',
       title: 'Suppliers',
       icon: Users,
@@ -61,6 +72,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       icon: Warehouse,
       path: '/warehouse',
       subItems: [
+        { title: 'Inhouse Products', path: '/warehouse/inhouse-products' },
         { title: 'Stock In (from GRN)', path: '/warehouse/stock-in' },
         { title: 'Barcode / QR Assign', path: '/warehouse/barcode' },
         { title: 'Batch & Expiry Tracking', path: '/warehouse/batch-tracking' },
