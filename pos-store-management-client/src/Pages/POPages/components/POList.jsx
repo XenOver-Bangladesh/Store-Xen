@@ -106,45 +106,53 @@ const POList = ({
               </div>
             </Button>
             
-            <Button
-              variant="edit"
-              size="sm"
-              onClick={() => onEdit(po)}
-              title="Edit Purchase Order"
-              className="flex items-center"
-            >
-              <div className="flex items-center">
-              <Edit className="w-4 h-4 mr-1.5" />
-              <span>Edit</span>
-              </div>
-            </Button>
+            {/* Only show Edit for Draft and Pending statuses */}
+            {po.status !== 'Fully Received' && po.status !== 'Partially Received' && po.status !== 'Sent' && (
+              <Button
+                variant="edit"
+                size="sm"
+                onClick={() => onEdit(po)}
+                title="Edit Purchase Order"
+                className="flex items-center"
+              >
+                <div className="flex items-center">
+                <Edit className="w-4 h-4 mr-1.5" />
+                <span>Edit</span>
+                </div>
+              </Button>
+            )}
             
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onSend(po)}
-              disabled={po.status === 'Sent' || po.status === 'Completed'}
-              title={po.status === 'Sent' || po.status === 'Completed' ? 'Already sent' : 'Send to Supplier'}
-              className="flex items-center shadow-sm text-purple-600 hover:text-white hover:bg-purple-600"
-            >
-              <div className="flex items-center ">
-              <Send className="w-4 h-4 mr-1.5" />
-              <span>Send</span>
-              </div>
-            </Button>
+            {/* Only show Send button for Draft/Pending POs */}
+            {po.status !== 'Sent' && po.status !== 'Partially Received' && po.status !== 'Fully Received' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onSend(po)}
+                title="Send to Supplier"
+                className="flex items-center shadow-sm text-purple-600 hover:text-white hover:bg-purple-600"
+              >
+                <div className="flex items-center ">
+                <Send className="w-4 h-4 mr-1.5" />
+                <span>Send</span>
+                </div>
+              </Button>
+            )}
             
-            <Button
-              variant="delete"
-              size="sm"
-              onClick={() => onDelete(po)}
-              title="Delete Purchase Order"
-              className="flex items-center"
-            >
-              <div className="flex items-center">
-              <Trash2 className="w-4 h-4 mr-1.5" />
-              <span>Delete</span>
-              </div>
-            </Button>
+            {/* Don't allow delete for Fully Received or Partially Received POs */}
+            {po.status !== 'Fully Received' && po.status !== 'Partially Received' && (
+              <Button
+                variant="delete"
+                size="sm"
+                onClick={() => onDelete(po)}
+                title="Delete Purchase Order"
+                className="flex items-center"
+              >
+                <div className="flex items-center">
+                <Trash2 className="w-4 h-4 mr-1.5" />
+                <span>Delete</span>
+                </div>
+              </Button>
+            )}
           </div>
         )}
       />

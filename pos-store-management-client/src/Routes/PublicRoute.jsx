@@ -5,6 +5,8 @@ import SupplierPages from "../Pages/SuppliersPages/SupplierPages";
 import ProductAdd from "../Pages/ProductPages/ProductAdd";
 import ProductManage from "../Pages/ProductPages/ProductManage";
 import ManagePO from "../Pages/POPages/ManagePO";
+import GRNManage from "../Pages/GRNPages/GRNManage";
+import Payments from "../Pages/GENPaymentsPage/Payments";
 // Router config
 const router = createBrowserRouter([
   {
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
       {
         path: "/suppliers/purchase-orders",
         element: <ManagePO />
+      },
+      {
+        path: "/suppliers/grn",
+        element: <GRNManage />
+      },
+      {
+        path: "/suppliers/payments",
+        element: <Payments />
       },
       //products
       {

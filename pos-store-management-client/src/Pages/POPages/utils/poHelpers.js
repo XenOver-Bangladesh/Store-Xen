@@ -4,6 +4,8 @@ export const getStatusColor = (status) => {
   const colors = {
     Pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
     Sent: 'bg-blue-100 text-blue-800 border-blue-200',
+    'Partially Received': 'bg-purple-100 text-purple-800 border-purple-200',
+    'Fully Received': 'bg-green-100 text-green-800 border-green-200',
     Completed: 'bg-green-100 text-green-800 border-green-200',
     Cancelled: 'bg-red-100 text-red-800 border-red-200'
   }
@@ -14,6 +16,8 @@ export const getStatusBadgeColor = (status) => {
   const colors = {
     Pending: '🟡',
     Sent: '🔵',
+    'Partially Received': '🟣',
+    'Fully Received': '🟢',
     Completed: '🟢',
     Cancelled: '🔴'
   }
