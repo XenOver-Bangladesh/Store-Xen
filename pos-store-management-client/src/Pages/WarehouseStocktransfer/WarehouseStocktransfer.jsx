@@ -413,62 +413,17 @@ const WarehouseStocktransfer = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-purple-50 via-blue-50 to-green-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex justify-between items-center">
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <ArrowRightLeft className="w-8 h-8 mr-3 text-purple-600" />
-              Stock Transfer
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Move inventory between warehouse locations
-            </p>
-
-            {/* Important Info Alert */}
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-4 flex items-start gap-3">
-              <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-blue-900">Flexible Transfer System</p>
-                <p className="text-sm text-blue-700 mt-1">
-                  You can now transfer partial quantities between warehouses. Specify the exact amount you want to move,
-                  and the remaining stock will stay in the source warehouse. This allows for better inventory distribution.
-                </p>
-              </div>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <ArrowRightLeft className="w-6 h-6 text-white" />
             </div>
-
-            {/* Info Alert */}
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-4 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-blue-900">Transfer Instructions</p>
-                <p className="text-sm text-blue-700 mt-1">
-                  Select a product from the list and click "Transfer" to move it to a different warehouse.
-                  A complete transfer history is maintained for audit purposes.
-                </p>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Products in Stock</p>
-                <p className="text-lg font-bold text-gray-900">
-                  {inventory.filter(item => item.stockQty > 0).length}
-                </p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Total Stock Qty</p>
-                <p className="text-lg font-bold text-green-600">
-                  {inventory.reduce((sum, item) => sum + (item.stockQty || 0), 0)}
-                </p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Transfers Made</p>
-                <p className="text-lg font-bold text-purple-600">{transfers.length}</p>
-              </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Stock Transfer Management</h1>
+              <p className="text-gray-600 mt-1">Move inventory between warehouse locations efficiently</p>
             </div>
           </div>
-
           <Button 
             variant="secondary" 
             size="md"
@@ -479,6 +434,80 @@ const WarehouseStocktransfer = () => {
               View History
             </div>
           </Button>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-xs text-gray-600 font-medium mb-1">Products in Stock</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {inventory.filter(item => item.stockQty > 0).length}
+              </p>
+            </div>
+            <div className="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+              <Package className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-xs text-gray-600 font-medium mb-1">Total Stock</p>
+              <p className="text-2xl font-bold text-green-600">
+                {inventory.reduce((sum, item) => sum + (item.stockQty || 0), 0)}
+              </p>
+            </div>
+            <div className="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+              <Package className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-xs text-gray-600 font-medium mb-1">Warehouses</p>
+              <p className="text-2xl font-bold text-purple-600">
+                {warehouseOptions.length}
+              </p>
+            </div>
+            <div className="w-12 h-12 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center">
+              <Package className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-xs text-gray-600 font-medium mb-1">Transfers Made</p>
+              <p className="text-2xl font-bold text-yellow-600">
+                {transfers.length}
+              </p>
+            </div>
+            <div className="w-12 h-12 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center">
+              <ArrowRightLeft className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Info Card */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6 flex items-start gap-3">
+        <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-blue-900">How Stock Transfer Works</p>
+          <div className="text-sm text-blue-700 mt-2 space-y-1">
+            <p>• Select a product from the list below</p>
+            <p>• Specify the quantity you want to transfer (partial transfers are supported)</p>
+            <p>• Choose the destination warehouse</p>
+            <p>• The remaining stock stays in the source warehouse</p>
+            <p>• All transfers are tracked in the transfer history</p>
+          </div>
         </div>
       </div>
 
@@ -510,141 +539,199 @@ const WarehouseStocktransfer = () => {
       <SharedModal
         isOpen={transferModalOpen}
         onClose={() => setTransferModalOpen(false)}
-        title="Transfer Stock"
-        size="medium"
+        title="Transfer Stock Between Warehouses"
+        size="large"
       >
         {selectedItem && (
-          <form onSubmit={handleTransferSubmit} className="space-y-4">
-            {/* Product Info */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-gray-900 mb-2">Product Details</h3>
-              <p className="text-sm text-gray-700">
-                <span className="font-medium">Name:</span> {selectedItem.productName}
-              </p>
-              <p className="text-sm text-gray-700">
-                <span className="font-medium">Current Location:</span> {selectedItem.location || 'Not assigned'}
-              </p>
-              <p className="text-sm text-gray-700">
-                <span className="font-medium">Stock to Transfer:</span>{' '}
-                <span className="font-bold text-green-600">{selectedItem.stockQty} units</span>
-              </p>
-              {selectedItem.batch && (
-                <p className="text-sm text-gray-700">
-                  <span className="font-medium">Batch:</span> {selectedItem.batch}
-                </p>
-              )}
-            </div>
-
-            {/* Quantity Input */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Transfer Quantity <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                min="1"
-                max={selectedItem.stockQty}
-                value={transferData.quantity}
-                onChange={(e) => setTransferData({ ...transferData, quantity: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                placeholder={`Enter quantity (max: ${selectedItem.stockQty})`}
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Available: {selectedItem.stockQty} units
-              </p>
-            </div>
-
-            {/* Source Warehouse */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Source Warehouse <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={transferData.sourceWarehouse}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 font-medium"
-                disabled
-                readOnly
-              />
-            </div>
-
-            {/* Destination Warehouse */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Destination Warehouse <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={transferData.destinationWarehouse}
-                onChange={(e) => setTransferData({ ...transferData, destinationWarehouse: e.target.value })}
-                disabled={warehousesLoading}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                required
-              >
-                <option value="">
-                  {warehousesLoading ? 'Loading warehouses...' : 'Select destination warehouse'}
-                </option>
-                {warehouses.length > 0 ? (
-                  warehouses
-                    .filter(wh => wh.name !== selectedItem.location)
-                    .map(wh => (
-                      <option key={wh._id} value={wh.name}>
-                        {wh.name} {wh.location ? `- ${wh.location}` : ''}
-                      </option>
-                    ))
-                ) : (
-                  !warehousesLoading && (
-                    <option value="" disabled>
-                      No warehouses available
-                    </option>
-                  )
-                )}
-              </select>
-              <p className="text-xs text-gray-500 mt-1">
-                {warehousesLoading 
-                  ? 'Loading available warehouses...' 
-                  : warehouses.length > 0 
-                    ? `Select destination warehouse (${warehouses.filter(wh => wh.name !== selectedItem.location).length} available)`
-                    : 'No warehouses available - please add warehouses first'
-                }
-              </p>
-            </div>
-
-            {/* Preview */}
-            {transferData.destinationWarehouse && transferData.quantity > 0 && (
-              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                <h4 className="font-semibold text-green-900 mb-2">Transfer Preview</h4>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="text-center flex-1">
-                    <p className="text-gray-600 font-medium">{transferData.sourceWarehouse}</p>
-                    <p className="font-bold text-red-600 text-lg mt-1">
-                      {selectedItem.stockQty} → {selectedItem.stockQty - transferData.quantity}
-                    </p>
-                    <p className="text-xs text-gray-500">units remaining</p>
+          <form onSubmit={handleTransferSubmit} className="space-y-6">
+            {/* Product Info Card */}
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-lg border-2 border-blue-200">
+              <h3 className="font-bold text-lg text-gray-900 mb-4 flex items-center">
+                <Package className="w-5 h-5 mr-2 text-blue-600" />
+                Product Information
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Product Name</p>
+                  <p className="font-semibold text-gray-900">{selectedItem.productName}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Product ID</p>
+                  <p className="font-mono text-sm text-gray-700">{selectedItem.productId}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Current Location</p>
+                  <p className="font-semibold text-blue-700">{selectedItem.location}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Available Stock</p>
+                  <p className="font-bold text-2xl text-green-600">{selectedItem.stockQty} units</p>
+                </div>
+                {selectedItem.batch && (
+                  <div className="col-span-2">
+                    <p className="text-sm text-gray-600 mb-1">Batch Number</p>
+                    <p className="font-mono text-sm text-gray-700">{selectedItem.batch}</p>
                   </div>
-                  <ArrowRightLeft className="w-6 h-6 text-green-600 mx-4" />
-                  <div className="text-center flex-1">
-                    <p className="text-gray-600 font-medium">{transferData.destinationWarehouse}</p>
-                    <p className="font-bold text-green-600 text-lg mt-1">
-                      +{transferData.quantity}
+                )}
+              </div>
+            </div>
+
+            {/* Transfer Form Fields */}
+            <div className="grid grid-cols-1 gap-6">
+              {/* Quantity Input */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Transfer Quantity <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max={selectedItem.stockQty}
+                  value={transferData.quantity}
+                  onChange={(e) => setTransferData({ ...transferData, quantity: parseInt(e.target.value) || 0 })}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-bold text-lg"
+                  placeholder={`Enter quantity (max: ${selectedItem.stockQty})`}
+                  required
+                />
+                <div className="flex justify-between mt-2">
+                  <p className="text-xs text-gray-600">
+                    Available: <strong className="text-green-600">{selectedItem.stockQty} units</strong>
+                  </p>
+                  {transferData.quantity > 0 && (
+                    <p className="text-xs text-gray-600">
+                      Remaining: <strong className={selectedItem.stockQty - transferData.quantity >= 10 ? 'text-green-600' : 'text-red-600'}>
+                        {selectedItem.stockQty - transferData.quantity} units
+                      </strong>
                     </p>
-                    <p className="text-xs text-gray-500">units</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Source Warehouse */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  From Warehouse
+                </label>
+                <input
+                  type="text"
+                  value={transferData.sourceWarehouse}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg bg-gray-50 text-gray-700 font-semibold text-lg"
+                  disabled
+                  readOnly
+                />
+              </div>
+
+              {/* Destination Warehouse */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  To Warehouse <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={transferData.destinationWarehouse}
+                  onChange={(e) => setTransferData({ ...transferData, destinationWarehouse: e.target.value })}
+                  disabled={warehousesLoading}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100 disabled:cursor-not-allowed font-medium text-lg"
+                  required
+                >
+                  <option value="">
+                    {warehousesLoading ? 'Loading warehouses...' : 'Select destination warehouse'}
+                  </option>
+                  {warehouses.length > 0 ? (
+                    warehouses
+                      .filter(wh => wh.name !== selectedItem.location)
+                      .map(wh => (
+                        <option key={wh._id} value={wh.name}>
+                          {wh.name} {wh.location ? `- ${wh.location}` : ''}
+                        </option>
+                      ))
+                  ) : (
+                    !warehousesLoading && (
+                      <option value="" disabled>
+                        No warehouses available
+                      </option>
+                    )
+                  )}
+                </select>
+                <p className="text-xs text-gray-500 mt-2">
+                  {warehousesLoading 
+                    ? 'Loading available warehouses...' 
+                    : warehouses.length > 0 
+                      ? `${warehouses.filter(wh => wh.name !== selectedItem.location).length} destination(s) available`
+                      : 'No warehouses available - please add warehouses first'
+                  }
+                </p>
+              </div>
+            </div>
+
+            {/* Transfer Preview */}
+            {transferData.destinationWarehouse && transferData.quantity > 0 && (
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg border-2 border-green-200">
+                <h4 className="font-bold text-green-900 mb-4 flex items-center text-lg">
+                  <AlertCircle className="w-5 h-5 mr-2" />
+                  Transfer Preview
+                </h4>
+                <div className="flex items-center justify-between">
+                  <div className="text-center flex-1">
+                    <p className="text-gray-700 font-semibold mb-2">{transferData.sourceWarehouse}</p>
+                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                      <p className="text-sm text-gray-600 mb-1">Current Stock</p>
+                      <p className="font-bold text-2xl text-gray-900">{selectedItem.stockQty}</p>
+                      <p className="text-sm text-red-600 font-semibold mt-2">
+                        After: {selectedItem.stockQty - transferData.quantity} units
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="mx-6 flex flex-col items-center">
+                    <ArrowRightLeft className="w-10 h-10 text-green-600 animate-pulse" />
+                    <p className="text-sm font-bold text-green-700 mt-2">
+                      {transferData.quantity} units
+                    </p>
+                  </div>
+                  
+                  <div className="text-center flex-1">
+                    <p className="text-gray-700 font-semibold mb-2">{transferData.destinationWarehouse}</p>
+                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                      <p className="text-sm text-gray-600 mb-1">Will Receive</p>
+                      <p className="font-bold text-2xl text-green-600">+{transferData.quantity}</p>
+                      <p className="text-sm text-green-600 font-semibold mt-2">
+                        New stock added
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
-            <div className="flex justify-end gap-3 mt-6">
+            {/* Info Alert */}
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-blue-900">Transfer Information</p>
+                <p className="text-sm text-blue-700 mt-1">
+                  The transfer will move the specified quantity from the source warehouse to the destination warehouse. This action is tracked in the transfer history.
+                </p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3 pt-4 border-t">
               <Button
                 type="button"
                 variant="secondary"
+                size="lg"
                 onClick={() => setTransferModalOpen(false)}
               >
                 Cancel
               </Button>
-              <Button type="submit" variant="primary">
+              <Button 
+                type="submit" 
+                variant="primary" 
+                size="lg"
+                disabled={!transferData.destinationWarehouse || !transferData.quantity || transferData.quantity <= 0}
+              >
                 <div className="flex items-center">
-                  <ArrowRightLeft className="w-4 h-4 mr-2" />
+                  <ArrowRightLeft className="w-5 h-5 mr-2" />
                   Confirm Transfer
                 </div>
               </Button>
