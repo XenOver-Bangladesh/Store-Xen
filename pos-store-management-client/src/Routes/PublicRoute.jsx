@@ -7,6 +7,8 @@ import ProductManage from "../Pages/ProductPages/ProductManage";
 import ManagePO from "../Pages/POPages/ManagePO";
 import GRNManage from "../Pages/GRNPages/GRNManage";
 import Payments from "../Pages/GENPaymentsPage/Payments";
+import { InStockProductPages } from "../Pages/InStockProductPages/InStockProductPages";
+import StockInPages from "../Pages/StockInPages/StockInPages";
 // Router config
 const router = createBrowserRouter([
   {
@@ -47,6 +49,15 @@ const router = createBrowserRouter([
       {
         path: "/products/add",
         element: <ProductAdd />
+      },
+      //warehouse
+      {
+        path: "/warehouse/inhouse-products",
+        element: <InStockProductPages />
+      },
+      {
+        path: "/warehouse/stock-in",
+        element: <StockInPages />
       },
     ],
   },
