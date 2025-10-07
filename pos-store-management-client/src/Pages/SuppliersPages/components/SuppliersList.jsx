@@ -234,7 +234,7 @@ const SuppliersList = () => {
       <EditSuppliersModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        supplier={selectedSupplier}
+        supplierData={selectedSupplier}
         onSuccess={handleEditSuccess}
       />
     </div>
