@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Plus, RefreshCw } from 'lucide-react'
+import { Plus, RefreshCw, ClipboardList, ShoppingCart, Users, Info } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import StatsCard from '../../Shared/StatsCard/StatsCard'
 import GRNForm from './components/GRNForm'
 import GRNList from './components/GRNList'
 import GRNFilter from './components/GRNFilter'
@@ -500,20 +501,7 @@ const GRNManage = () => {
             <p className="text-gray-600 mt-2">
               Receive and manage goods from purchase orders
             </p>
-            <div className="flex items-center gap-4 mt-3 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></span>
-                <span className="text-gray-700">{grns.length} Total GRNs</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-                <span className="text-gray-700">{purchaseOrders.length} Available POs</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
-                <span className="text-gray-700">{suppliers.length} Suppliers</span>
-              </div>
-            </div>
+            
           </div>
 
           <div className="flex gap-3">
@@ -543,6 +531,40 @@ const GRNManage = () => {
             </Button>
           </div>
         </div>
+      </div>
+
+      {/* Info Card */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
+        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-blue-900">Goods Receive Note (GRN) Process</p>
+          <p className="text-sm text-blue-700 mt-1">
+            Record received goods from purchase orders. Stock is automatically updated to inventory upon GRN creation.
+            GRNs can be approved to finalize the receiving process and lock the record for audit purposes.
+          </p>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatsCard
+          label="Total GRNs"
+          value={grns.length}
+          icon={ClipboardList}
+          color="blue"
+        />
+        <StatsCard
+          label="Available POs"
+          value={purchaseOrders.length}
+          icon={ShoppingCart}
+          color="green"
+        />
+        <StatsCard
+          label="Active Suppliers"
+          value={suppliers.length}
+          icon={Users}
+          color="purple"
+        />
       </div>
 
       {/* Filter Section */}

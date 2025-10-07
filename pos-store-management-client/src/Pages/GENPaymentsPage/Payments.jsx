@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { RefreshCw, DollarSign } from 'lucide-react'
+import { RefreshCw, Receipt, DollarSign, CheckCircle, AlertCircle, Info } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import StatsCard from '../../Shared/StatsCard/StatsCard'
 import PaymentsList from './components/PaymentsList'
 import PaymentsFilter from './components/PaymentsFilter'
 import AddPaymentModal from './components/AddPaymentModal'
@@ -334,25 +335,7 @@ const Payments = () => {
               Track and manage supplier payments from GRNs
             </p>
             
-            {/* Stats */}
-            <div className="grid grid-cols-4 gap-4 mt-4">
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Total Payments</p>
-                <p className="text-lg font-bold text-gray-900">{payments.length}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Total Amount</p>
-                <p className="text-lg font-bold text-blue-600">{formatCurrency(stats.totalAmount)}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Total Paid</p>
-                <p className="text-lg font-bold text-green-600">{formatCurrency(stats.totalPaid)}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Total Due</p>
-                <p className="text-lg font-bold text-red-600">{formatCurrency(stats.totalDue)}</p>
-              </div>
-            </div>
+            
           </div>
 
           <Button 
@@ -369,6 +352,46 @@ const Payments = () => {
             </div>
           </Button>
         </div>
+      </div>
+
+      {/* Info Card */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
+        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-blue-900">Supplier Payment Tracking</p>
+          <p className="text-sm text-blue-700 mt-1">
+            Track payments owed to suppliers based on received goods. Record partial or full payments,
+            maintain payment history, and monitor outstanding balances to ensure timely supplier payments.
+          </p>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          label="Total Payments"
+          value={payments.length}
+          icon={Receipt}
+          color="gray"
+        />
+        <StatsCard
+          label="Total Amount"
+          value={formatCurrency(stats.totalAmount)}
+          icon={DollarSign}
+          color="blue"
+        />
+        <StatsCard
+          label="Total Paid"
+          value={formatCurrency(stats.totalPaid)}
+          icon={CheckCircle}
+          color="green"
+        />
+        <StatsCard
+          label="Total Due"
+          value={formatCurrency(stats.totalDue)}
+          icon={AlertCircle}
+          color="red"
+        />
       </div>
 
       {/* Filter Section */}

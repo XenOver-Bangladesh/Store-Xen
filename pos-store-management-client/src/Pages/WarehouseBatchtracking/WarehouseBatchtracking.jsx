@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Package, Plus, Pencil, AlertTriangle, Calendar, Clock, Info } from 'lucide-react'
+import { Package, Plus, Pencil, AlertTriangle, Calendar, Clock, Info, CheckCircle, XCircle, RefreshCw } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import StatsCard from '../../Shared/StatsCard/StatsCard'
 import { SharedTable } from '../../Shared/SharedTable/SharedTable'
 import { ReuseableFilter } from '../../Shared/ReuseableFilter/ReuseableFilter'
 import SharedModal from '../../Shared/SharedModal/SharedModal'
@@ -364,60 +365,80 @@ const WarehouseBatchtracking = () => {
             <p className="text-gray-600 mt-2">
               Track batch numbers and expiry dates for inventory items
             </p>
-
-            {/* Info Box */}
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-4 flex items-start gap-3">
-              <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-blue-900">How Batch Tracking Works</p>
-                <p className="text-sm text-blue-700 mt-1">
-                  Each inventory item stores batch number and expiry date. Click "Edit Batch" on any item to update its batch information.
-                  Batch data comes from GRN entries but can be updated here anytime.
-                </p>
-              </div>
+          </div>
+          
+          <Button 
+            variant="secondary" 
+            size="md"
+            onClick={fetchAllData}
+            loading={loading}
+          >
+            <div className="flex items-center">
+              <RefreshCw className="w-5 h-5 mr-2" />
+              Refresh
             </div>
+          </Button>
+        </div>
+      </div>
 
-            {/* Alert for expired/near-expiry items */}
-            {(expiredCount > 0 || nearExpiryCount > 0) && (
-              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mt-4 flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-yellow-900">Attention Required</p>
-                  <p className="text-sm text-yellow-700 mt-1">
-                    {expiredCount > 0 && `${expiredCount} item${expiredCount > 1 ? 's' : ''} expired. `}
-                    {nearExpiryCount > 0 && `${nearExpiryCount} item${nearExpiryCount > 1 ? 's' : ''} expiring within 30 days.`}
-                  </p>
-                </div>
-              </div>
-            )}
+      {/* Info Box */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
+        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-blue-900">How Batch Tracking Works</p>
+          <p className="text-sm text-blue-700 mt-1">
+            Each inventory item stores batch number and expiry date. Click "Edit Batch" on any item to update its batch information.
+            Batch data comes from GRN entries but can be updated here anytime.
+          </p>
+        </div>
+      </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-5 gap-4 mt-4">
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Total Items</p>
-                <p className="text-lg font-bold text-gray-900">{inventory.length}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">With Batch Info</p>
-                <p className="text-lg font-bold text-blue-600">{withBatchCount}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Valid</p>
-                <p className="text-lg font-bold text-green-600">
-                  {inventory.filter(item => getExpiryStatus(item.expiry) === 'valid').length}
-                </p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Near Expiry</p>
-                <p className="text-lg font-bold text-yellow-600">{nearExpiryCount}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Expired</p>
-                <p className="text-lg font-bold text-red-600">{expiredCount}</p>
-              </div>
-            </div>
+      {/* Alert for expired/near-expiry items */}
+      {(expiredCount > 0 || nearExpiryCount > 0) && (
+        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-yellow-900">Attention Required</p>
+            <p className="text-sm text-yellow-700 mt-1">
+              {expiredCount > 0 && `${expiredCount} item${expiredCount > 1 ? 's' : ''} expired. `}
+              {nearExpiryCount > 0 && `${nearExpiryCount} item${nearExpiryCount > 1 ? 's' : ''} expiring within 30 days.`}
+            </p>
           </div>
         </div>
+      )}
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <StatsCard
+          label="Total Items"
+          value={inventory.length}
+          icon={Package}
+          color="gray"
+        />
+        <StatsCard
+          label="With Batch Info"
+          value={withBatchCount}
+          icon={CheckCircle}
+          color="blue"
+        />
+        <StatsCard
+          label="Valid"
+          value={inventory.filter(item => getExpiryStatus(item.expiry) === 'valid').length}
+          icon={CheckCircle}
+          color="green"
+        />
+        <StatsCard
+          label="Near Expiry"
+          value={nearExpiryCount}
+          icon={Clock}
+          color="yellow"
+        />
+        <StatsCard
+          label="Expired"
+          value={expiredCount}
+          icon={XCircle}
+          color="red"
+        />
       </div>
 
       {/* Filters */}

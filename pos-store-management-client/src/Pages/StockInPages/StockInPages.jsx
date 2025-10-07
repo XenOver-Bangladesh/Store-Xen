@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { RefreshCw, Package, CheckCircle, Info } from 'lucide-react'
+import { RefreshCw, Package, CheckCircle, Info, TrendingUp, ClipboardCheck } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import StatsCard from '../../Shared/StatsCard/StatsCard'
 import { SharedTable } from '../../Shared/SharedTable/SharedTable'
+import StockInFilter from './components/StockInFilter'
 import { grnAPI, suppliersAPI } from '../GRNPages/services/grnService'
 import { formatDate } from '../GRNPages/utils/grnHelpers'
 
@@ -10,6 +12,15 @@ const StockInPages = () => {
   const [grns, setGrns] = useState([])
   const [suppliers, setSuppliers] = useState([])
   const [fetchLoading, setFetchLoading] = useState(false)
+  
+  // Filter state
+  const [filters, setFilters] = useState({
+    status: '',
+    supplier: '',
+    dateFrom: '',
+    dateTo: '',
+    search: ''
+  })
 
   useEffect(() => {
     fetchAllData()
@@ -50,6 +61,11 @@ const StockInPages = () => {
     }
   }
 
+  // Filter handler
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters)
+  }
+
   // Show only approved GRNs (stock already added to inventory automatically)
   const stockInItems = useMemo(() => {
     return grns
@@ -61,6 +77,64 @@ const StockInPages = () => {
         return 0
       })
   }, [grns])
+
+  // Filtered stock items
+  const filteredStockInItems = useMemo(() => {
+    const filtered = stockInItems.filter(grn => {
+      // Status filter
+      if (filters.status && grn.status !== filters.status) {
+        return false
+      }
+
+      // Supplier filter
+      if (filters.supplier && grn.supplierId !== filters.supplier) {
+        return false
+      }
+
+      // Date from filter
+      if (filters.dateFrom) {
+        const grnDate = new Date(grn.receivedDate)
+        const fromDate = new Date(filters.dateFrom)
+        if (grnDate < fromDate) {
+          return false
+        }
+      }
+
+      // Date to filter
+      if (filters.dateTo) {
+        const grnDate = new Date(grn.receivedDate)
+        const toDate = new Date(filters.dateTo)
+        if (grnDate > toDate) {
+          return false
+        }
+      }
+
+      // Search filter (GRN or PO Number)
+      if (filters.search) {
+        const searchLower = filters.search.toLowerCase()
+        const grnMatch = grn.grnNumber?.toLowerCase().includes(searchLower)
+        const poMatch = grn.poNumber?.toLowerCase().includes(searchLower)
+        if (!grnMatch && !poMatch) {
+          return false
+        }
+      }
+
+      return true
+    })
+
+    return filtered
+  }, [stockInItems, filters])
+
+  // Calculate summary stats
+  const stats = useMemo(() => {
+    const totalGRNs = stockInItems.length
+    const totalItems = stockInItems.reduce((sum, grn) => 
+      sum + (grn.items?.reduce((s, item) => s + (item.receivedQty || 0), 0) || 0), 0
+    )
+    const approvedGRNs = stockInItems.filter(grn => grn.status === 'Approved').length
+
+    return { totalGRNs, totalItems, approvedGRNs }
+  }, [stockInItems])
 
   const columns = React.useMemo(() => [
     {
@@ -274,44 +348,7 @@ const StockInPages = () => {
               Review GRN-approved stock entries that have been added to warehouse
             </p>
             
-            {/* Info Alert */}
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-4">
-              <div className="flex items-start gap-3">
-                <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-blue-900">Automatic Stock Update</p>
-                  <p className="text-sm text-blue-700 mt-1">
-                    Stock is automatically added to your warehouse inventory when GRNs are created. 
-                    This page shows the history of all stock entries from approved GRNs.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600 flex items-center">
-                  <CheckCircle className="w-3 h-3 mr-1 text-green-500" />
-                  Total GRNs
-                </p>
-                <p className="text-lg font-bold text-gray-900">{stockInItems.length}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Items Received</p>
-                <p className="text-lg font-bold text-blue-600">
-                  {stockInItems.reduce((sum, grn) => 
-                    sum + (grn.items?.reduce((s, item) => s + (item.receivedQty || 0), 0) || 0), 0
-                  )}
-                </p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Approved GRNs</p>
-                <p className="text-lg font-bold text-green-600">
-                  {stockInItems.filter(grn => grn.status === 'Approved').length}
-                </p>
-              </div>
-            </div>
+            
           </div>
 
           <Button 
@@ -330,11 +367,56 @@ const StockInPages = () => {
         </div>
       </div>
 
+      {/* Info Alert */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+        <div className="flex items-start gap-3">
+          <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-blue-900">Automatic Stock Update</p>
+            <p className="text-sm text-blue-700 mt-1">
+              Stock is automatically added to your warehouse inventory when GRNs are created. 
+              This page shows the history of all stock entries from approved GRNs.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatsCard
+          label="Total GRNs"
+          value={stats.totalGRNs}
+          icon={ClipboardCheck}
+          color="gray"
+        />
+        <StatsCard
+          label="Items Received"
+          value={stats.totalItems}
+          icon={TrendingUp}
+          color="blue"
+        />
+        <StatsCard
+          label="Approved GRNs"
+          value={stats.approvedGRNs}
+          icon={CheckCircle}
+          color="green"
+        />
+      </div>
+
+      {/* Filter Section */}
+      <StockInFilter
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        suppliers={suppliers}
+        resultsCount={filteredStockInItems.length}
+        totalCount={stockInItems.length}
+      />
+
       {/* Stock In Table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <SharedTable
           columns={columns}
-          data={stockInItems}
+          data={filteredStockInItems}
           pageSize={10}
           loading={fetchLoading}
           renderRowActions={renderRowActions}

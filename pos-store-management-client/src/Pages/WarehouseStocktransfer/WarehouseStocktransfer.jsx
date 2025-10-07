@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { ArrowRightLeft, Search, Package, AlertCircle, CheckCircle, AlertTriangle } from 'lucide-react'
+import { ArrowRightLeft, Search, Package, AlertCircle, CheckCircle, AlertTriangle, RefreshCw, TrendingUp, Warehouse } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import StatsCard from '../../Shared/StatsCard/StatsCard'
 import { SharedTable } from '../../Shared/SharedTable/SharedTable'
 import { ReuseableFilter } from '../../Shared/ReuseableFilter/ReuseableFilter'
 import SharedModal from '../../Shared/SharedModal/SharedModal'
@@ -108,6 +109,29 @@ const WarehouseStocktransfer = () => {
 
   const handleClearFilters = () => {
     setFilters({ search: '', warehouse: '' })
+  }
+
+  const handleExport = () => {
+    // Export to CSV
+    const csv = [
+      ['Product Name', 'Product ID', 'Warehouse', 'Stock Quantity', 'Batch Number', 'Expiry Date'],
+      ...filteredInventory.map(item => [
+        item.productName || '',
+        item.productId || '',
+        item.location || '',
+        item.stockQty || 0,
+        item.batchNumber || '',
+        item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : ''
+      ])
+    ].map(row => row.join(',')).join('\n')
+
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `warehouse-stock-${Date.now()}.csv`
+    a.click()
+    window.URL.revokeObjectURL(url)
   }
 
   const handleOpenTransferModal = (item) => {
@@ -413,91 +437,48 @@ const WarehouseStocktransfer = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-              <ArrowRightLeft className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Stock Transfer Management</h1>
-              <p className="text-gray-600 mt-1">Move inventory between warehouse locations efficiently</p>
-            </div>
+      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+              <ArrowRightLeft className="w-8 h-8 mr-3 text-blue-600" />
+              Stock Transfer Management
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Move inventory between warehouse locations efficiently
+            </p>
           </div>
-          <Button 
-            variant="secondary" 
-            size="md"
-            onClick={handleViewHistory}
-          >
-            <div className="flex items-center">
-              <Search className="w-5 h-5 mr-2" />
-              View History
-            </div>
-          </Button>
+
+          <div className="flex gap-3">
+            <Button 
+              variant="secondary" 
+              size="md"
+              onClick={fetchAllData}
+              disabled={loading}
+              loading={loading}
+            >
+              <div className="flex items-center">
+                <RefreshCw className="w-5 h-5 mr-2" />
+                Refresh
+              </div>
+            </Button>
+            <Button 
+              variant="primary" 
+              size="md"
+              onClick={handleViewHistory}
+            >
+              <div className="flex items-center">
+                <Search className="w-5 h-5 mr-2" />
+                View History
+              </div>
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-xs text-gray-600 font-medium mb-1">Products in Stock</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {inventory.filter(item => item.stockQty > 0).length}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
-              <Package className="w-6 h-6" />
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-xs text-gray-600 font-medium mb-1">Total Stock</p>
-              <p className="text-2xl font-bold text-green-600">
-                {inventory.reduce((sum, item) => sum + (item.stockQty || 0), 0)}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
-              <Package className="w-6 h-6" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-xs text-gray-600 font-medium mb-1">Warehouses</p>
-              <p className="text-2xl font-bold text-purple-600">
-                {warehouseOptions.length}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center">
-              <Package className="w-6 h-6" />
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-xs text-gray-600 font-medium mb-1">Transfers Made</p>
-              <p className="text-2xl font-bold text-yellow-600">
-                {transfers.length}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center">
-              <ArrowRightLeft className="w-6 h-6" />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Info Card */}
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6 flex items-start gap-3">
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
         <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
         <div className="flex-1">
           <p className="text-sm font-semibold text-blue-900">How Stock Transfer Works</p>
@@ -511,16 +492,45 @@ const WarehouseStocktransfer = () => {
         </div>
       </div>
 
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          label="Products in Stock"
+          value={inventory.filter(item => item.stockQty > 0).length}
+          icon={Package}
+          color="blue"
+        />
+        <StatsCard
+          label="Total Stock Units"
+          value={inventory.reduce((sum, item) => sum + (item.stockQty || 0), 0)}
+          icon={TrendingUp}
+          color="green"
+        />
+        <StatsCard
+          label="Active Warehouses"
+          value={warehouseOptions.length}
+          icon={Warehouse}
+          color="purple"
+        />
+        <StatsCard
+          label="Transfers Made"
+          value={transfers.length}
+          icon={ArrowRightLeft}
+          color="yellow"
+        />
+      </div>
+
       {/* Filters */}
       <ReuseableFilter
         filters={filters}
         onFilterChange={handleFilterChange}
         onClearFilters={handleClearFilters}
+        onExport={handleExport}
         filterConfig={filterConfig}
         title="Search & Filter Stock"
         resultsCount={filteredInventory.length}
         totalCount={inventory.filter(item => item.stockQty > 0).length}
-        showExport={false}
+        showExport={true}
       />
 
       {/* Stock Transfer Table */}

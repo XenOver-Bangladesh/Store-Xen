@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Plus, Package, List, Info } from 'lucide-react'
 import Button from '../../Components/UI/Button'
 import AddCategoryModal from './AddCategoryModal'
 import axios from 'axios'
@@ -287,24 +288,40 @@ const ProductAdd = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-blue-50 p-5 rounded-sm shadow-sm border border-gray-200 flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-semibold text-black">
-            Add New Product
-          </h1>
-          <p className="text-gray-900">
-            Create and manage your product inventory with ease.
-          </p>
-        </div>
+      <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-red-50 p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+              <Plus className="w-8 h-8 mr-3 text-purple-600" />
+              Add New Product
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Create and manage your product inventory with ease
+            </p>
+          </div>
 
-        <div>
           <Button 
             variant="primary" 
             size="md"
             onClick={() => navigate('/products/manage')}
           >
-            Manage Products
+            <div className="flex items-center">
+              <List className="w-5 h-5 mr-2" />
+              Manage Products
+            </div>
           </Button>
+        </div>
+      </div>
+
+      {/* Info Card */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
+        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-blue-900">Product Creation</p>
+          <p className="text-sm text-blue-700 mt-1">
+            Add new products to your catalog with complete details including category, brand, supplier, and images.
+            A unique QR code is automatically generated for each product for easy tracking and identification.
+          </p>
         </div>
       </div>
 

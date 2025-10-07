@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Plus, RefreshCw } from 'lucide-react'
+import { Plus, RefreshCw, FileText, Users, Package, Info } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import StatsCard from '../../Shared/StatsCard/StatsCard'
 import POForm from './components/POForm'
 import POList from './components/POList'
 import POFilter from './components/POFilter'
@@ -431,21 +432,10 @@ const ManagePO = () => {
             <p className="text-gray-600 mt-2">
               Create and manage purchase orders for your suppliers
             </p>
-            <div className="flex items-center gap-4 mt-3 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></span>
-                <span className="text-gray-700">{purchaseOrders.length} Total POs</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-                <span className="text-gray-700">{suppliers.length} Suppliers</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
-                <span className="text-gray-700">{products.length} Products</span>
-              </div>
-            </div>
+            
           </div>
+
+          
 
           <div className="flex gap-3">
             <Button 
@@ -474,6 +464,40 @@ const ManagePO = () => {
             </Button>
           </div>
         </div>
+      </div>
+
+      {/* Info Card */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
+        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-blue-900">Purchase Order Management</p>
+          <p className="text-sm text-blue-700 mt-1">
+            Create purchase orders for your suppliers, track their status, and manage the ordering process. 
+            POs can be sent to suppliers and converted to GRNs when goods are received.
+          </p>
+        </div>
+      </div>
+      
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatsCard
+          label="Total Purchase Orders"
+          value={purchaseOrders.length}
+          icon={FileText}
+          color="blue"
+        />
+        <StatsCard
+          label="Active Suppliers"
+          value={suppliers.length}
+          icon={Users}
+          color="green"
+        />
+        <StatsCard
+          label="Available Products"
+          value={products.length}
+          icon={Package}
+          color="purple"
+        />
       </div>
 
       {/* Filter Section */}

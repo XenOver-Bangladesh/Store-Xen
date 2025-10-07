@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { QrCode, Barcode, Plus, RefreshCw, Download, AlertCircle } from 'lucide-react'
+import { QrCode, Barcode, Plus, RefreshCw, Download, AlertCircle, Package, CheckCircle2, XCircle } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import StatsCard from '../../Shared/StatsCard/StatsCard'
 import { SharedTable } from '../../Shared/SharedTable/SharedTable'
 import { ReuseableFilter } from '../../Shared/ReuseableFilter/ReuseableFilter'
 import SharedModal from '../../Shared/SharedModal/SharedModal'
@@ -397,33 +398,7 @@ const WarehouseBarcode = () => {
               Assign unique barcodes and QR codes to stock items
             </p>
 
-            {/* Info Alert */}
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-4 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-blue-900">Auto-Generation Available</p>
-                <p className="text-sm text-blue-700 mt-1">
-                  System can automatically generate unique barcodes and QR codes for your inventory items.
-                  You can also manually enter custom codes if needed.
-                </p>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Total Products</p>
-                <p className="text-lg font-bold text-gray-900">{inventory.length}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Assigned</p>
-                <p className="text-lg font-bold text-green-600">{assignedCount}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Unassigned</p>
-                <p className="text-lg font-bold text-orange-600">{unassignedCount}</p>
-              </div>
-            </div>
+            
           </div>
 
           <Button 
@@ -438,6 +413,40 @@ const WarehouseBarcode = () => {
             </div>
           </Button>
         </div>
+      </div>
+
+      {/* Info Alert */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
+        <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-blue-900">Auto-Generation Available</p>
+          <p className="text-sm text-blue-700 mt-1">
+            System can automatically generate unique barcodes and QR codes for your inventory items.
+            You can also manually enter custom codes if needed.
+          </p>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatsCard
+          label="Total Products"
+          value={inventory.length}
+          icon={Package}
+          color="gray"
+        />
+        <StatsCard
+          label="Assigned Codes"
+          value={assignedCount}
+          icon={CheckCircle2}
+          color="green"
+        />
+        <StatsCard
+          label="Unassigned"
+          value={unassignedCount}
+          icon={XCircle}
+          color="red"
+        />
       </div>
 
       {/* Filters */}

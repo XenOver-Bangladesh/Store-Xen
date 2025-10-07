@@ -1,7 +1,7 @@
 import React from 'react'
 import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
 
-const PaymentsFilter = ({ 
+const StockInFilter = ({ 
   filters, 
   onFilterChange, 
   suppliers = [],
@@ -12,19 +12,19 @@ const PaymentsFilter = ({
     {
       type: 'search',
       key: 'search',
-      label: 'Search Payments',
+      label: 'Search GRN/PO',
       placeholder: 'Search by GRN or PO Number...'
     },
     {
       type: 'select',
       key: 'status',
-      label: 'Payment Status',
+      label: 'Status',
       placeholder: 'All Statuses',
       options: [
-        { value: '', label: 'All Statuses' },
-        { value: 'Due', label: '🔴 Due' },
-        { value: 'Partial', label: '🟡 Partial' },
-        { value: 'Paid', label: '🟢 Paid' }
+        { value: '', label: 'All Status' },
+        { value: 'Approved', label: '✅ Approved' },
+        { value: 'Fully Received', label: '🟢 Fully Received' },
+        { value: 'Partially Received', label: '🟡 Partially Received' }
       ]
     },
     {
@@ -66,7 +66,7 @@ const PaymentsFilter = ({
 
   const handleExport = () => {
     // TODO: Implement export functionality
-    console.log('Export Payments data')
+    console.log('Export Stock In data')
   }
 
   const handleFilterChangeInternal = (key, value) => {
@@ -83,7 +83,7 @@ const PaymentsFilter = ({
       onClearFilters={handleClearFilters}
       onExport={handleExport}
       filterConfig={filterConfig}
-      title="Filter Supplier Payments"
+      title="Filter Stock In History"
       showExport={true}
       showClear={true}
       resultsCount={resultsCount}
@@ -92,5 +92,5 @@ const PaymentsFilter = ({
   )
 }
 
-export default PaymentsFilter
+export default StockInFilter
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { RefreshCw, Package, AlertTriangle, TrendingUp } from 'lucide-react'
+import { RefreshCw, Package, AlertTriangle, TrendingUp, XCircle, Clock, Info } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import StatsCard from '../../Shared/StatsCard/StatsCard'
 import InventoryList from './components/InventoryList'
 import InventoryFilter from './components/InventoryFilter'
 import { inventoryAPI, productsAPI } from './services/inventoryService'
@@ -239,44 +240,7 @@ export const InStockProductPages = () => {
               Manage and monitor warehouse inventory
             </p>
             
-            {/* Stats */}
-            <div className="grid grid-cols-5 gap-4 mt-4">
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600 flex items-center">
-                  <Package className="w-3 h-3 mr-1" />
-                  Total Products
-                </p>
-                <p className="text-lg font-bold text-gray-900">{stats.totalProducts}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600 flex items-center">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  Total Stock
-                </p>
-                <p className="text-lg font-bold text-blue-600">{stats.totalStock}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600 flex items-center">
-                  <AlertTriangle className="w-3 h-3 mr-1 text-yellow-500" />
-                  Low Stock
-                </p>
-                <p className="text-lg font-bold text-yellow-600">{stats.lowStock}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600 flex items-center">
-                  <AlertTriangle className="w-3 h-3 mr-1 text-red-500" />
-                  Out of Stock
-                </p>
-                <p className="text-lg font-bold text-red-600">{stats.outOfStock}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600 flex items-center">
-                  <AlertTriangle className="w-3 h-3 mr-1 text-orange-500" />
-                  Expiring Soon
-                </p>
-                <p className="text-lg font-bold text-orange-600">{stats.expiring}</p>
-              </div>
-            </div>
+            
           </div>
 
           <Button 
@@ -293,6 +257,52 @@ export const InStockProductPages = () => {
             </div>
           </Button>
         </div>
+      </div>
+
+      {/* Info Card */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
+        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-blue-900">Warehouse Inventory Management</p>
+          <p className="text-sm text-blue-700 mt-1">
+            Monitor all products in your warehouse with real-time stock levels, batch tracking, expiry dates, 
+            and location information. Stock is automatically updated through GRN entries.
+          </p>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <StatsCard
+          label="Total Products"
+          value={stats.totalProducts}
+          icon={Package}
+          color="gray"
+        />
+        <StatsCard
+          label="Total Stock"
+          value={stats.totalStock}
+          icon={TrendingUp}
+          color="blue"
+        />
+        <StatsCard
+          label="Low Stock"
+          value={stats.lowStock}
+          icon={AlertTriangle}
+          color="yellow"
+        />
+        <StatsCard
+          label="Out of Stock"
+          value={stats.outOfStock}
+          icon={XCircle}
+          color="red"
+        />
+        <StatsCard
+          label="Expiring Soon"
+          value={stats.expiring}
+          icon={Clock}
+          color="purple"
+        />
       </div>
 
       {/* Filter Section */}
