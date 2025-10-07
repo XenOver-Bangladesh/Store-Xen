@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Warehouse, Plus, Pencil, Trash2, Eye, Package, MapPin } from 'lucide-react'
+import { Warehouse, Plus, Pencil, Trash2, Eye, Package, MapPin, Info } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import StatsCard from '../../Shared/StatsCard/StatsCard'
 import { SharedTable } from '../../Shared/SharedTable/SharedTable'
 import { ReuseableFilter } from '../../Shared/ReuseableFilter/ReuseableFilter'
 import SharedModal from '../../Shared/SharedModal/SharedModal'
@@ -361,26 +362,6 @@ const WarehouseList = () => {
             <p className="text-gray-600 mt-2">
               Manage warehouse locations and view stock summaries
             </p>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Total Warehouses</p>
-                <p className="text-lg font-bold text-gray-900">{warehouses.length}</p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Total Products</p>
-                <p className="text-lg font-bold text-blue-600">
-                  {warehouses.reduce((sum, w) => sum + (w.totalProducts || 0), 0)}
-                </p>
-              </div>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-gray-600">Total Stock</p>
-                <p className="text-lg font-bold text-green-600">
-                  {warehouses.reduce((sum, w) => sum + (w.totalStock || 0), 0)}
-                </p>
-              </div>
-            </div>
           </div>
 
           <Button 
@@ -394,6 +375,65 @@ const WarehouseList = () => {
             </div>
           </Button>
         </div>
+      </div>
+
+      {/* Info Card */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="flex items-start">
+          <div className="flex-shrink-0">
+            <Info className="w-5 h-5 text-blue-600 mt-0.5" />
+          </div>
+          <div className="ml-3">
+            <h3 className="text-sm font-medium text-blue-800">
+              Warehouse Management Overview
+            </h3>
+            <div className="mt-2 text-sm text-blue-700">
+              <p>
+                Manage your warehouse locations, track inventory levels, and monitor stock distribution across different facilities. 
+                Add new warehouses, update contact information, and view detailed stock summaries for each location.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        <StatsCard
+          title="Total Warehouses"
+          value={warehouses.length}
+          icon={Warehouse}
+          color="blue"
+          trend={null}
+        />
+        <StatsCard
+          title="Total Products"
+          value={warehouses.reduce((sum, w) => sum + (w.totalProducts || 0), 0)}
+          icon={Package}
+          color="purple"
+          trend={null}
+        />
+        <StatsCard
+          title="Total Stock"
+          value={warehouses.reduce((sum, w) => sum + (w.totalStock || 0), 0)}
+          icon={Package}
+          color="green"
+          trend={null}
+        />
+        <StatsCard
+          title="Active Locations"
+          value={warehouses.filter(w => w.location).length}
+          icon={MapPin}
+          color="orange"
+          trend={null}
+        />
+        <StatsCard
+          title="Avg Products/Warehouse"
+          value={warehouses.length > 0 ? Math.round(warehouses.reduce((sum, w) => sum + (w.totalProducts || 0), 0) / warehouses.length) : 0}
+          icon={Package}
+          color="indigo"
+          trend={null}
+        />
       </div>
 
       {/* Filters */}

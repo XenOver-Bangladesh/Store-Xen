@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react'
-import SharedModal from '../../Shared/SharedModal/SharedModal'
+import SharedModal from '../../../Shared/SharedModal/SharedModal'
 import { EditSuppliersForm } from './EditSuppliersForm'
-import Button from '../../Components/UI/Button'
-import axios from "axios";
-import Swal from 'sweetalert2';
+import Button from '../../../Components/UI/Button'
+import { suppliersAPI } from '../services/supplierService'
+import Swal from 'sweetalert2'
 
 const EditSuppliersModal = ({ isOpen, onClose, onSuccess, supplierData }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -21,8 +21,8 @@ const EditSuppliersModal = ({ isOpen, onClose, onSuccess, supplierData }) => {
       const supplierId = supplierData._id || supplierData.id;
       
       // Put data to your API
-      const response = await axios.put(`https://pos-system-management-server-20.vercel.app/suppliers/${supplierId}`, values);
-      console.log("Update Supplier response:", response.data);
+      const response = await suppliersAPI.update(supplierId, values);
+      console.log("Update Supplier response:", response);
       
       // Show success message with SweetAlert2
       await Swal.fire({

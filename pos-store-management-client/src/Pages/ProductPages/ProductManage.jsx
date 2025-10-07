@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { LayoutGrid, List, Eye, Pencil, Trash2, Plus, Package, Info, RefreshCw } from 'lucide-react'
+import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
 import { SharedTable } from '../../Shared/SharedTable/SharedTable'
-import { ReuseableFilter } from '../../Shared/ReuseableFilter/ReuseableFilter'
-import ViewProductModal from './ViewProductModal'
-import EditProductModal from './EditProductModal'
-import axios from 'axios'
-import Swal from 'sweetalert2'
-import { LayoutGrid, List, Eye, Pencil, Trash2, Plus, Package, Info, RefreshCw } from 'lucide-react'
+import ViewProductModal from './components/ViewProductModal'
+import EditProductModal from './components/EditProductModal'
+import ProductFilter from './components/ProductFilter'
+import ProductCard from './components/ProductCard'
+import { productsAPI } from './services/productService'
+import { applyProductFilters, getUniqueCategories, getUniqueSuppliers } from './utils/productHelpers'
 
 const ProductManage = () => {
   const navigate = useNavigate()
@@ -34,28 +36,7 @@ const ProductManage = () => {
   }, [])
 
   const applyFilters = useCallback(() => {
-    let filtered = [...products]
-
-    // Search filter
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase()
-      filtered = filtered.filter(product => 
-        product.productName?.toLowerCase().includes(searchLower) ||
-        product.brand?.toLowerCase().includes(searchLower) ||
-        product.qrCode?.toLowerCase().includes(searchLower)
-      )
-    }
-
-    // Category filter
-    if (filters.category) {
-      filtered = filtered.filter(product => product.category === filters.category)
-    }
-
-    // Supplier filter
-    if (filters.supplier) {
-      filtered = filtered.filter(product => product.supplier === filters.supplier)
-    }
-
+    const filtered = applyProductFilters(products, filters)
     setFilteredProducts(filtered)
   }, [products, filters])
 
@@ -67,8 +48,8 @@ const ProductManage = () => {
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      const response = await axios.get('https://pos-system-management-server-20.vercel.app/Products')
-      setProducts(response.data)
+      const data = await productsAPI.getAll()
+      setProducts(data)
     } catch (error) {
       console.error('Error fetching products:', error)
       Swal.fire({
@@ -92,28 +73,6 @@ const ProductManage = () => {
       category: '',
       supplier: ''
     })
-  }
-
-  const handleExport = () => {
-    // Export to CSV
-    const csv = [
-      ['Product Name', 'Category', 'Brand', 'Supplier', 'QR Code', 'Created At'],
-      ...filteredProducts.map(p => [
-        p.productName,
-        p.category,
-        p.brand || '',
-        p.supplier || '',
-        p.qrCode,
-        new Date(p.createdAt).toLocaleDateString()
-      ])
-    ].map(row => row.join(',')).join('\n')
-
-    const blob = new Blob([csv], { type: 'text/csv' })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `products-${Date.now()}.csv`
-    a.click()
   }
 
   const handleView = (product) => {
@@ -140,7 +99,7 @@ const ProductManage = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`https://pos-system-management-server-20.vercel.app/Products/${product._id}`)
+        await productsAPI.delete(product._id)
         
         await Swal.fire({
           title: 'Deleted!',
@@ -170,8 +129,8 @@ const ProductManage = () => {
   }
 
   // Get unique categories and suppliers for filters
-  const categories = [...new Set(products.map(p => p.category).filter(Boolean))]
-  const suppliers = [...new Set(products.map(p => p.supplier).filter(Boolean))]
+  const categories = getUniqueCategories(products)
+  const suppliers = getUniqueSuppliers(products)
 
   // Table columns
   const columns = [
@@ -222,34 +181,6 @@ const ProductManage = () => {
     }
   ]
 
-  // Filter configuration
-  const filterConfig = [
-    {
-      key: 'search',
-      label: 'Search',
-      type: 'search',
-      placeholder: 'Search by name, brand, or QR code...',
-      span: 2
-    },
-    {
-      key: 'category',
-      label: 'Category',
-      type: 'select',
-      options: [
-        { value: '', label: 'All Categories' },
-        ...categories.map(cat => ({ value: cat, label: cat }))
-      ]
-    },
-    {
-      key: 'supplier',
-      label: 'Supplier',
-      type: 'select',
-      options: [
-        { value: '', label: 'All Suppliers' },
-        ...suppliers.map(sup => ({ value: sup, label: sup }))
-      ]
-    }
-  ]
 
   // Render row actions for table
   const renderRowActions = (product) => (
@@ -298,87 +229,13 @@ const ProductManage = () => {
         </div>
       ) : filteredProducts.length > 0 ? (
         filteredProducts.map((product) => (
-          <div
+          <ProductCard
             key={product._id}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group"
-          >
-            {/* Product Image */}
-            <div className="relative h-48 bg-gray-100 overflow-hidden">
-              <img
-                src={product.productImage || 'https://via.placeholder.com/400'}
-                alt={product.productName}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-              />
-              <div className="absolute top-2 right-2">
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-600 text-white shadow-lg">
-                  {product.category}
-                </span>
-              </div>
-            </div>
-
-            {/* Product Info */}
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
-                {product.productName}
-              </h3>
-              
-              <div className="space-y-2 mb-4">
-                {product.brand && (
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Brand:</span> {product.brand}
-                  </p>
-                )}
-                {product.supplier && (
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Supplier:</span> {product.supplier}
-                  </p>
-                )}
-                <p className="text-xs text-gray-500 font-mono">
-                  QR: {product.qrCode}
-                </p>
-                <p className="text-xs text-gray-400">
-                  Added: {new Date(product.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleView(product)}
-                  className="flex-1"
-                >
-                  <div className='flex items-center'>
-                  <Eye className="w-4 h-4 mr-1" />
-                  View
-                  </div>
-                </Button>
-                <Button
-                  variant="edit"
-                  size="sm"
-                  onClick={() => handleEdit(product)}
-                  className="flex-1"
-                >
-                 <div className="flex items-center">
-                 <Pencil className="w-4 h-4 mr-1" />
-                 Edit
-                 </div>
-                </Button>
-                <Button 
-                  variant="delete"
-                  size="sm"
-                  onClick={() => handleDelete(product)}
-                  className="flex-1"
-                >
-                  <div className="flex items-center">
-                  <Trash2 className="w-4 h-4 mr-1" />
-                  Delete
-                  </div>
-                </Button>
-              </div>
-            </div>
-          </div>
+            product={product}
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         ))
       ) : (
         <div className="col-span-full flex flex-col items-center justify-center py-16">
@@ -475,15 +332,14 @@ const ProductManage = () => {
       </div>
 
       {/* Filters */}
-      <ReuseableFilter
+      <ProductFilter
         filters={filters}
         onFilterChange={handleFilterChange}
         onClearFilters={handleClearFilters}
-        onExport={handleExport}
-        filterConfig={filterConfig}
-        title="Search & Filter Products"
-        resultsCount={filteredProducts.length}
-        totalCount={products.length}
+        products={products}
+        filteredProducts={filteredProducts}
+        categories={categories}
+        suppliers={suppliers}
       />
 
       {/* Content - Table or Card View */}

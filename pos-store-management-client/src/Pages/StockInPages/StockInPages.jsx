@@ -5,8 +5,19 @@ import Button from '../../Components/UI/Button'
 import StatsCard from '../../Shared/StatsCard/StatsCard'
 import { SharedTable } from '../../Shared/SharedTable/SharedTable'
 import StockInFilter from './components/StockInFilter'
-import { grnAPI, suppliersAPI } from '../GRNPages/services/grnService'
-import { formatDate } from '../GRNPages/utils/grnHelpers'
+import { showStockInDetails } from './components/StockInDetails'
+import { grnAPI, suppliersAPI } from './services/stockInService'
+import { 
+  formatDate, 
+  applyStockInFilters, 
+  calculateStockInStats,
+  getStockStatusColor,
+  getStockStatusDisplay,
+  getTotalOrderedQty,
+  getTotalReceivedQty,
+  sortGRNsByDate,
+  getApprovedGRNs
+} from './utils/stockInHelpers'
 
 const StockInPages = () => {
   const [grns, setGrns] = useState([])
@@ -68,72 +79,18 @@ const StockInPages = () => {
 
   // Show only approved GRNs (stock already added to inventory automatically)
   const stockInItems = useMemo(() => {
-    return grns
-      .filter(grn => grn.status === 'Approved' || grn.status === 'Partially Received' || grn.status === 'Fully Received')
-      .sort((a, b) => {
-        if (a.createdAt && b.createdAt) {
-          return new Date(b.createdAt) - new Date(a.createdAt)
-        }
-        return 0
-      })
+    const approved = getApprovedGRNs(grns)
+    return sortGRNsByDate(approved)
   }, [grns])
 
   // Filtered stock items
   const filteredStockInItems = useMemo(() => {
-    const filtered = stockInItems.filter(grn => {
-      // Status filter
-      if (filters.status && grn.status !== filters.status) {
-        return false
-      }
-
-      // Supplier filter
-      if (filters.supplier && grn.supplierId !== filters.supplier) {
-        return false
-      }
-
-      // Date from filter
-      if (filters.dateFrom) {
-        const grnDate = new Date(grn.receivedDate)
-        const fromDate = new Date(filters.dateFrom)
-        if (grnDate < fromDate) {
-          return false
-        }
-      }
-
-      // Date to filter
-      if (filters.dateTo) {
-        const grnDate = new Date(grn.receivedDate)
-        const toDate = new Date(filters.dateTo)
-        if (grnDate > toDate) {
-          return false
-        }
-      }
-
-      // Search filter (GRN or PO Number)
-      if (filters.search) {
-        const searchLower = filters.search.toLowerCase()
-        const grnMatch = grn.grnNumber?.toLowerCase().includes(searchLower)
-        const poMatch = grn.poNumber?.toLowerCase().includes(searchLower)
-        if (!grnMatch && !poMatch) {
-          return false
-        }
-      }
-
-      return true
-    })
-
-    return filtered
+    return applyStockInFilters(stockInItems, filters)
   }, [stockInItems, filters])
 
   // Calculate summary stats
   const stats = useMemo(() => {
-    const totalGRNs = stockInItems.length
-    const totalItems = stockInItems.reduce((sum, grn) => 
-      sum + (grn.items?.reduce((s, item) => s + (item.receivedQty || 0), 0) || 0), 0
-    )
-    const approvedGRNs = stockInItems.filter(grn => grn.status === 'Approved').length
-
-    return { totalGRNs, totalItems, approvedGRNs }
+    return calculateStockInStats(stockInItems)
   }, [stockInItems])
 
   const columns = React.useMemo(() => [
@@ -184,7 +141,7 @@ const StockInPages = () => {
       header: 'Ordered Qty',
       accessorKey: 'orderedQty',
       cell: ({ row }) => {
-        const totalOrdered = row.original.items?.reduce((sum, item) => sum + (item.orderedQty || 0), 0) || 0
+        const totalOrdered = getTotalOrderedQty(row.original)
         return <span className="font-semibold text-gray-700">{totalOrdered}</span>
       }
     },
@@ -192,7 +149,7 @@ const StockInPages = () => {
       header: 'Received Qty',
       accessorKey: 'receivedQty',
       cell: ({ row }) => {
-        const totalReceived = row.original.items?.reduce((sum, item) => sum + (item.receivedQty || 0), 0) || 0
+        const totalReceived = getTotalReceivedQty(row.original)
         return <span className="font-semibold text-green-600">{totalReceived}</span>
       }
     },
@@ -213,12 +170,11 @@ const StockInPages = () => {
       accessorKey: 'status',
       cell: ({ row }) => {
         const status = row.original.status
-        const color = status === 'Approved' ? 'bg-green-100 text-green-800 border-green-200' : 
-                      status === 'Fully Received' ? 'bg-blue-100 text-blue-800 border-blue-200' : 
-                      'bg-yellow-100 text-yellow-800 border-yellow-200'
+        const color = getStockStatusColor(status)
+        const displayText = getStockStatusDisplay(status)
         return (
           <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${color}`}>
-            {status === 'Approved' ? '✅ In Warehouse' : status}
+            {displayText}
           </span>
         )
       }
@@ -226,95 +182,7 @@ const StockInPages = () => {
   ], [suppliers])
 
   const handleView = (grn) => {
-    const supplier = suppliers.find(s => s._id === grn.supplierId)
-    const itemsTable = grn.items?.map((item, index) => `
-      <tr class="border-b">
-        <td class="py-2 px-3 text-left">${index + 1}</td>
-        <td class="py-2 px-3 text-left">${item.productName || 'N/A'}</td>
-        <td class="py-2 px-3 text-center">${item.orderedQty}</td>
-        <td class="py-2 px-3 text-center font-semibold text-green-600">${item.receivedQty}</td>
-        <td class="py-2 px-3 text-center">${item.batch || 'N/A'}</td>
-        <td class="py-2 px-3 text-center">${item.expiry ? new Date(item.expiry).toLocaleDateString() : 'N/A'}</td>
-      </tr>
-    `).join('') || '<tr><td colspan="6" class="py-4 text-center text-gray-500">No items</td></tr>'
-
-    const totalOrdered = grn.items?.reduce((sum, item) => sum + (item.orderedQty || 0), 0) || 0
-    const totalReceived = grn.items?.reduce((sum, item) => sum + (item.receivedQty || 0), 0) || 0
-
-    Swal.fire({
-      title: `<div class="flex items-center justify-center"><svg class="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Stock In Details: ${grn.grnNumber}</div>`,
-      html: `
-        <div class="text-left space-y-4 max-h-96 overflow-y-auto">
-          <div class="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <p class="text-gray-600 font-semibold">PO Number</p>
-              <p class="text-gray-900 font-mono">${grn.poNumber || 'N/A'}</p>
-            </div>
-            <div>
-              <p class="text-gray-600 font-semibold">Supplier</p>
-              <p class="text-gray-900">${supplier?.supplierName || 'N/A'}</p>
-            </div>
-            <div>
-              <p class="text-gray-600 font-semibold">Received Date</p>
-              <p class="text-gray-900">${formatDate(grn.receivedDate)}</p>
-            </div>
-            <div>
-              <p class="text-gray-600 font-semibold">Status</p>
-              <p><span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">${grn.status}</span></p>
-            </div>
-          </div>
-          
-          <div class="bg-green-50 p-3 rounded-lg border border-green-200">
-            <p class="text-sm font-semibold text-green-800 mb-2">✅ Stock Added to Warehouse</p>
-            <p class="text-xs text-green-700">This GRN has been processed and ${totalReceived} units have been added to your inventory.</p>
-          </div>
-          
-          <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
-            <div class="grid grid-cols-2 gap-3 text-center">
-              <div>
-                <p class="text-xs text-gray-600">Total Ordered</p>
-                <p class="text-lg font-bold text-gray-900">${totalOrdered}</p>
-              </div>
-              <div>
-                <p class="text-xs text-gray-600">Total Received</p>
-                <p class="text-lg font-bold text-green-600">${totalReceived}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="mt-4">
-            <p class="text-gray-600 font-semibold mb-2">Items Received</p>
-            <div class="overflow-x-auto border rounded-lg">
-              <table class="min-w-full text-sm">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="py-2 px-3 text-left">#</th>
-                    <th class="py-2 px-3 text-left">Product</th>
-                    <th class="py-2 px-3 text-center">Ordered</th>
-                    <th class="py-2 px-3 text-center">Received</th>
-                    <th class="py-2 px-3 text-center">Batch</th>
-                    <th class="py-2 px-3 text-center">Expiry</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${itemsTable}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          ${grn.notes ? `
-            <div class="mt-3">
-              <p class="text-gray-600 font-semibold mb-1">Notes</p>
-              <p class="text-gray-700 text-sm bg-gray-50 p-3 rounded">${grn.notes}</p>
-            </div>
-          ` : ''}
-        </div>
-      `,
-      width: '800px',
-      confirmButtonColor: '#3B82F6',
-      confirmButtonText: 'Close'
-    })
+    showStockInDetails(grn, suppliers)
   }
 
   const renderRowActions = (grn) => (
@@ -408,6 +276,8 @@ const StockInPages = () => {
         filters={filters}
         onFilterChange={handleFilterChange}
         suppliers={suppliers}
+        stockInItems={stockInItems}
+        filteredStockInItems={filteredStockInItems}
         resultsCount={filteredStockInItems.length}
         totalCount={stockInItems.length}
       />

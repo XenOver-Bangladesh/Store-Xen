@@ -1,11 +1,9 @@
 import React, { useState, useRef } from 'react'
-import SharedModal from '../../Shared/SharedModal/SharedModal'
+import SharedModal from '../../../Shared/SharedModal/SharedModal'
 import { AddSuppliersFrom } from './AddSuppliersFrom'
-import Button from '../../Components/UI/Button'
-import axios from "axios";
-import Swal from 'sweetalert2';
-
-
+import Button from '../../../Components/UI/Button'
+import { suppliersAPI } from '../services/supplierService'
+import Swal from 'sweetalert2'
 
 const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -14,9 +12,8 @@ const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
   const handleFormSubmit = async (values) => {
     setIsSubmitting(true)
     try {
-      // Post data to your API
-      const response = await axios.post("https://pos-system-management-server-20.vercel.app/suppliers", values);
-      console.log("Add Supplier response:", response.data);
+      const response = await suppliersAPI.create(values);
+      console.log("Add Supplier response:", response);
       
       // Show success message with SweetAlert2
       await Swal.fire({
@@ -31,7 +28,7 @@ const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
       
       // Call success callback if provided
       if (onSuccess) {
-        onSuccess(response.data)
+        onSuccess(response)
       }
       
       // Close modal after successful submission

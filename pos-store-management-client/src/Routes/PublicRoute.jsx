@@ -13,11 +13,17 @@ import WarehouseBarcode from "../Pages/WarehouseBarcode/WarehouseBarcode";
 import WarehouseBatchtracking from "../Pages/WarehouseBatchtracking/WarehouseBatchtracking";
 import WarehouseStocktransfer from "../Pages/WarehouseStocktransfer/WarehouseStocktransfer";
 import WarehouseList from "../Pages/WarehouseList/WarehouseList";
+import ScrollToTop from "../Components/ScrollToTop/ScrollToTop";
 // Router config
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <DashboardLayout />,
+    element: (
+      <>
+        <ScrollToTop />
+        <DashboardLayout />
+      </>
+    ),
     children: [
       {
         index: true,

@@ -1,11 +1,13 @@
 import React from 'react'
-import { ReuseableFilter } from '../../Shared/ReuseableFilter/ReuseableFilter'
+import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
+import { exportSuppliersToCSV, downloadCSV } from '../utils/supplierHelpers'
 
-export const SuppliersFilter = ({
+const SuppliersFilter = ({
   filters = {},
   onFilterChange = () => {},
   onClearFilters = () => {},
-  onExport = () => {},
+  suppliers = [],
+  filteredSuppliers = [],
   resultsCount = 0,
   totalCount = 0
 }) => {
@@ -24,7 +26,8 @@ export const SuppliersFilter = ({
       options: [
         { value: '', label: 'All Status' },
         { value: 'Active', label: 'Active' },
-        { value: 'Inactive', label: 'Inactive' }
+        { value: 'Inactive', label: 'Inactive' },
+        { value: 'Suspended', label: 'Suspended' }
       ]
     },
     {
@@ -33,20 +36,27 @@ export const SuppliersFilter = ({
       type: 'select',
       options: [
         { value: '', label: 'All Payment Terms' },
-        { value: 'Cash', label: 'Cash' },
-        { value: '7 Days Credit', label: '7 Days Credit' },
-        { value: '15 Days Credit', label: '15 Days Credit' },
-        { value: '30 Days Credit', label: '30 Days Credit' }
+        { value: 'Net 15', label: 'Net 15' },
+        { value: 'Net 30', label: 'Net 30' },
+        { value: 'Net 45', label: 'Net 45' },
+        { value: 'Net 60', label: 'Net 60' },
+        { value: 'COD', label: 'COD' },
+        { value: 'Prepaid', label: 'Prepaid' }
       ]
     }
   ]
+
+  const handleExport = () => {
+    const csv = exportSuppliersToCSV(filteredSuppliers)
+    downloadCSV(csv, `suppliers-${Date.now()}.csv`)
+  }
 
   return (
     <ReuseableFilter
       filters={filters}
       onFilterChange={onFilterChange}
       onClearFilters={onClearFilters}
-      onExport={onExport}
+      onExport={handleExport}
       filterConfig={filterConfig}
       title="Suppliers Filters & Search"
       resultsCount={resultsCount}
@@ -56,3 +66,5 @@ export const SuppliersFilter = ({
     />
   )
 }
+
+export default SuppliersFilter

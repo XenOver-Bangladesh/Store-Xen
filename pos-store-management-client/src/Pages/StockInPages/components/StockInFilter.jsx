@@ -1,10 +1,13 @@
 import React from 'react'
 import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
+import { exportStockInToCSV, downloadCSV } from '../utils/stockInHelpers'
 
 const StockInFilter = ({ 
   filters, 
   onFilterChange, 
   suppliers = [],
+  stockInItems = [],
+  filteredStockInItems = [],
   resultsCount = 0,
   totalCount = 0
 }) => {
@@ -65,8 +68,8 @@ const StockInFilter = ({
   }
 
   const handleExport = () => {
-    // TODO: Implement export functionality
-    console.log('Export Stock In data')
+    const csv = exportStockInToCSV(filteredStockInItems, suppliers)
+    downloadCSV(csv, `stock-in-${Date.now()}.csv`)
   }
 
   const handleFilterChangeInternal = (key, value) => {

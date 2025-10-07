@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import SharedModal from '../../Shared/SharedModal/SharedModal'
-import Button from '../../Components/UI/Button'
-import axios from 'axios'
+import SharedModal from '../../../Shared/SharedModal/SharedModal'
+import Button from '../../../Components/UI/Button'
+import { productsAPI, suppliersAPI, imageAPI } from '../services/productService'
+import { generateQRCode, validateImageFile, DEFAULT_CATEGORIES } from '../utils/productHelpers'
 import Swal from 'sweetalert2'
 
 const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
@@ -16,16 +17,6 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   })
   const [errors, setErrors] = useState({})
   const [suppliers, setSuppliers] = useState([])
-  const categories = [
-    'Electronics',
-    'Clothing',
-    'Food & Beverage',
-    'Home & Garden',
-    'Sports & Outdoors',
-    'Books & Media',
-    'Health & Beauty',
-    'Toys & Games'
-  ]
   const [imagePreview, setImagePreview] = useState(null)
   const [imageFile, setImageFile] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -55,8 +46,8 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
 
   const fetchSuppliers = async () => {
     try {
-      const response = await axios.get('https://pos-system-management-server-20.vercel.app/suppliers')
-      setSuppliers(response.data)
+      const data = await suppliersAPI.getAll()
+      setSuppliers(data)
     } catch (error) {
       console.error('Error fetching suppliers:', error)
     }
@@ -64,18 +55,16 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
 
   const fetchAllProducts = async () => {
     try {
-      const response = await axios.get('https://pos-system-management-server-20.vercel.app/Products')
-      setAllProducts(response.data)
+      const data = await productsAPI.getAll()
+      setAllProducts(data)
     } catch (error) {
       console.error('Error fetching products:', error)
     }
   }
 
-  const generateQRCode = () => {
-    const timestamp = Date.now()
-    const randomStr = Math.random().toString(36).substring(2, 10).toUpperCase()
-    const qrValue = `PRD-${randomStr}-${timestamp}`
-    setFormData(prev => ({ ...prev, qrCode: qrValue }))
+  const handleGenerateQRCode = () => {
+    const newQRCode = generateQRCode()
+    setFormData(prev => ({ ...prev, qrCode: newQRCode }))
   }
 
   const handleInputChange = (e) => {
@@ -90,20 +79,11 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     const file = e.target.files[0]
     if (!file) return
 
-    if (!file.type.startsWith('image/')) {
+    const validation = validateImageFile(file)
+    if (!validation.isValid) {
       Swal.fire({
         title: 'Invalid File',
-        text: 'Please select an image file',
-        icon: 'error',
-        confirmButtonColor: '#ef4444'
-      })
-      return
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      Swal.fire({
-        title: 'File Too Large',
-        text: 'Image size should be less than 5MB',
+        text: validation.error,
         icon: 'error',
         confirmButtonColor: '#ef4444'
       })
@@ -112,26 +92,6 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
 
     setImageFile(file)
     setImagePreview(URL.createObjectURL(file))
-  }
-
-  const uploadToImgBB = async (file) => {
-    const uploadFormData = new FormData()
-    uploadFormData.append('image', file)
-
-    try {
-      const response = await axios.post(
-        `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`,
-        uploadFormData
-      )
-      
-      if (response.data.success) {
-        return response.data.data.url
-      }
-      throw new Error('Upload failed')
-    } catch (error) {
-      console.error('Error uploading image:', error)
-      throw error
-    }
   }
 
   const validateForm = () => {
@@ -182,7 +142,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
       // Upload new image if selected
       if (imageFile) {
         try {
-          imageUrl = await uploadToImgBB(imageFile)
+          imageUrl = await imageAPI.upload(imageFile, import.meta.env.VITE_IMGBB_API_KEY)
         } catch (uploadError) {
           console.error('Image upload error:', uploadError)
           const result = await Swal.fire({
@@ -208,10 +168,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         productImage: imageUrl
       }
 
-      await axios.put(
-        `https://pos-system-management-server-20.vercel.app/Products/${product._id}`,
-        updatedData
-      )
+      await productsAPI.update(product._id, updatedData)
 
       await Swal.fire({
         title: 'Success!',
@@ -374,7 +331,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
               className={`block w-full rounded-xl border ${errors.category ? 'border-red-500' : 'border-gray-300'} hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm`}
             >
               <option value="">Select Category...</option>
-              {categories.map((cat, idx) => (
+              {DEFAULT_CATEGORIES.map((cat, idx) => (
                 <option key={idx} value={cat}>{cat}</option>
               ))}
             </select>
@@ -438,7 +395,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={generateQRCode}
+                onClick={handleGenerateQRCode}
                 className="whitespace-nowrap"
               >
                 Generate New

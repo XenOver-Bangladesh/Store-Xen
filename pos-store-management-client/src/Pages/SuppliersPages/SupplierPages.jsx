@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Plus, Users, Info } from "lucide-react";
-import SuppliersList from "./SuppliersList";
+import SuppliersList from "./components/SuppliersList";
 import Button from "../../Components/UI/Button";
-import AddSuppliersModal from "./AddSuppliersModal";
+import AddSuppliersModal from "./components/AddSuppliersModal";
 
 const SupplierPages = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { QrCode, Barcode, Plus, RefreshCw, Download, AlertCircle, Package, CheckCircle2, XCircle } from 'lucide-react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import { QrCode, Barcode, Plus, RefreshCw, Download, AlertCircle, Package, CheckCircle2, XCircle, Info } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
 import StatsCard from '../../Shared/StatsCard/StatsCard'
-import { SharedTable } from '../../Shared/SharedTable/SharedTable'
-import { ReuseableFilter } from '../../Shared/ReuseableFilter/ReuseableFilter'
+import BarcodeFilter from './components/BarcodeFilter'
+import BarcodeList from './components/BarcodeList'
 import SharedModal from '../../Shared/SharedModal/SharedModal'
-import axios from 'axios'
-
-const API_URL = 'https://pos-system-management-server-20.vercel.app'
+import { inventoryAPI } from './services/barcodeService'
+import { 
+  applyBarcodeFilters, 
+  calculateBarcodeStats, 
+  generateCode
+} from './utils/barcodeHelpers'
 
 const WarehouseBarcode = () => {
   const [inventory, setInventory] = useState([])
@@ -37,8 +40,8 @@ const WarehouseBarcode = () => {
   const fetchInventory = async () => {
     setLoading(true)
     try {
-      const response = await axios.get(`${API_URL}/inventory`)
-      setInventory(response.data)
+      const data = await inventoryAPI.getAll()
+      setInventory(data)
     } catch (error) {
       console.error('Error fetching inventory:', error)
       Swal.fire({
@@ -52,41 +55,9 @@ const WarehouseBarcode = () => {
     }
   }
 
-  // Generate unique barcode/QR code
-  const generateCode = (prefix = 'QR') => {
-    const timestamp = Date.now()
-    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0')
-    return `${prefix}-${timestamp}-${random}`
-  }
-
   // Apply filters
   const applyFilters = useCallback(() => {
-    let filtered = [...inventory]
-
-    // Search filter
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase()
-      filtered = filtered.filter(item => 
-        item.productName?.toLowerCase().includes(searchLower) ||
-        item.productId?.toLowerCase().includes(searchLower) ||
-        item.sku?.toLowerCase().includes(searchLower) ||
-        item.barcode?.toLowerCase().includes(searchLower) ||
-        item.qrCode?.toLowerCase().includes(searchLower)
-      )
-    }
-
-    // Warehouse filter
-    if (filters.warehouse) {
-      filtered = filtered.filter(item => item.location === filters.warehouse)
-    }
-
-    // Barcode Status filter
-    if (filters.barcodeStatus === 'assigned') {
-      filtered = filtered.filter(item => item.barcode || item.qrCode)
-    } else if (filters.barcodeStatus === 'unassigned') {
-      filtered = filtered.filter(item => !item.barcode && !item.qrCode)
-    }
-
+    const filtered = applyBarcodeFilters(inventory, filters)
     setFilteredInventory(filtered)
   }, [inventory, filters])
 
@@ -102,36 +73,7 @@ const WarehouseBarcode = () => {
     setFilters({ search: '', warehouse: '', barcodeStatus: '' })
   }
 
-  const handleExport = () => {
-    const csv = [
-      ['Product Name', 'SKU', 'Barcode', 'QR Code', 'Warehouse', 'Stock Qty'],
-      ...filteredInventory.map(item => [
-        item.productName,
-        item.sku || item.productId,
-        item.barcode || '',
-        item.qrCode || '',
-        item.location || '',
-        item.stockQty || 0
-      ])
-    ].map(row => row.join(',')).join('\n')
 
-    const blob = new Blob([csv], { type: 'text/csv' })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `barcodes-${Date.now()}.csv`
-    a.click()
-  }
-
-  const handleOpenModal = (item) => {
-    setSelectedItem(item)
-    setFormData({
-      barcode: item.barcode || '',
-      qrCode: item.qrCode || '',
-      autoGenerate: !item.barcode && !item.qrCode
-    })
-    setModalOpen(true)
-  }
 
   const handleAutoGenerate = () => {
     if (formData.autoGenerate) {
@@ -165,7 +107,7 @@ const WarehouseBarcode = () => {
     }
 
     try {
-      await axios.patch(`${API_URL}/inventory/${selectedItem._id}/barcode`, {
+      await inventoryAPI.update(selectedItem._id, {
         barcode: formData.barcode || undefined,
         qrCode: formData.qrCode || undefined
       })
@@ -191,198 +133,24 @@ const WarehouseBarcode = () => {
     }
   }
 
-  const handlePrintQR = (item) => {
-    // Create a simple QR code display for printing
-    const qrData = item.qrCode || item.barcode || item.productId
-    const printContent = `
-      <html>
-        <head>
-          <title>QR Code - ${item.productName}</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              text-align: center;
-              padding: 20px;
-            }
-            .qr-container {
-              border: 2px solid #333;
-              padding: 20px;
-              display: inline-block;
-              margin: 20px;
-            }
-            .product-name {
-              font-size: 18px;
-              font-weight: bold;
-              margin-bottom: 10px;
-            }
-            .qr-code {
-              font-size: 24px;
-              font-family: monospace;
-              margin: 10px 0;
-            }
-            .info {
-              font-size: 12px;
-              color: #666;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="qr-container">
-            <div class="product-name">${item.productName}</div>
-            <div class="qr-code">${qrData}</div>
-            <div class="info">SKU: ${item.sku || item.productId}</div>
-            <div class="info">Location: ${item.location || 'N/A'}</div>
-          </div>
-        </body>
-      </html>
-    `
-    
-    const printWindow = window.open('', '', 'width=600,height=600')
-    printWindow.document.write(printContent)
-    printWindow.document.close()
-    printWindow.focus()
-    printWindow.print()
-    printWindow.close()
+
+
+
+  // Handle edit barcode
+  const handleEditBarcode = (item) => {
+    setSelectedItem(item)
+    setFormData({
+      barcode: item.barcode || '',
+      qrCode: item.qrCode || '',
+      autoGenerate: !item.barcode && !item.qrCode
+    })
+    setModalOpen(true)
   }
 
-  // Get unique warehouses
-  const warehouseOptions = [...new Set(inventory.map(item => item.location).filter(Boolean))]
-
-  // Filter configuration
-  const filterConfig = [
-    {
-      key: 'search',
-      label: 'Search',
-      type: 'search',
-      placeholder: 'Search by product name, SKU, barcode, or QR...',
-      span: 2
-    },
-    {
-      key: 'warehouse',
-      label: 'Warehouse',
-      type: 'select',
-      options: [
-        { value: '', label: 'All Warehouses' },
-        ...warehouseOptions.map(wh => ({ value: wh, label: wh }))
-      ]
-    },
-    {
-      key: 'barcodeStatus',
-      label: 'Barcode Status',
-      type: 'select',
-      options: [
-        { value: '', label: 'All Status' },
-        { value: 'assigned', label: 'Assigned' },
-        { value: 'unassigned', label: 'Unassigned' }
-      ]
-    }
-  ]
-
-  // Table columns
-  const columns = [
-    {
-      accessorKey: 'productName',
-      header: 'Product Name',
-      cell: ({ row }) => (
-        <div className="flex items-center">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mr-3">
-            <QrCode className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <div className="font-semibold text-gray-900">{row.original.productName}</div>
-            <div className="text-xs text-gray-500 font-mono">{row.original.sku || row.original.productId}</div>
-          </div>
-        </div>
-      )
-    },
-    {
-      accessorKey: 'barcode',
-      header: 'Current Barcode',
-      cell: ({ row }) => (
-        row.original.barcode ? (
-          <div className="flex items-center">
-            <Barcode className="w-4 h-4 mr-2 text-gray-500" />
-            <span className="font-mono text-sm text-gray-700">{row.original.barcode}</span>
-          </div>
-        ) : (
-          <span className="text-gray-400 text-sm">Not assigned</span>
-        )
-      )
-    },
-    {
-      accessorKey: 'qrCode',
-      header: 'Current QR Code',
-      cell: ({ row }) => (
-        row.original.qrCode ? (
-          <div className="flex items-center">
-            <QrCode className="w-4 h-4 mr-2 text-gray-500" />
-            <span className="font-mono text-sm text-gray-700">{row.original.qrCode}</span>
-          </div>
-        ) : (
-          <span className="text-gray-400 text-sm">Not assigned</span>
-        )
-      )
-    },
-    {
-      accessorKey: 'stockQty',
-      header: 'Quantity',
-      cell: ({ row }) => (
-        <span className="font-semibold text-gray-900">{row.original.stockQty || 0}</span>
-      )
-    },
-    {
-      accessorKey: 'location',
-      header: 'Warehouse',
-      cell: ({ row }) => (
-        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full font-medium text-sm">
-          {row.original.location || 'N/A'}
-        </span>
-      )
-    }
-  ]
-
-  // Render row actions
-  const renderRowActions = (item) => (
-    <div className="flex items-center gap-2">
-      <Button
-        variant="primary"
-        size="sm"
-        onClick={() => handleOpenModal(item)}
-        title="Assign/Regenerate"
-      >
-        <div className="flex items-center">
-          {item.barcode || item.qrCode ? (
-            <>
-              <RefreshCw className="w-4 h-4 mr-1" />
-              Regenerate
-            </>
-          ) : (
-            <>
-              <Plus className="w-4 h-4 mr-1" />
-              Assign
-            </>
-          )}
-        </div>
-      </Button>
-      {(item.barcode || item.qrCode) && (
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => handlePrintQR(item)}
-          title="Print QR/Barcode"
-        >
-          <div className="flex items-center">
-            <Download className="w-4 h-4 mr-1" />
-            Print
-          </div>
-        </Button>
-      )}
-    </div>
-  )
-
   // Calculate stats
-  const assignedCount = inventory.filter(item => item.barcode || item.qrCode).length
-  const unassignedCount = inventory.length - assignedCount
+  const stats = useMemo(() => {
+    return calculateBarcodeStats(inventory)
+  }, [inventory])
 
   return (
     <div className="space-y-6">
@@ -415,14 +183,14 @@ const WarehouseBarcode = () => {
         </div>
       </div>
 
-      {/* Info Alert */}
+      {/* Info Card */}
       <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
-        <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
         <div>
-          <p className="text-sm font-semibold text-blue-900">Auto-Generation Available</p>
+          <p className="text-sm font-semibold text-blue-900">Barcode & QR Code Management</p>
           <p className="text-sm text-blue-700 mt-1">
-            System can automatically generate unique barcodes and QR codes for your inventory items.
-            You can also manually enter custom codes if needed.
+            Assign unique barcodes and QR codes to your inventory items for efficient tracking and management.
+            System can automatically generate unique codes or you can manually enter custom codes.
           </p>
         </div>
       </div>
@@ -431,47 +199,41 @@ const WarehouseBarcode = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatsCard
           label="Total Products"
-          value={inventory.length}
+          value={stats.totalProducts}
           icon={Package}
-          color="gray"
+          color="blue"
         />
         <StatsCard
           label="Assigned Codes"
-          value={assignedCount}
+          value={stats.assignedCount}
           icon={CheckCircle2}
           color="green"
         />
         <StatsCard
           label="Unassigned"
-          value={unassignedCount}
+          value={stats.unassignedCount}
           icon={XCircle}
           color="red"
         />
       </div>
 
       {/* Filters */}
-      <ReuseableFilter
+      <BarcodeFilter
         filters={filters}
         onFilterChange={handleFilterChange}
         onClearFilters={handleClearFilters}
-        onExport={handleExport}
-        filterConfig={filterConfig}
-        title="Search & Filter Products"
+        inventory={inventory}
+        filteredInventory={filteredInventory}
         resultsCount={filteredInventory.length}
         totalCount={inventory.length}
       />
 
       {/* Product Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <SharedTable
-          columns={columns}
-          data={filteredInventory}
-          pageSize={10}
-          loading={loading}
-          renderRowActions={renderRowActions}
-          actionsHeader="Actions"
-        />
-      </div>
+      <BarcodeList
+        inventory={filteredInventory}
+        loading={loading}
+        onEditBarcode={handleEditBarcode}
+      />
 
       {/* Assign/Regenerate Modal */}
       <SharedModal

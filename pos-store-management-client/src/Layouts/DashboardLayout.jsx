@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import Sidebar from '../Components/Sidebar/Sidebar'
 import Header from '../Components/Header/Header'
 import { Footer } from '../Components/Footer/Footer'
+import ScrollToTopButton from '../Components/ScrollToTopButton/ScrollToTopButton'
 import { Z_INDEX } from '../constants/zIndex'
 
 export const DashboardLayout = () => {
@@ -30,6 +31,9 @@ export const DashboardLayout = () => {
           </div>
         </main>
         <Footer></Footer>
+        
+        {/* Scroll to Top Button */}
+        <ScrollToTopButton />
       </div>
     </div>
   )
