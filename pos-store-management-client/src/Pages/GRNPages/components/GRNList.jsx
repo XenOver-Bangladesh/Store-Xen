@@ -124,13 +124,13 @@ const GRNList = ({
         </Button>
       )}
       
-      {/* Only show Approve button when all items are fully received */}
-      {grn.status === 'Fully Received' && (
+      {/* Show Approve button for both Partially and Fully Received GRNs */}
+      {(grn.status === 'Partially Received' || grn.status === 'Fully Received') && (
         <Button
           variant="primary"
           size="sm"
           onClick={() => onApprove(grn)}
-          title="Approve GRN - All items received"
+          title={grn.status === 'Fully Received' ? "Approve GRN - All items received" : "Approve GRN - Partial receipt"}
         >
           <div className="flex items-center">
             <CheckCircle className="w-4 h-4 mr-1" />

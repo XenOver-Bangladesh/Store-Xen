@@ -107,9 +107,9 @@ const GRNManage = () => {
     setFilters(newFilters)
   }
 
-  // Filtered GRNs
+  // Filtered and sorted GRNs
   const filteredGRNs = useMemo(() => {
-    return grns.filter(grn => {
+    const filtered = grns.filter(grn => {
       // Status filter
       if (filters.status && grn.status !== filters.status) {
         return false
@@ -147,6 +147,26 @@ const GRNManage = () => {
       }
 
       return true
+    })
+
+    // Sort by newest first with multi-level fallback (createdAt -> _id -> receivedDate)
+    return filtered.sort((a, b) => {
+      // Try sorting by createdAt first
+      if (a.createdAt && b.createdAt) {
+        return new Date(b.createdAt) - new Date(a.createdAt)
+      }
+      
+      // Fallback to _id (MongoDB ObjectIds are sortable by creation time)
+      if (a._id && b._id && a._id !== b._id) {
+        return b._id.localeCompare(a._id)
+      }
+      
+      // Final fallback to receivedDate
+      if (a.receivedDate && b.receivedDate) {
+        return new Date(b.receivedDate) - new Date(a.receivedDate)
+      }
+      
+      return 0
     })
   }, [grns, filters])
 
@@ -381,6 +401,8 @@ const GRNManage = () => {
 
   const handleApprove = async (grn) => {
     const totalItems = grn.items?.reduce((sum, item) => sum + (item.receivedQty || 0), 0) || 0
+    const totalOrdered = grn.items?.reduce((sum, item) => sum + (item.orderedQty || 0), 0) || 0
+    const isPartialReceipt = grn.status === 'Partially Received'
     
     const result = await Swal.fire({
       title: 'Approve GRN?',
@@ -388,18 +410,28 @@ const GRNManage = () => {
         <div class="text-left space-y-3">
           <p class="text-gray-700">You are about to approve <strong class="text-blue-600">${grn.grnNumber}</strong></p>
           
-          <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+          <div class="${isPartialReceipt ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-200'} p-3 rounded-lg border">
             <p class="text-sm text-gray-700"><strong>PO:</strong> ${grn.poNumber}</p>
-            <p class="text-sm text-gray-700"><strong>Items:</strong> ${totalItems} units</p>
-            <p class="text-sm text-gray-700"><strong>Status:</strong> All items fully received ✅</p>
+            <p class="text-sm text-gray-700"><strong>Received:</strong> ${totalItems} of ${totalOrdered} units</p>
+            <p class="text-sm text-gray-700"><strong>Status:</strong> ${isPartialReceipt ? 'Partial receipt' : 'All items fully received'} ${isPartialReceipt ? '⚠️' : '✅'}</p>
           </div>
           
-          <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+          ${isPartialReceipt ? `
+            <div class="bg-orange-50 p-3 rounded-lg border border-orange-200">
+              <p class="text-xs text-gray-700"><strong>⚠️ Partial Receipt:</strong></p>
+              <p class="text-xs text-gray-600 mt-1">
+                This GRN is for a partial receipt. Additional GRNs can still be created for remaining items from PO ${grn.poNumber}.
+              </p>
+            </div>
+          ` : ''}
+          
+          <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
             <p class="text-xs text-gray-700"><strong>ℹ️ What approval does:</strong></p>
             <ul class="text-xs text-gray-600 mt-1 ml-4 list-disc space-y-1">
               <li>Locks this GRN (cannot edit/delete)</li>
-              <li>Completes audit trail</li>
-              <li>Finalizes payment record</li>
+              <li>Completes audit trail for this receipt</li>
+              <li>Finalizes payment record for received items</li>
+              ${isPartialReceipt ? '<li>Allows additional GRNs for remaining items</li>' : ''}
             </ul>
             <p class="text-xs text-gray-500 mt-2">
               <em>Note: Inventory was already updated when GRN was created</em>

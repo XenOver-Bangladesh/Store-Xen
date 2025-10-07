@@ -101,9 +101,9 @@ const ManagePO = () => {
     setFilters(newFilters)
   }
 
-  // Filtered purchase orders
+  // Filtered and sorted purchase orders
   const filteredPurchaseOrders = useMemo(() => {
-    return purchaseOrders.filter(po => {
+    const filtered = purchaseOrders.filter(po => {
       // Status filter
       if (filters.status && po.status !== filters.status) {
         return false
@@ -141,6 +141,26 @@ const ManagePO = () => {
       }
 
       return true
+    })
+
+    // Sort by newest first with multi-level fallback (createdAt -> _id -> poDate)
+    return filtered.sort((a, b) => {
+      // Try sorting by createdAt first
+      if (a.createdAt && b.createdAt) {
+        return new Date(b.createdAt) - new Date(a.createdAt)
+      }
+      
+      // Fallback to _id (MongoDB ObjectIds are sortable by creation time)
+      if (a._id && b._id && a._id !== b._id) {
+        return b._id.localeCompare(a._id)
+      }
+      
+      // Final fallback to poDate
+      if (a.poDate && b.poDate) {
+        return new Date(b.poDate) - new Date(a.poDate)
+      }
+      
+      return 0
     })
   }, [purchaseOrders, filters])
 
