@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+/* Smooth scrolling behavior for the entire app */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure the body starts at the top */
+body {
+  scroll-behavior: smooth;
+}
+
+/* Reset scroll position on route changes */
+#root {
+  scroll-behavior: smooth;
+}
