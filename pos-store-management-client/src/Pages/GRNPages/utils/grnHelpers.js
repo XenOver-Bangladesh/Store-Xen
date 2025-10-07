@@ -54,6 +54,11 @@ export const validateGRNForm = (formData) => {
     errors.push('Please enter a received date')
   }
 
+  // Check if destination warehouse is selected
+  if (!formData.destinationWarehouse) {
+    errors.push('Please select a destination warehouse')
+  }
+
   // Check if items exist
   if (!formData.items || formData.items.length === 0) {
     errors.push('Please add at least one item')

@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { X, Save } from 'lucide-react'
 import Button from '../../../Components/UI/Button'
 import SharedModal from '../../../Shared/SharedModal/SharedModal'
 import GRNItemsTable from './GRNItemsTable'
 import { validateGRNForm, generateGRNNumber, MAX_NOTES_LENGTH } from '../utils/grnHelpers'
 import Swal from 'sweetalert2'
+import axios from 'axios'
+
+const API_URL = 'https://pos-system-management-server-20.vercel.app'
 
 const GRNForm = ({
   isOpen,
@@ -16,6 +19,36 @@ const GRNForm = ({
   onSubmit,
   isEditing
 }) => {
+  const [warehouses, setWarehouses] = useState([])
+  const [warehousesLoading, setWarehousesLoading] = useState(false)
+
+  // Fetch warehouses from API
+  useEffect(() => {
+    const fetchWarehouses = async () => {
+      if (isOpen) {
+        setWarehousesLoading(true)
+        try {
+          const response = await axios.get(`${API_URL}/warehouses`)
+          setWarehouses(response.data)
+        } catch (error) {
+          console.error('Error fetching warehouses:', error)
+          // Fallback to default warehouses if API fails
+          setWarehouses([
+            { _id: '1', name: 'Main Warehouse', location: 'Building A' },
+            { _id: '2', name: 'Secondary Warehouse', location: 'Building B' },
+            { _id: '3', name: 'Cold Storage', location: 'Building C' },
+            { _id: '4', name: 'Dry Storage', location: 'Building D' },
+            { _id: '5', name: 'Returns Warehouse', location: 'Building E' }
+          ])
+        } finally {
+          setWarehousesLoading(false)
+        }
+      }
+    }
+
+    fetchWarehouses()
+  }, [isOpen])
+
   // Generate GRN Number when modal opens for new GRN
   useEffect(() => {
     if (isOpen && !isEditing && !formData.grnNumber) {
@@ -234,6 +267,44 @@ const GRNForm = ({
                 Date when goods were received
               </p>
             </div>
+          </div>
+
+          {/* Warehouse Selection */}
+          <div className="mt-4">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Destination Warehouse <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.destinationWarehouse || ''}
+              onChange={(e) => setFormData({ ...formData, destinationWarehouse: e.target.value })}
+              disabled={warehousesLoading}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            >
+              <option value="">
+                {warehousesLoading ? 'Loading warehouses...' : 'Select warehouse'}
+              </option>
+              {warehouses.length > 0 ? (
+                warehouses.map(warehouse => (
+                  <option key={warehouse._id} value={warehouse.name}>
+                    {warehouse.name} {warehouse.location ? `- ${warehouse.location}` : ''}
+                  </option>
+                ))
+              ) : (
+                !warehousesLoading && (
+                  <option value="" disabled>
+                    No warehouses available
+                  </option>
+                )
+              )}
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              {warehousesLoading 
+                ? 'Loading available warehouses...' 
+                : warehouses.length > 0 
+                  ? `Where the received goods will be stored (${warehouses.length} warehouses available)`
+                  : 'No warehouses available - please add warehouses first'
+              }
+            </p>
           </div>
         </div>
 

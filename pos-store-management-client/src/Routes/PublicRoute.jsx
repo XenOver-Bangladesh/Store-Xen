@@ -9,6 +9,10 @@ import GRNManage from "../Pages/GRNPages/GRNManage";
 import Payments from "../Pages/GENPaymentsPage/Payments";
 import { InStockProductPages } from "../Pages/InStockProductPages/InStockProductPages";
 import StockInPages from "../Pages/StockInPages/StockInPages";
+import WarehouseBarcode from "../Pages/WarehouseBarcode/WarehouseBarcode";
+import WarehouseBatchtracking from "../Pages/WarehouseBatchtracking/WarehouseBatchtracking";
+import WarehouseStocktransfer from "../Pages/WarehouseStocktransfer/WarehouseStocktransfer";
+import WarehouseList from "../Pages/WarehouseList/WarehouseList";
 // Router config
 const router = createBrowserRouter([
   {
@@ -58,6 +62,22 @@ const router = createBrowserRouter([
       {
         path: "/warehouse/stock-in",
         element: <StockInPages />
+      },
+      {
+        path: "/warehouse/barcode",
+        element: <WarehouseBarcode />
+      },
+      {
+        path: "/warehouse/batch-tracking",
+        element: <WarehouseBatchtracking />
+      },
+      {
+        path: "/warehouse/stock-transfer",
+        element: <WarehouseStocktransfer />
+      },
+      {
+        path: "/warehouse/list",
+        element: <WarehouseList />
       },
     ],
   },
