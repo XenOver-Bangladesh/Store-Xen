@@ -1,0 +1,173 @@
+import React, { useState, useEffect, useCallback } from 'react'
+import { Tag, Plus, RefreshCw } from 'lucide-react'
+import Swal from 'sweetalert2'
+import Button from '../../Components/UI/Button'
+import DiscountsList from './components/DiscountsList'
+import DiscountFilter from './components/DiscountFilter'
+import DiscountModal from './components/DiscountModal'
+import { discountsAPI, productsAPI } from './services/discountsService'
+import { applyDiscountFilters } from './utils/discountsHelpers'
+
+const DiscountsPages = () => {
+  const [discounts, setDiscounts] = useState([])
+  const [products, setProducts] = useState([])
+  const [filteredDiscounts, setFilteredDiscounts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedDiscount, setSelectedDiscount] = useState(null)
+  
+  const [filters, setFilters] = useState({
+    search: '',
+    status: '',
+    type: ''
+  })
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const applyFilters = useCallback(() => {
+    const filtered = applyDiscountFilters(discounts, filters)
+    setFilteredDiscounts(filtered)
+  }, [discounts, filters])
+
+  useEffect(() => {
+    applyFilters()
+  }, [applyFilters])
+
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const [discountsData, productsData] = await Promise.all([
+        discountsAPI.getAll(),
+        productsAPI.getAll()
+      ])
+      setDiscounts(discountsData)
+      setProducts(productsData)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      Swal.fire('Error', 'Failed to load data', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }))
+  }
+
+  const handleClearFilters = () => {
+    setFilters({ search: '', status: '', type: '' })
+  }
+
+  const handleAdd = () => {
+    setSelectedDiscount(null)
+    setModalOpen(true)
+  }
+
+  const handleEdit = (discount) => {
+    setSelectedDiscount(discount)
+    setModalOpen(true)
+  }
+
+  const handleSave = async (discountData) => {
+    try {
+      if (selectedDiscount) {
+        await discountsAPI.update(selectedDiscount._id, discountData)
+        await Swal.fire('Updated!', 'Discount updated successfully', 'success')
+      } else {
+        await discountsAPI.create(discountData)
+        await Swal.fire('Created!', 'Discount created successfully', 'success')
+      }
+      
+      setModalOpen(false)
+      fetchData()
+    } catch (error) {
+      Swal.fire('Error', 'Failed to save discount', 'error')
+    }
+  }
+
+  const handleDelete = async (discount) => {
+    const result = await Swal.fire({
+      title: 'Delete Discount?',
+      text: `Delete "${discount.offerName}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      confirmButtonText: 'Yes, delete it!'
+    })
+
+    if (result.isConfirmed) {
+      try {
+        await discountsAPI.delete(discount._id)
+        await Swal.fire('Deleted!', 'Discount deleted successfully', 'success')
+        fetchData()
+      } catch (error) {
+        Swal.fire('Error', 'Failed to delete discount', 'error')
+      }
+    }
+  }
+
+  const handleToggleStatus = async (discount) => {
+    try {
+      await discountsAPI.toggleStatus(discount._id)
+      await Swal.fire('Success!', 'Discount status updated', 'success')
+      fetchData()
+    } catch (error) {
+      Swal.fire('Error', 'Failed to update status', 'error')
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-orange-50 via-red-50 to-pink-50 p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+              <Tag className="w-8 h-8 mr-3 text-orange-600" />
+              Discounts & Offers
+            </h1>
+            <p className="text-gray-600 mt-2">Manage promotional offers and discount codes</p>
+          </div>
+
+          <div className="flex gap-3">
+            <Button variant="secondary" size="md" onClick={fetchData}>
+              <RefreshCw className="w-5 h-5 mr-2" />
+              Refresh
+            </Button>
+            <Button variant="primary" size="md" onClick={handleAdd}>
+              <Plus className="w-5 h-5 mr-2" />
+              Add Discount
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <DiscountFilter
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onClearFilters={handleClearFilters}
+        discounts={discounts}
+        filteredDiscounts={filteredDiscounts}
+      />
+
+      <DiscountsList
+        discounts={filteredDiscounts}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onToggleStatus={handleToggleStatus}
+        loading={loading}
+      />
+
+      <DiscountModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        discount={selectedDiscount}
+        onSave={handleSave}
+        products={products}
+      />
+    </div>
+  )
+}
+
+export default DiscountsPages

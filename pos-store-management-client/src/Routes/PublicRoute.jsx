@@ -14,6 +14,11 @@ import WarehouseBatchtracking from "../Pages/WarehouseBatchtracking/WarehouseBat
 import WarehouseStocktransfer from "../Pages/WarehouseStocktransfer/WarehouseStocktransfer";
 import WarehouseList from "../Pages/WarehouseList/WarehouseList";
 import ScrollToTop from "../Components/ScrollToTop/ScrollToTop";
+import PosTerminalPage from "../Pages/PosTerminal/PosTerminalPage";
+import DiscountsPages from "../Pages/DiscountsPages/DiscountsPages";
+import SalesPaymentPage from "../Pages/SalesPaymentPage/SalesPaymentPage";
+import SalesInvoice from "../Pages/SalesInvoice/SalesInvoice";
+import SalesReturn from "../Pages/SalesReturns/SalesReturn";
 // Router config
 const router = createBrowserRouter([
   {
@@ -85,6 +90,28 @@ const router = createBrowserRouter([
         path: "/warehouse/list",
         element: <WarehouseList />
       },
+      //sales
+      {
+        path: "/sales/pos-terminal",
+        element: <PosTerminalPage />
+      },
+      {
+        path: "/sales/discounts",
+        element: <DiscountsPages />
+      },
+      {
+        path: "/sales/payments",
+        element: <SalesPaymentPage />
+      },
+      {
+        path: "/sales/invoice",
+        element: <SalesInvoice />
+      },
+      {
+        path: "/sales/returns",
+        element: <SalesReturn />
+      },
+      
     ],
   },
 ]);
