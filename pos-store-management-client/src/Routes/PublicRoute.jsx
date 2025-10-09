@@ -19,6 +19,14 @@ import DiscountsPages from "../Pages/DiscountsPages/DiscountsPages";
 import SalesPaymentPage from "../Pages/SalesPaymentPage/SalesPaymentPage";
 import SalesInvoice from "../Pages/SalesInvoice/SalesInvoice";
 import SalesReturn from "../Pages/SalesReturns/SalesReturn";
+import InventoryPages from "../Pages/InventoryPages/InventoryPages";
+import StockDashboard from "../Pages/InventoryPages/StockDashboard/StockDashboard";
+import LowStockAlerts from "../Pages/InventoryPages/LowStockAlerts/LowStockAlerts";
+import AutoReorderSuggestions from "../Pages/InventoryPages/AutoReorderSuggestions/AutoReorderSuggestions";
+import InventoryValuation from "../Pages/InventoryPages/InventoryValuation/InventoryValuation";
+import SalesReports from "../Pages/InventoryPages/SalesReports/SalesReports";
+import ProfitLossReports from "../Pages/InventoryPages/ProfitLossReports/ProfitLossReports";
+import StockAnalysis from "../Pages/InventoryPages/StockAnalysis/StockAnalysis";
 // Router config
 const router = createBrowserRouter([
   {
@@ -110,6 +118,39 @@ const router = createBrowserRouter([
       {
         path: "/sales/returns",
         element: <SalesReturn />
+      },
+      //inventory
+      {
+        path: "/inventory",
+        element: <InventoryPages />
+      },
+      {
+        path: "/inventory/stock-dashboard",
+        element: <StockDashboard />
+      },
+      {
+        path: "/inventory/low-stock",
+        element: <LowStockAlerts />
+      },
+      {
+        path: "/inventory/reorder",
+        element: <AutoReorderSuggestions />
+      },
+      {
+        path: "/inventory/valuation",
+        element: <InventoryValuation />
+      },
+      {
+        path: "/inventory/sales-reports",
+        element: <SalesReports />
+      },
+      {
+        path: "/inventory/profit-loss",
+        element: <ProfitLossReports />
+      },
+      {
+        path: "/inventory/stock-analysis",
+        element: <StockAnalysis />
       },
       
     ],
