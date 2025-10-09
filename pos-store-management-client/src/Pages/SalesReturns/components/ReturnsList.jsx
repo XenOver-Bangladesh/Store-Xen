@@ -51,19 +51,25 @@ const ReturnsList = ({ returns, onApprove, onReject, onDelete, loading }) => {
       {returnItem.status === 'Pending' && (
         <>
           <Button variant="primary" size="sm" onClick={() => onApprove(returnItem)}>
-            <CheckCircle className="w-4 h-4 mr-1" />
-            Approve
+            <div className="flex items-center">
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Approve
+            </div>
           </Button>
           <Button variant="delete" size="sm" onClick={() => onReject(returnItem)}>
-            <XCircle className="w-4 h-4 mr-1" />
-            Reject
+            <div className="flex items-center">
+              <XCircle className="w-4 h-4 mr-2" />
+              Reject
+            </div>
           </Button>
         </>
       )}
       {returnItem.status !== 'Approved' && (
         <Button variant="delete" size="sm" onClick={() => onDelete(returnItem)}>
-          <Trash2 className="w-4 h-4 mr-1" />
-          Delete
+          <div className="flex items-center">
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete
+          </div>
         </Button>
       )}
     </div>

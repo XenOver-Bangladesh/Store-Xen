@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { LayoutGrid, List, Eye, Pencil, Trash2, Plus, Package, Info, RefreshCw } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import InfoCard from '../../Shared/InfoCard/InfoCard'
 import { SharedTable } from '../../Shared/SharedTable/SharedTable'
 import ViewProductModal from './components/ViewProductModal'
 import EditProductModal from './components/EditProductModal'
@@ -320,16 +321,12 @@ const ProductManage = () => {
       </div>
 
       {/* Info Card */}
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
-        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-        <div>
-          <p className="text-sm font-semibold text-blue-900">Product Catalog Management</p>
-          <p className="text-sm text-blue-700 mt-1">
-            Maintain your complete product catalog with detailed information, categories, suppliers, and QR codes.
-            Products are linked to purchase orders, inventory, and sales transactions for complete traceability.
-          </p>
-        </div>
-      </div>
+      <InfoCard
+        type="info"
+        title="Product Catalog Management"
+        message="Maintain your complete product catalog with detailed information, categories, suppliers, and QR codes. Products are linked to purchase orders, inventory, and sales transactions for complete traceability."
+        icon={Info}
+      />
 
       {/* Filters */}
       <ProductFilter
@@ -340,6 +337,8 @@ const ProductManage = () => {
         filteredProducts={filteredProducts}
         categories={categories}
         suppliers={suppliers}
+        resultsCount={filteredProducts.length}
+        totalCount={products.length}
       />
 
       {/* Content - Table or Card View */}

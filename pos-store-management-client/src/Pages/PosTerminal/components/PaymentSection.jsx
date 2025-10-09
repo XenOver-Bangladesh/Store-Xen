@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { User, CreditCard, CheckCircle, Clock, XCircle } from 'lucide-react'
+import { User, CreditCard, CheckCircle, Clock, XCircle, History } from 'lucide-react'
 import Button from '../../../Components/UI/Button'
+import CustomerHistory from './CustomerHistory'
 import Swal from 'sweetalert2'
 
 const PaymentSection = ({ 
@@ -16,6 +17,7 @@ const PaymentSection = ({
 }) => {
   const [paymentMethod, setPaymentMethod] = useState('Cash')
   const [showCustomerModal, setShowCustomerModal] = useState(false)
+  const [showCustomerHistory, setShowCustomerHistory] = useState(false)
   const [newCustomer, setNewCustomer] = useState({ name: '', phone: '', email: '' })
 
   const paymentMethods = ['Cash', 'Card', 'bKash', 'Nagad', 'Rocket', 'Bank Transfer']
@@ -64,8 +66,22 @@ const PaymentSection = ({
             size="md"
             onClick={() => setShowCustomerModal(true)}
           >
-            + New
+            <div className="flex items-center">
+              + New
+            </div>
           </Button>
+          {selectedCustomer && (
+            <Button
+              variant="ghost"
+              size="md"
+              onClick={() => setShowCustomerHistory(true)}
+              title="View Customer History"
+            >
+              <div className="flex items-center">
+                <History className="w-4 h-4" />
+              </div>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -101,8 +117,10 @@ const PaymentSection = ({
           disabled={cartItems.length === 0}
           className="w-full"
         >
-          <Clock className="w-4 h-4 mr-1" />
-          Hold
+          <div className="flex items-center">
+            <Clock className="w-4 h-4 mr-2" />
+            Hold
+          </div>
         </Button>
 
         <Button
@@ -112,8 +130,10 @@ const PaymentSection = ({
           disabled={cartItems.length === 0}
           className="w-full"
         >
-          <XCircle className="w-4 h-4 mr-1" />
-          Clear
+          <div className="flex items-center">
+            <XCircle className="w-4 h-4 mr-2" />
+            Clear
+          </div>
         </Button>
 
         <Button
@@ -123,8 +143,10 @@ const PaymentSection = ({
           disabled={cartItems.length === 0 || !selectedCustomer}
           className="w-full"
         >
-          <CheckCircle className="w-4 h-4 mr-1" />
-          Complete
+          <div className="flex items-center">
+            <CheckCircle className="w-4 h-4 mr-2" />
+            Complete
+          </div>
         </Button>
       </div>
 
@@ -185,7 +207,9 @@ const PaymentSection = ({
                 }}
                 className="flex-1"
               >
-                Cancel
+                <div className="flex items-center">
+                  Cancel
+                </div>
               </Button>
               <Button
                 variant="primary"
@@ -193,12 +217,21 @@ const PaymentSection = ({
                 onClick={handleCreateCustomer}
                 className="flex-1"
               >
-                Save Customer
+                <div className="flex items-center">
+                  Save Customer
+                </div>
               </Button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Customer History Modal */}
+      <CustomerHistory
+        customer={selectedCustomer}
+        isOpen={showCustomerHistory}
+        onClose={() => setShowCustomerHistory(false)}
+      />
     </div>
   )
 }

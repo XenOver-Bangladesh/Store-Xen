@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Plus, Users, Info } from "lucide-react";
 import SuppliersList from "./components/SuppliersList";
 import Button from "../../Components/UI/Button";
+import InfoCard from "../../Shared/InfoCard/InfoCard";
 import AddSuppliersModal from "./components/AddSuppliersModal";
 
 const SupplierPages = () => {
@@ -51,16 +52,12 @@ const SupplierPages = () => {
       </div>
 
       {/* Info Card */}
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
-        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-        <div>
-          <p className="text-sm font-semibold text-blue-900">Supplier Database Management</p>
-          <p className="text-sm text-blue-700 mt-1">
-            Maintain a comprehensive database of your suppliers with contact information, payment terms, and status tracking.
-            Suppliers are linked to purchase orders, GRNs, and payments for complete supply chain visibility.
-          </p>
-        </div>
-      </div>
+      <InfoCard
+        type="info"
+        title="Supplier Database Management"
+        message="Maintain a comprehensive database of your suppliers with contact information, payment terms, and status tracking. Suppliers are linked to purchase orders, GRNs, and payments for complete supply chain visibility."
+        icon={Info}
+      />
 
       {/* Suppliers List */}
       <SuppliersList key={refreshKey} />

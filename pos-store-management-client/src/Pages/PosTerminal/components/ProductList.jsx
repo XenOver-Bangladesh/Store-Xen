@@ -1,21 +1,62 @@
 import React, { useState } from 'react'
-import { Search, Package, Plus } from 'lucide-react'
+import { Search, Package, Plus, Edit3 } from 'lucide-react'
 import Button from '../../../Components/UI/Button'
+import Swal from 'sweetalert2'
 
-const ProductList = ({ products, inventory, onAddToCart, filters, onFilterChange }) => {
+const ProductList = ({ products, inventory, onAddToCart, onUpdateProductPrice, filters, onFilterChange }) => {
+  const [editingPrice, setEditingPrice] = useState(null)
+  const [tempPrice, setTempPrice] = useState('')
+
+  const handlePriceEdit = (product, currentPrice) => {
+    setEditingPrice(product._id)
+    setTempPrice(currentPrice.toString())
+  }
+
+  const handlePriceSave = async (product) => {
+    const newPrice = parseFloat(tempPrice)
+    
+    if (isNaN(newPrice) || newPrice < 0) {
+      Swal.fire('Invalid Price', 'Please enter a valid price', 'error')
+      return
+    }
+
+    try {
+      // Update the product price
+      if (onUpdateProductPrice) {
+        await onUpdateProductPrice(product._id, newPrice)
+        Swal.fire('Success', 'Product price updated successfully', 'success')
+      } else {
+        Swal.fire('Warning', 'Price update function not available', 'warning')
+      }
+      setEditingPrice(null)
+      setTempPrice('')
+    } catch (error) {
+      console.error('Error updating price:', error)
+      Swal.fire('Error', `Failed to update product price: ${error.message}`, 'error')
+    }
+  }
+
+  const handlePriceCancel = () => {
+    setEditingPrice(null)
+    setTempPrice('')
+  }
   const getProductStock = (productId) => {
     // Find ALL inventory records for this product (across all locations)
     const inventoryItems = inventory.filter(item => item.productId === productId)
     
     if (inventoryItems.length === 0) {
+      console.log(`No inventory items found for product ${productId}`)
       return 0
     }
     
     // Sum up stock from all locations
     const totalStock = inventoryItems.reduce((sum, item) => {
-      return sum + (item.stockQty || 0)
+      const stockQty = parseFloat(item.stockQty) || 0
+      console.log(`Product ${productId} - Location: ${item.location}, StockQty: ${item.stockQty} (parsed: ${stockQty})`)
+      return sum + stockQty
     }, 0)
     
+    console.log(`Product ${productId} - Total stock calculated: ${totalStock}`)
     return Math.max(0, totalStock)
   }
 
@@ -83,7 +124,47 @@ const ProductList = ({ products, inventory, onAddToCart, filters, onFilterChange
                       <h4 className="font-semibold text-gray-900 truncate">{product.productName}</h4>
                       <p className="text-sm text-gray-500">{product.category}</p>
                       <div className="flex items-center justify-between mt-1">
-                        <span className="text-lg font-bold text-blue-600">${price.toFixed(2)}</span>
+                        <div className="flex items-center gap-2">
+                          {editingPrice === product._id ? (
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm text-gray-500">$</span>
+                              <input
+                                type="number"
+                                value={tempPrice}
+                                onChange={(e) => setTempPrice(e.target.value)}
+                                className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                                step="0.01"
+                                min="0"
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => handlePriceSave(product)}
+                                className="text-green-600 hover:text-green-700 text-sm"
+                                title="Save"
+                              >
+                                ✓
+                              </button>
+                              <button
+                                onClick={handlePriceCancel}
+                                className="text-red-600 hover:text-red-700 text-sm"
+                                title="Cancel"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1">
+                              <span className="text-lg font-bold text-blue-600">${price.toFixed(2)}</span>
+                              <button
+                                onClick={() => handlePriceEdit(product, price)}
+                                className="text-gray-400 hover:text-blue-600 text-sm"
+                                title="Edit Price"
+                              >
+                                <Edit3 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                         <div className="text-right">
                           <span className={`text-sm font-medium ${stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
                             Stock: {stock}
@@ -109,7 +190,9 @@ const ProductList = ({ products, inventory, onAddToCart, filters, onFilterChange
                       disabled={stock === 0}
                       className="flex-shrink-0"
                     >
-                      <Plus className="w-4 h-4" />
+                      <div className="flex items-center">
+                        <Plus className="w-4 h-4" />
+                      </div>
                     </Button>
                   </div>
                 </div>

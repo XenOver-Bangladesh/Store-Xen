@@ -4,7 +4,7 @@ import Swal from 'sweetalert2'
 import ProductList from './components/ProductList'
 import Cart from './components/Cart'
 import PaymentSection from './components/PaymentSection'
-import { productsAPI, inventoryAPI, customersAPI, salesAPI } from './services/posService'
+import { productsAPI, inventoryAPI, customersAPI, salesAPI, salesPaymentsAPI } from './services/posService'
 import { 
   calculateCartTotals, 
   validateSaleData, 
@@ -35,6 +35,9 @@ const PosTerminalPage = () => {
     grandTotal: 0
   })
 
+  const [appliedDiscounts, setAppliedDiscounts] = useState([])
+  const [taxRate, setTaxRate] = useState(0.1) // 10% default tax rate
+
   // Fetch initial data
   useEffect(() => {
     fetchData()
@@ -56,15 +59,15 @@ const PosTerminalPage = () => {
 
   // Apply filters
   useEffect(() => {
-    const filtered = filterProducts(products, filters.search, filters.category, filters.warehouse)
+    const filtered = filterProducts(products, filters.search, filters.category, filters.warehouse, inventory)
     setFilteredProducts(filtered)
-  }, [products, filters])
+  }, [products, filters, inventory])
 
   // Calculate totals when cart changes
   useEffect(() => {
-    const newTotals = calculateCartTotals(cartItems, [], 0) // Add tax rate if needed
+    const newTotals = calculateCartTotals(cartItems, appliedDiscounts, taxRate)
     setTotals(newTotals)
-  }, [cartItems])
+  }, [cartItems, appliedDiscounts, taxRate])
 
   const fetchData = async () => {
     setLoading(true)
@@ -74,6 +77,12 @@ const PosTerminalPage = () => {
         inventoryAPI.getAll(),
         customersAPI.getAll()
       ])
+      
+      console.log('=== FETCHED DATA DEBUG ===')
+      console.log('Products count:', productsData.length)
+      console.log('Inventory count:', inventoryData.length)
+      console.log('Sample inventory item:', inventoryData[0])
+      console.log('Sony PS5 inventory items:', inventoryData.filter(item => item.productName && item.productName.includes('Sony PS5')))
       
       setProducts(productsData)
       setInventory(inventoryData)
@@ -122,14 +131,29 @@ const PosTerminalPage = () => {
   const handleAddToCart = (product, price) => {
     // Get current stock from inventory to ensure accuracy (aggregate across all locations)
     const inventoryItems = inventory.filter(item => item.productId === product._id)
-    const currentStock = inventoryItems.reduce((sum, item) => sum + (item.stockQty || 0), 0)
+    
+    // Debug logging
+    console.log('=== ADD TO CART DEBUG ===')
+    console.log('Product:', product.productName, 'ID:', product._id)
+    console.log('Inventory items found:', inventoryItems)
+    
+    const currentStock = inventoryItems.reduce((sum, item) => {
+      const stockQty = parseFloat(item.stockQty) || 0
+      console.log(`Location: ${item.location}, StockQty: ${item.stockQty} (parsed: ${stockQty})`)
+      return sum + stockQty
+    }, 0)
+    
+    console.log('Total calculated stock:', currentStock)
     
     if (currentStock <= 0) {
+      console.log('Stock check failed - currentStock:', currentStock)
       Swal.fire('Out of Stock', 'This product is not available', 'warning')
       return
     }
 
     const existingItemIndex = cartItems.findIndex(item => item.productId === product._id)
+    const originalPrice = product.sellingPrice || product.price || 0
+    const isCustomPrice = price !== originalPrice
 
     if (existingItemIndex >= 0) {
       // Update quantity if already in cart
@@ -151,6 +175,8 @@ const PosTerminalPage = () => {
           productId: product._id,
           productName: product.productName,
           unitPrice: price,
+          originalPrice: originalPrice,
+          isCustomPrice: isCustomPrice,
           quantity: 1,
           availableStock: currentStock,
           category: product.category
@@ -187,6 +213,72 @@ const PosTerminalPage = () => {
     setCartItems(newCartItems)
   }
 
+  const handleUpdatePrice = (index, newPrice) => {
+    const newCartItems = [...cartItems]
+    const originalPrice = newCartItems[index].originalPrice || newCartItems[index].unitPrice
+    newCartItems[index].unitPrice = newPrice
+    newCartItems[index].isCustomPrice = newPrice !== originalPrice
+    setCartItems(newCartItems)
+  }
+
+  const handleResetPrice = (index) => {
+    const newCartItems = [...cartItems]
+    if (newCartItems[index].originalPrice) {
+      newCartItems[index].unitPrice = newCartItems[index].originalPrice
+      newCartItems[index].isCustomPrice = false
+      setCartItems(newCartItems)
+    }
+  }
+
+  const handleUpdateProductPrice = async (productId, newPrice) => {
+    try {
+      // Validate input
+      if (!productId || newPrice === undefined || newPrice < 0) {
+        throw new Error('Invalid product ID or price')
+      }
+
+      console.log('Attempting to update product price:', productId, newPrice)
+
+      // Update the product in the backend
+      const response = await productsAPI.update(productId, { sellingPrice: newPrice })
+      
+      console.log('Backend update response:', response)
+      
+      // Update the product in the local state regardless of backend response
+      // This ensures the UI updates even if there are network issues
+      setProducts(prevProducts => 
+        prevProducts.map(product => 
+          product._id === productId 
+            ? { ...product, sellingPrice: newPrice }
+            : product
+        )
+      )
+      
+      return response
+    } catch (error) {
+      console.error('Error updating product price:', error)
+      
+      // Even if backend fails, update the local state for better UX
+      setProducts(prevProducts => 
+        prevProducts.map(product => 
+          product._id === productId 
+            ? { ...product, sellingPrice: newPrice }
+            : product
+        )
+      )
+      
+      throw error
+    }
+  }
+
+  const handleApplyDiscount = (discount) => {
+    setAppliedDiscounts(prev => [...prev, discount])
+  }
+
+  const handleRemoveDiscount = (discountId) => {
+    setAppliedDiscounts(prev => prev.filter(d => d._id !== discountId))
+  }
+
   const handleClearCart = () => {
     Swal.fire({
       title: 'Clear Cart?',
@@ -200,6 +292,7 @@ const PosTerminalPage = () => {
       if (result.isConfirmed) {
         setCartItems([])
         setSelectedCustomer(null)
+        setAppliedDiscounts([])
       }
     })
   }
@@ -223,10 +316,19 @@ const PosTerminalPage = () => {
   }
 
   const handleCompleteSale = async (paymentMethod) => {
+    console.log('=== COMPLETE SALE DEBUG ===')
+    console.log('Cart items:', cartItems)
+    console.log('Selected customer:', selectedCustomer)
+    console.log('Payment method:', paymentMethod)
+    console.log('Totals:', totals)
+    console.log('Inventory:', inventory)
+    
     // Validate with current inventory data
     const validation = validateSaleData(cartItems, selectedCustomer, paymentMethod, inventory)
+    console.log('Validation result:', validation)
     
     if (!validation.isValid) {
+      console.log('Validation failed:', validation.errors)
       Swal.fire('Validation Error', validation.errors.join('\n'), 'error')
       return
     }
@@ -235,9 +337,39 @@ const PosTerminalPage = () => {
       // Prepare sale data
       const invoiceNo = `INV-${Date.now()}`
       const saleData = prepareSaleData(cartItems, selectedCustomer, paymentMethod, totals, invoiceNo)
+      console.log('Prepared sale data:', saleData)
 
       // Create sale
+      console.log('Sending sale data to server...')
       await salesAPI.create(saleData)
+
+      // Create sales payment record
+      try {
+        const paymentData = {
+          invoiceNo: saleData.invoiceNo,
+          customerId: saleData.customerId,
+          customerName: saleData.customerName,
+          customerPhone: saleData.customerPhone,
+          amount: saleData.grandTotal,
+          paymentMethod: saleData.paymentMethod,
+          status: 'Completed',
+          notes: `Payment for invoice ${saleData.invoiceNo}`,
+          appliedDiscounts: appliedDiscounts.map(d => ({
+            discountId: d._id,
+            discountName: d.offerName,
+            discountValue: d.value,
+            discountType: d.type
+          }))
+        }
+        
+        console.log('Creating sales payment record...')
+        await salesPaymentsAPI.create(paymentData)
+        console.log('Sales payment record created successfully')
+      } catch (paymentError) {
+        console.error('Error creating sales payment record:', paymentError)
+        // Don't fail the sale if payment record creation fails
+        Swal.fire('Warning', 'Sale completed but payment record creation failed', 'warning')
+      }
 
       await Swal.fire({
         title: 'Sale Completed!',
@@ -255,6 +387,7 @@ const PosTerminalPage = () => {
       // Clear cart
       setCartItems([])
       setSelectedCustomer(null)
+      setAppliedDiscounts([])
       
       // Refresh inventory
       const inventoryData = await inventoryAPI.getAll()
@@ -311,6 +444,20 @@ const PosTerminalPage = () => {
           
           <div className="text-right">
             <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600">Tax Rate:</label>
+                <select
+                  value={taxRate}
+                  onChange={(e) => setTaxRate(parseFloat(e.target.value))}
+                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value={0}>0%</option>
+                  <option value={0.05}>5%</option>
+                  <option value={0.1}>10%</option>
+                  <option value={0.15}>15%</option>
+                  <option value={0.2}>20%</option>
+                </select>
+              </div>
               <button
                 onClick={refreshInventory}
                 className="flex items-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors"
@@ -338,6 +485,7 @@ const PosTerminalPage = () => {
             products={filteredProducts}
             inventory={inventory}
             onAddToCart={handleAddToCart}
+            onUpdateProductPrice={handleUpdateProductPrice}
             filters={filters}
             onFilterChange={handleFilterChange}
           />
@@ -349,8 +497,13 @@ const PosTerminalPage = () => {
             cartItems={cartItems}
             onUpdateQuantity={handleUpdateQuantity}
             onRemoveItem={handleRemoveItem}
+            onUpdatePrice={handleUpdatePrice}
+            onResetPrice={handleResetPrice}
             onClearCart={handleClearCart}
             totals={totals}
+            appliedDiscounts={appliedDiscounts}
+            onApplyDiscount={handleApplyDiscount}
+            onRemoveDiscount={handleRemoveDiscount}
           />
 
           <PaymentSection

@@ -83,6 +83,7 @@ const DiscountsPages = () => {
       setModalOpen(false)
       fetchData()
     } catch (error) {
+      console.error('Error saving discount:', error)
       Swal.fire('Error', 'Failed to save discount', 'error')
     }
   }
@@ -103,6 +104,7 @@ const DiscountsPages = () => {
         await Swal.fire('Deleted!', 'Discount deleted successfully', 'success')
         fetchData()
       } catch (error) {
+        console.error('Error deleting discount:', error)
         Swal.fire('Error', 'Failed to delete discount', 'error')
       }
     }
@@ -114,6 +116,7 @@ const DiscountsPages = () => {
       await Swal.fire('Success!', 'Discount status updated', 'success')
       fetchData()
     } catch (error) {
+      console.error('Error updating status:', error)
       Swal.fire('Error', 'Failed to update status', 'error')
     }
   }
@@ -132,12 +135,16 @@ const DiscountsPages = () => {
 
           <div className="flex gap-3">
             <Button variant="secondary" size="md" onClick={fetchData}>
-              <RefreshCw className="w-5 h-5 mr-2" />
-              Refresh
+              <div className="flex items-center">
+                <RefreshCw className="w-5 h-5 mr-2" />
+                Refresh
+              </div>
             </Button>
             <Button variant="primary" size="md" onClick={handleAdd}>
+              <div className="flex items-center">
               <Plus className="w-5 h-5 mr-2" />
               Add Discount
+              </div>
             </Button>
           </div>
         </div>
@@ -149,6 +156,8 @@ const DiscountsPages = () => {
         onClearFilters={handleClearFilters}
         discounts={discounts}
         filteredDiscounts={filteredDiscounts}
+        resultsCount={filteredDiscounts.length}
+        totalCount={discounts.length}
       />
 
       <DiscountsList

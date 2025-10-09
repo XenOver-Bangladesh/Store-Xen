@@ -14,8 +14,18 @@ export const paymentsAPI = {
     return response.data
   },
   
+  create: async (paymentData) => {
+    const response = await axios.post(`${API_BASE_URL}/payments`, paymentData)
+    return response.data
+  },
+  
   update: async (id, data) => {
     const response = await axios.put(`${API_BASE_URL}/payments/${id}`, data)
+    return response.data
+  },
+  
+  delete: async (id) => {
+    const response = await axios.delete(`${API_BASE_URL}/payments/${id}`)
     return response.data
   }
 }

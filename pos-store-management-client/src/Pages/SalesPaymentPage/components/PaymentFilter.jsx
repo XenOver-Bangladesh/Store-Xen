@@ -1,58 +1,84 @@
 import React from 'react'
-import { Search, Filter, X } from 'lucide-react'
-import Button from '../../../Components/UI/Button'
+import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
 
-const PaymentFilter = ({ filters, onFilterChange, onClearFilters }) => {
+const PaymentFilter = ({ 
+  filters, 
+  onFilterChange, 
+  onClearFilters,
+  resultsCount = 0,
+  totalCount = 0
+}) => {
+  const filterConfig = [
+    {
+      type: 'search',
+      key: 'search',
+      label: 'Search Payments',
+      placeholder: 'Search by invoice or customer...',
+      span: 2
+    },
+    {
+      type: 'select',
+      key: 'paymentMethod',
+      label: 'Payment Method',
+      placeholder: 'All Methods',
+      options: [
+        { value: '', label: 'All Methods' },
+        { value: 'Cash', label: '💵 Cash' },
+        { value: 'Card', label: '💳 Card' },
+        { value: 'bKash', label: '📱 bKash' },
+        { value: 'Nagad', label: '📱 Nagad' },
+        { value: 'Rocket', label: '📱 Rocket' },
+        { value: 'Bank Transfer', label: '🏦 Bank Transfer' }
+      ]
+    },
+    {
+      type: 'date',
+      key: 'dateFrom',
+      label: 'Date From',
+      placeholder: 'Start Date'
+    },
+    {
+      type: 'date',
+      key: 'dateTo',
+      label: 'Date To',
+      placeholder: 'End Date'
+    }
+  ]
+
+  const handleClearFilters = () => {
+    onFilterChange({
+      search: '',
+      paymentMethod: '',
+      dateFrom: '',
+      dateTo: ''
+    })
+  }
+
+  const handleExport = () => {
+    // TODO: Implement export functionality
+    console.log('Export Sales Payments data')
+  }
+
+  const handleFilterChangeInternal = (key, value) => {
+    onFilterChange({
+      ...filters,
+      [key]: value
+    })
+  }
+
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search invoice/customer..."
-            value={filters.search}
-            onChange={(e) => onFilterChange('search', e.target.value)}
-            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <select
-          value={filters.paymentMethod}
-          onChange={(e) => onFilterChange('paymentMethod', e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">All Methods</option>
-          <option value="Cash">Cash</option>
-          <option value="Card">Card</option>
-          <option value="bKash">bKash</option>
-          <option value="Nagad">Nagad</option>
-          <option value="Rocket">Rocket</option>
-          <option value="Bank Transfer">Bank Transfer</option>
-        </select>
-
-        <input
-          type="date"
-          value={filters.dateFrom}
-          onChange={(e) => onFilterChange('dateFrom', e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          placeholder="From Date"
-        />
-
-        <input
-          type="date"
-          value={filters.dateTo}
-          onChange={(e) => onFilterChange('dateTo', e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          placeholder="To Date"
-        />
-
-        <Button variant="secondary" size="md" onClick={onClearFilters} className="w-full">
-          <X className="w-4 h-4 mr-1" />
-          Clear
-        </Button>
-      </div>
-    </div>
+    <ReuseableFilter
+      filters={filters}
+      onFilterChange={handleFilterChangeInternal}
+      onClearFilters={handleClearFilters}
+      onExport={handleExport}
+      filterConfig={filterConfig}
+      title="Filter Sales Payments"
+      showExport={true}
+      showClear={true}
+      resultsCount={resultsCount}
+      totalCount={totalCount}
+    />
   )
 }
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { CreditCard, RefreshCw } from 'lucide-react'
+import { CreditCard, RefreshCw, Info } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import InfoCard from '../../Shared/InfoCard/InfoCard'
 import PaymentsList from './components/PaymentsList'
 import PaymentFilter from './components/PaymentFilter'
 import { salesPaymentsAPI } from './services/salesPaymentsService'
@@ -66,16 +67,28 @@ const SalesPaymentPage = () => {
           </div>
 
           <Button variant="secondary" size="md" onClick={fetchPayments}>
-            <RefreshCw className="w-5 h-5 mr-2" />
-            Refresh
+            <div className="flex items-center">
+              <RefreshCw className="w-5 h-5 mr-2" />
+              Refresh
+            </div>
           </Button>
         </div>
       </div>
+
+      {/* Info Card */}
+      <InfoCard
+        type="info"
+        title="Sales Payment Management"
+        message="Track and manage all customer payment records. Monitor payment methods, amounts, and status to maintain accurate financial records and customer relationships."
+        icon={Info}
+      />
 
       <PaymentFilter
         filters={filters}
         onFilterChange={handleFilterChange}
         onClearFilters={handleClearFilters}
+        resultsCount={filteredPayments.length}
+        totalCount={payments.length}
       />
 
       <PaymentsList payments={filteredPayments} loading={loading} />

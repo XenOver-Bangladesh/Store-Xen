@@ -51,12 +51,16 @@ const InvoiceList = ({ invoices, onView, onPrint, loading }) => {
   const renderRowActions = (invoice) => (
     <div className="flex items-center gap-2">
       <Button variant="ghost" size="sm" onClick={() => onView(invoice)}>
-        <Eye className="w-4 h-4 mr-1" />
-        View
+        <div className="flex items-center">
+          <Eye className="w-4 h-4 mr-2" />
+          View
+        </div>
       </Button>
       <Button variant="primary" size="sm" onClick={() => onPrint(invoice)}>
-        <Printer className="w-4 h-4 mr-1" />
-        Print
+        <div className="flex items-center">
+          <Printer className="w-4 h-4 mr-2" />
+          Print
+        </div>
       </Button>
     </div>
   )

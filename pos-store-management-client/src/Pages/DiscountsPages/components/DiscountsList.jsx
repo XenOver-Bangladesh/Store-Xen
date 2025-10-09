@@ -64,12 +64,14 @@ const DiscountsList = ({ discounts, onEdit, onDelete, onToggleStatus, loading })
         size="sm"
         onClick={() => onToggleStatus(discount)}
       >
-        {discount.status === 'Active' ? (
-          <ToggleRight className="w-4 h-4 mr-1" />
-        ) : (
-          <ToggleLeft className="w-4 h-4 mr-1" />
-        )}
-        {discount.status === 'Active' ? 'Deactivate' : 'Activate'}
+        <div className="flex items-center">
+          {discount.status === 'Active' ? (
+            <ToggleRight className="w-4 h-4 mr-2" />
+          ) : (
+            <ToggleLeft className="w-4 h-4 mr-2" />
+          )}
+          {discount.status === 'Active' ? 'Deactivate' : 'Activate'}
+        </div>
       </Button>
       
       <Button
@@ -77,8 +79,10 @@ const DiscountsList = ({ discounts, onEdit, onDelete, onToggleStatus, loading })
         size="sm"
         onClick={() => onEdit(discount)}
       >
-        <Pencil className="w-4 h-4 mr-1" />
-        Edit
+        <div className="flex items-center">
+          <Pencil className="w-4 h-4 mr-2" />
+          Edit
+        </div>
       </Button>
       
       <Button
@@ -86,8 +90,10 @@ const DiscountsList = ({ discounts, onEdit, onDelete, onToggleStatus, loading })
         size="sm"
         onClick={() => onDelete(discount)}
       >
-        <Trash2 className="w-4 h-4 mr-1" />
-        Delete
+        <div className="flex items-center">
+          <Trash2 className="w-4 h-4 mr-2" />
+          Delete
+        </div>
       </Button>
     </div>
   )

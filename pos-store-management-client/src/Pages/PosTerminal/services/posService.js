@@ -50,8 +50,35 @@ export const productsAPI = {
     return response.data
   },
   
+  getById: async (id) => {
+    const response = await api.get(`/products/${id}`)
+    return response.data
+  },
+  
   getByBarcode: async (barcode) => {
     const response = await api.get(`/products/barcode/${barcode}`)
+    return response.data
+  },
+  
+  update: async (id, productData) => {
+    try {
+      console.log('Updating product:', id, productData)
+      const response = await api.put(`/products/${id}`, productData)
+      console.log('Product update response:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error in productsAPI.update:', error)
+      throw error
+    }
+  },
+  
+  create: async (productData) => {
+    const response = await api.post('/products', productData)
+    return response.data
+  },
+  
+  delete: async (id) => {
+    const response = await api.delete(`/products/${id}`)
     return response.data
   }
 }
@@ -103,6 +130,54 @@ export const discountsAPI = {
     const response = await api.get('/discounts')
     const discounts = response.data
     return discounts.filter(d => d.status === 'Active')
+  },
+  
+  create: async (discountData) => {
+    const response = await api.post('/discounts', discountData)
+    return response.data
+  },
+  
+  update: async (id, discountData) => {
+    const response = await api.put(`/discounts/${id}`, discountData)
+    return response.data
+  },
+  
+  delete: async (id) => {
+    const response = await api.delete(`/discounts/${id}`)
+    return response.data
+  }
+}
+
+// Sales Payments API
+export const salesPaymentsAPI = {
+  getAll: async () => {
+    const response = await api.get('/sales-payments')
+    return response.data
+  },
+  
+  getById: async (id) => {
+    const response = await api.get(`/sales-payments/${id}`)
+    return response.data
+  },
+  
+  getByInvoiceNo: async (invoiceNo) => {
+    const response = await api.get(`/sales-payments/invoice/${invoiceNo}`)
+    return response.data
+  },
+  
+  create: async (paymentData) => {
+    const response = await api.post('/sales-payments', paymentData)
+    return response.data
+  },
+  
+  update: async (id, paymentData) => {
+    const response = await api.put(`/sales-payments/${id}`, paymentData)
+    return response.data
+  },
+  
+  delete: async (id) => {
+    const response = await api.delete(`/sales-payments/${id}`)
+    return response.data
   }
 }
 

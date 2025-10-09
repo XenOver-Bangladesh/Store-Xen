@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { FileText, RefreshCw } from 'lucide-react'
+import { FileText, RefreshCw, Info } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import InfoCard from '../../Shared/InfoCard/InfoCard'
 import InvoiceList from './components/InvoiceList'
 import InvoiceFilter from './components/InvoiceFilter'
 import InvoiceViewModal from './components/InvoiceViewModal'
@@ -78,16 +79,28 @@ const SalesInvoice = () => {
           </div>
 
           <Button variant="secondary" size="md" onClick={fetchInvoices}>
-            <RefreshCw className="w-5 h-5 mr-2" />
-            Refresh
+            <div className="flex items-center">
+              <RefreshCw className="w-5 h-5 mr-2" />
+              Refresh
+            </div>
           </Button>
         </div>
       </div>
+
+      {/* Info Card */}
+      <InfoCard
+        type="info"
+        title="Sales Invoice Management"
+        message="View, print, and manage all sales invoices. Track payment status, generate reports, and maintain complete sales records for accounting and customer service purposes."
+        icon={Info}
+      />
 
       <InvoiceFilter
         filters={filters}
         onFilterChange={handleFilterChange}
         onClearFilters={handleClearFilters}
+        resultsCount={filteredInvoices.length}
+        totalCount={invoices.length}
       />
 
       <InvoiceList

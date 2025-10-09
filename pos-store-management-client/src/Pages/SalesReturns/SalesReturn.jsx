@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { RotateCcw, Plus, RefreshCw } from 'lucide-react'
+import { RotateCcw, Plus, RefreshCw, Info } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import InfoCard from '../../Shared/InfoCard/InfoCard'
 import ReturnsList from './components/ReturnsList'
 import ReturnFilter from './components/ReturnFilter'
 import ReturnModal from './components/ReturnModal'
@@ -71,6 +72,7 @@ const SalesReturn = () => {
       setModalOpen(false)
       fetchData()
     } catch (error) {
+      console.error('Error creating return:', error)
       Swal.fire('Error', 'Failed to create return', 'error')
     }
   }
@@ -91,6 +93,7 @@ const SalesReturn = () => {
         await Swal.fire('Approved!', 'Return approved and stock adjusted', 'success')
         fetchData()
       } catch (error) {
+        console.error('Error approving return:', error)
         Swal.fire('Error', 'Failed to approve return', 'error')
       }
     }
@@ -112,6 +115,7 @@ const SalesReturn = () => {
         await Swal.fire('Rejected!', 'Return has been rejected', 'success')
         fetchData()
       } catch (error) {
+        console.error('Error rejecting return:', error)
         Swal.fire('Error', 'Failed to reject return', 'error')
       }
     }
@@ -152,21 +156,35 @@ const SalesReturn = () => {
 
           <div className="flex gap-3">
             <Button variant="secondary" size="md" onClick={fetchData}>
-              <RefreshCw className="w-5 h-5 mr-2" />
-              Refresh
+              <div className="flex items-center">
+                <RefreshCw className="w-5 h-5 mr-2" />
+                Refresh
+              </div>
             </Button>
             <Button variant="primary" size="md" onClick={handleCreate}>
-              <Plus className="w-5 h-5 mr-2" />
-              New Return
+              <div className="flex items-center">
+                <Plus className="w-5 h-5 mr-2" />
+                New Return
+              </div>
             </Button>
           </div>
         </div>
       </div>
 
+      {/* Info Card */}
+      <InfoCard
+        type="warning"
+        title="Sales Returns Management"
+        message="Process customer returns, manage refunds, and automatically adjust inventory. Returns must be approved before stock adjustments are made to maintain accurate inventory levels."
+        icon={Info}
+      />
+
       <ReturnFilter
         filters={filters}
         onFilterChange={handleFilterChange}
         onClearFilters={handleClearFilters}
+        resultsCount={filteredReturns.length}
+        totalCount={returns.length}
       />
 
       <ReturnsList

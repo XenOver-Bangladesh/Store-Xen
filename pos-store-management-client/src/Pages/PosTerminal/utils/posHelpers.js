@@ -183,7 +183,7 @@ export const prepareSaleData = (cartItems, customer, paymentMethod, totals, invo
 /**
  * Filter products
  */
-export const filterProducts = (products, searchTerm, category = '', warehouse = '') => {
+export const filterProducts = (products, searchTerm, category = '', warehouse = '', inventory = []) => {
   let filtered = [...products]
 
   if (searchTerm) {
@@ -200,8 +200,11 @@ export const filterProducts = (products, searchTerm, category = '', warehouse = 
   }
 
   if (warehouse) {
-    // Filter based on warehouse stock
-    filtered = filtered.filter(p => p.location === warehouse)
+    // Filter based on warehouse stock - check if product has inventory in the selected warehouse
+    filtered = filtered.filter(p => {
+      const productInventory = inventory.filter(inv => inv.productId === p._id)
+      return productInventory.some(inv => inv.location === warehouse && inv.stockQty > 0)
+    })
   }
 
   return filtered
