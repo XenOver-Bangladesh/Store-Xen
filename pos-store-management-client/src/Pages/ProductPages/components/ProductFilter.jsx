@@ -21,7 +21,7 @@ const ProductFilter = ({
       key: 'search',
       label: 'Search',
       type: 'search',
-      placeholder: 'Search by name, brand, or QR code...',
+      placeholder: 'Search by name, SKU, brand, or QR code...',
       span: 2
     },
     {

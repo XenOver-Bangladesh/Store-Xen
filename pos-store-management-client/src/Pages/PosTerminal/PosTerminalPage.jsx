@@ -432,46 +432,44 @@ const PosTerminalPage = () => {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex justify-between items-center">
+      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <ShoppingCart className="w-8 h-8 mr-3 text-blue-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
+              <ShoppingCart className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-blue-600" />
               POS Terminal
             </h1>
-            <p className="text-gray-600 mt-2">Complete sales transactions quickly and efficiently</p>
+            <p className="text-sm sm:text-base text-gray-600 mt-2">Complete sales transactions quickly and efficiently</p>
           </div>
           
-          <div className="text-right">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-gray-600">Tax Rate:</label>
-                <select
-                  value={taxRate}
-                  onChange={(e) => setTaxRate(parseFloat(e.target.value))}
-                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value={0}>0%</option>
-                  <option value={0.05}>5%</option>
-                  <option value={0.1}>10%</option>
-                  <option value={0.15}>15%</option>
-                  <option value={0.2}>20%</option>
-                </select>
-              </div>
-              <button
-                onClick={refreshInventory}
-                className="flex items-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors"
-                title="Refresh Inventory"
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600">Tax Rate:</label>
+              <select
+                value={taxRate}
+                onChange={(e) => setTaxRate(parseFloat(e.target.value))}
+                className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
               >
-                <RefreshCw className="w-4 h-4" />
-                <span className="text-sm font-medium">Refresh Stock</span>
-              </button>
-              <div>
-                <p className="text-sm text-gray-600">Date</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {new Date().toLocaleDateString()}
-                </p>
-              </div>
+                <option value={0}>0%</option>
+                <option value={0.05}>5%</option>
+                <option value={0.1}>10%</option>
+                <option value={0.15}>15%</option>
+                <option value={0.2}>20%</option>
+              </select>
+            </div>
+            <button
+              onClick={refreshInventory}
+              className="flex items-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors w-full sm:w-auto justify-center"
+              title="Refresh Inventory"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span className="text-sm font-medium">Refresh Stock</span>
+            </button>
+            <div>
+              <p className="text-sm text-gray-600">Date</p>
+              <p className="text-lg font-semibold text-gray-900">
+                {new Date().toLocaleDateString()}
+              </p>
             </div>
           </div>
         </div>

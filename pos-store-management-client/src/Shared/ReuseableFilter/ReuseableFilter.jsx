@@ -15,22 +15,24 @@ export const ReuseableFilter = ({
   totalCount = 0
 }) => {
   return (
-    <div className="bg-white rounded-sm shadow-sm border border-gray-100 p-5 mt-4">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white rounded-sm shadow-sm border border-gray-100 p-4 sm:p-5 mt-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-4">
         <div className="flex items-center gap-3">
           <Filter className="w-5 h-5 text-blue-600" />
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           {showClear && (
             <Button
               variant="secondary"
               size="sm"
               onClick={onClearFilters}
+              className="w-full sm:w-auto"
             >
-              <div className="flex p-1 items-center">
+              <div className="flex p-1 items-center justify-center sm:justify-start">
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Clear Filters
+                <span className="hidden sm:inline">Clear Filters</span>
+                <span className="sm:hidden">Clear</span>
               </div>
             </Button>
           )}
@@ -39,17 +41,19 @@ export const ReuseableFilter = ({
               variant="secondary"
               size="sm"
               onClick={onExport}
+              className="w-full sm:w-auto"
             >
-              <div className="flex p-1 items-center">
+              <div className="flex p-1 items-center justify-center sm:justify-start">
                 <Download className="w-4 h-4 mr-2" />
-                Export
+                <span className="hidden sm:inline">Export</span>
+                <span className="sm:hidden">Export</span>
               </div>
             </Button>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
         {filterConfig.map((config, index) => (
           <div key={index} className={config.span ? `lg:col-span-${config.span}` : ''}>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -66,7 +70,7 @@ export const ReuseableFilter = ({
                   type="text"
                   value={filters[config.key] || ''}
                   onChange={(e) => onFilterChange(config.key, e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                  className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
                   placeholder={config.placeholder}
                 />
               </div>
@@ -74,7 +78,7 @@ export const ReuseableFilter = ({
               <select
                 value={filters[config.key] || ''}
                 onChange={(e) => onFilterChange(config.key, e.target.value)}
-                className="w-full px-3 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                className="w-full px-3 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 {config.options.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -87,7 +91,7 @@ export const ReuseableFilter = ({
                 type="date"
                 value={filters[config.key] || ''}
                 onChange={(e) => onFilterChange(config.key, e.target.value)}
-                className="w-full px-3 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                className="w-full px-3 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md"
                 placeholder={config.placeholder}
               />
             ) : null}
@@ -96,14 +100,14 @@ export const ReuseableFilter = ({
       </div>
 
       {/* Filter Results Summary */}
-      <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+      <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-gray-600 gap-3">
         <div>
           Showing <span className="font-medium text-gray-900">{resultsCount}</span> of <span className="font-medium text-gray-900">{totalCount}</span> items
         </div>
         {Object.values(filters).some(filter => filter !== '') && (
-          <div className="flex items-center gap-2">
-            <span className="text-blue-600">Filters applied</span>
-            <div className="flex items-center gap-1">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <span className="text-blue-600 font-medium">Filters applied</span>
+            <div className="flex flex-wrap items-center gap-1">
               {Object.entries(filters).map(([key, value]) => {
                 if (!value) return null;
                 const config = filterConfig.find(c => c.key === key);
@@ -112,7 +116,7 @@ export const ReuseableFilter = ({
                 return (
                   <span 
                     key={key}
-                    className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800"
+                    className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 whitespace-nowrap"
                   >
                     {config.label}: {value}
                   </span>

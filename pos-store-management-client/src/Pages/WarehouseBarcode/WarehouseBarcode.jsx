@@ -7,6 +7,7 @@ import BarcodeFilter from './components/BarcodeFilter'
 import BarcodeList from './components/BarcodeList'
 import SharedModal from '../../Shared/SharedModal/SharedModal'
 import { inventoryAPI } from './services/barcodeService'
+import { productsAPI } from '../ProductPages/services/productService'
 import { 
   applyBarcodeFilters, 
   calculateBarcodeStats, 
@@ -15,6 +16,7 @@ import {
 
 const WarehouseBarcode = () => {
   const [inventory, setInventory] = useState([])
+  const [products, setProducts] = useState([])
   const [filteredInventory, setFilteredInventory] = useState([])
   const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
@@ -40,14 +42,18 @@ const WarehouseBarcode = () => {
   const fetchInventory = async () => {
     setLoading(true)
     try {
-      const data = await inventoryAPI.getAll()
-      setInventory(data)
+      const [inventoryData, productsData] = await Promise.all([
+        inventoryAPI.getAll(),
+        productsAPI.getAll()
+      ])
+      setInventory(inventoryData)
+      setProducts(productsData)
     } catch (error) {
-      console.error('Error fetching inventory:', error)
+      console.error('Error fetching data:', error)
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Failed to fetch inventory',
+        text: 'Failed to fetch inventory data',
         confirmButtonColor: '#3B82F6'
       })
     } finally {
@@ -155,29 +161,28 @@ const WarehouseBarcode = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-cyan-50 via-blue-50 to-indigo-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex justify-between items-center">
+      <div className="bg-gradient-to-r from-cyan-50 via-blue-50 to-indigo-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <QrCode className="w-8 h-8 mr-3 text-cyan-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
+              <QrCode className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-cyan-600" />
               Barcode / QR Code Assignment
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
               Assign unique barcodes and QR codes to stock items
             </p>
-
-            
           </div>
 
           <Button 
             variant="secondary" 
-            size="md"
+            size="sm"
             onClick={fetchInventory}
             loading={loading}
+            className="w-full sm:w-auto flex items-center justify-center"
           >
             <div className="flex items-center">
-              <RefreshCw className="w-5 h-5 mr-2" />
-              Refresh
+              <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <span className="text-sm sm:text-base">Refresh</span>
             </div>
           </Button>
         </div>
@@ -196,7 +201,7 @@ const WarehouseBarcode = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         <StatsCard
           label="Total Products"
           value={stats.totalProducts}
@@ -231,6 +236,7 @@ const WarehouseBarcode = () => {
       {/* Product Table */}
       <BarcodeList
         inventory={filteredInventory}
+        products={products}
         loading={loading}
         onEditBarcode={handleEditBarcode}
       />
@@ -251,7 +257,10 @@ const WarehouseBarcode = () => {
                 <span className="font-medium">Name:</span> {selectedItem.productName}
               </p>
               <p className="text-sm text-gray-700">
-                <span className="font-medium">SKU:</span> {selectedItem.sku || selectedItem.productId}
+                <span className="font-medium">SKU:</span> {(() => {
+                  const product = products.find(p => p._id === selectedItem.productId)
+                  return product?.sku || selectedItem.productId
+                })()}
               </p>
               <p className="text-sm text-gray-700">
                 <span className="font-medium">Location:</span> {selectedItem.location}

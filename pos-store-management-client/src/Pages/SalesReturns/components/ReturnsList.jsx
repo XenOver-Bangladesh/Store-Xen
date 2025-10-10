@@ -75,7 +75,11 @@ const ReturnsList = ({ returns, onApprove, onReject, onDelete, loading }) => {
     </div>
   )
 
-  return <SharedTable columns={columns} data={returns} loading={loading} renderRowActions={renderRowActions} pageSize={10} />
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <SharedTable columns={columns} data={returns} loading={loading} renderRowActions={renderRowActions} pageSize={10} />
+    </div>
+  )
 }
 
 export default ReturnsList

@@ -53,6 +53,17 @@ export const validateProductForm = (formData, allProducts = []) => {
     errors.category = 'Category is required'
   }
   
+  // SKU is required
+  if (!formData.sku || !formData.sku.trim()) {
+    errors.sku = 'SKU is required'
+  } else {
+    // Check for duplicate SKU
+    const duplicateSKU = allProducts.find(p => p.sku === formData.sku.trim())
+    if (duplicateSKU && duplicateSKU._id !== formData._id) {
+      errors.sku = 'This SKU already exists. Please use a different SKU.'
+    }
+  }
+  
   // Check for duplicate QR code
   if (formData.qrCode) {
     const duplicateQR = allProducts.find(p => p.qrCode === formData.qrCode)
@@ -74,11 +85,12 @@ export const validateProductForm = (formData, allProducts = []) => {
  */
 export const exportProductsToCSV = (products) => {
   const csv = [
-    ['Product Name', 'Category', 'Brand', 'Supplier', 'QR Code', 'Created At'],
+    ['Product Name', 'Category', 'Brand', 'SKU', 'Supplier', 'QR Code', 'Created At'],
     ...products.map(p => [
       p.productName || '',
       p.category || '',
       p.brand || '',
+      p.sku || '',
       p.supplier || '',
       p.qrCode || '',
       p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ''
@@ -117,6 +129,7 @@ export const applyProductFilters = (products, filters) => {
     const searchLower = filters.search.toLowerCase()
     filtered = filtered.filter(product => 
       product.productName?.toLowerCase().includes(searchLower) ||
+      product.sku?.toLowerCase().includes(searchLower) ||
       product.brand?.toLowerCase().includes(searchLower) ||
       product.qrCode?.toLowerCase().includes(searchLower)
     )
@@ -173,14 +186,21 @@ export const formatDate = (date) => {
  * @param {string} imageUrl - Uploaded image URL
  * @returns {Object} Product data ready for API submission
  */
-export const prepareProductData = (formData, imageUrl = '') => {
+export const prepareProductData = (formData, imageUrl = '', suppliers = []) => {
+  // Find supplier ID if supplier name is provided
+  const selectedSupplier = suppliers.find(s => 
+    s.supplierName === formData.supplier || s.name === formData.supplier
+  )
+  
   return {
     productName: formData.productName.trim(),
     category: formData.category,
     brand: formData.brand?.trim() || '',
+    sku: formData.sku?.trim() || '',
     description: formData.description?.trim() || '',
     qrCode: formData.qrCode,
-    supplier: formData.supplier || '',
+    supplier: formData.supplier || '', // Keep supplier name for backward compatibility
+    supplierId: selectedSupplier?._id || null, // Add supplier ID for better data integrity
     productImage: imageUrl || formData.productImage || '',
     createdAt: formData.createdAt || new Date().toISOString()
   }

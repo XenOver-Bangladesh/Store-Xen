@@ -100,14 +100,14 @@ const InventoryPages = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <BarChart3 className="w-8 h-8 mr-3 text-blue-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
+              <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-blue-600" />
               Inventory & Reports
             </h1>
-            <p className="text-gray-600 mt-2">Comprehensive inventory management and business analytics</p>
+            <p className="text-sm sm:text-base text-gray-600 mt-2">Comprehensive inventory management and business analytics</p>
           </div>
         </div>
       </div>

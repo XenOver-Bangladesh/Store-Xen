@@ -10,6 +10,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     productName: '',
     category: '',
     brand: '',
+    sku: '',
     description: '',
     qrCode: '',
     supplier: '',
@@ -28,6 +29,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         productName: product.productName || '',
         category: product.category || '',
         brand: product.brand || '',
+        sku: product.sku || '',
         description: product.description || '',
         qrCode: product.qrCode || '',
         supplier: product.supplier || '',
@@ -105,6 +107,18 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
       newErrors.category = 'Category is required'
     }
 
+    if (!formData.sku.trim()) {
+      newErrors.sku = 'SKU is required'
+    } else {
+      // Check for duplicate SKU (excluding current product)
+      const duplicateSKU = allProducts.find(
+        p => p.sku === formData.sku.trim() && p._id !== product._id
+      )
+      if (duplicateSKU) {
+        newErrors.sku = 'This SKU already exists. Please use a different SKU.'
+      }
+    }
+
     if (!formData.qrCode.trim()) {
       newErrors.qrCode = 'QR Code is required'
     } else {
@@ -163,9 +177,15 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         }
       }
 
+      // Find supplier ID if supplier name is provided
+      const selectedSupplier = suppliers.find(s => 
+        s.supplierName === formData.supplier || s.name === formData.supplier
+      )
+
       const updatedData = {
         ...formData,
-        productImage: imageUrl
+        productImage: imageUrl,
+        supplierId: selectedSupplier?._id || null // Add supplier ID for better data integrity
       }
 
       await productsAPI.update(product._id, updatedData)
@@ -353,6 +373,25 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
               onChange={handleInputChange}
               className="block w-full rounded-xl border border-gray-300 hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm"
             />
+          </div>
+
+          {/* SKU */}
+          <div className="space-y-1">
+            <label className="text-sm font-semibold text-gray-700" htmlFor="sku">
+              SKU <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="sku"
+              name="sku"
+              type="text"
+              placeholder="e.g. SAM-GAL-S24-128"
+              value={formData.sku}
+              onChange={handleInputChange}
+              className={`block w-full rounded-xl border ${errors.sku ? 'border-red-500' : 'border-gray-300'} hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm font-mono`}
+            />
+            {errors.sku && (
+              <p className="text-xs text-red-600">{errors.sku}</p>
+            )}
           </div>
 
           {/* Supplier */}

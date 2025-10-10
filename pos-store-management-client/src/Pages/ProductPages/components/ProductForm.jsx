@@ -96,6 +96,25 @@ const ProductForm = ({
               />
             </div>
 
+            {/* SKU */}
+            <div className="space-y-1">
+              <label className="text-sm font-semibold text-gray-700" htmlFor="sku">
+                SKU <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="sku"
+                name="sku"
+                type="text"
+                placeholder="e.g. SAM-GAL-S24-128"
+                value={formData.sku}
+                onChange={onInputChange}
+                className={`block w-full rounded-xl border ${errors.sku ? 'border-red-500' : 'border-gray-300'} hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm placeholder-gray-400`}
+              />
+              {errors.sku && (
+                <p className="text-xs text-red-600">{errors.sku}</p>
+              )}
+            </div>
+
             {/* Supplier */}
             <div className="space-y-1">
               <label className="text-sm font-semibold text-gray-700" htmlFor="supplier">

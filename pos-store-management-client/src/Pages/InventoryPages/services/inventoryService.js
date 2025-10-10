@@ -171,27 +171,27 @@ export const suppliersAPI = {
 // Purchase Orders API
 export const purchaseOrdersAPI = {
   getAll: async () => {
-    const response = await api.get('/suppliers/purchase-orders')
+    const response = await api.get('/purchase-orders')
     return response.data
   },
   
   getById: async (id) => {
-    const response = await api.get(`/suppliers/purchase-orders/${id}`)
+    const response = await api.get(`/purchase-orders/${id}`)
     return response.data
   },
   
   create: async (poData) => {
-    const response = await api.post('/suppliers/purchase-orders', poData)
+    const response = await api.post('/purchase-orders', poData)
     return response.data
   },
   
   update: async (id, poData) => {
-    const response = await api.put(`/suppliers/purchase-orders/${id}`, poData)
+    const response = await api.put(`/purchase-orders/${id}`, poData)
     return response.data
   },
   
   delete: async (id) => {
-    const response = await api.delete(`/suppliers/purchase-orders/${id}`)
+    const response = await api.delete(`/purchase-orders/${id}`)
     return response.data
   }
 }

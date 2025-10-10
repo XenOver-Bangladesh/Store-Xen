@@ -144,27 +144,27 @@ const SalesReturn = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-red-50 via-orange-50 to-yellow-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex justify-between items-center">
+      <div className="bg-gradient-to-r from-red-50 via-orange-50 to-yellow-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <RotateCcw className="w-8 h-8 mr-3 text-red-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
+              <RotateCcw className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-red-600" />
               Sales Returns
             </h1>
-            <p className="text-gray-600 mt-2">Manage product returns and stock adjustments</p>
+            <p className="text-sm sm:text-base text-gray-600 mt-2">Manage product returns and stock adjustments</p>
           </div>
 
-          <div className="flex gap-3">
-            <Button variant="secondary" size="md" onClick={fetchData}>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <Button variant="secondary" size="sm" onClick={fetchData} className="w-full sm:w-auto flex items-center justify-center">
               <div className="flex items-center">
-                <RefreshCw className="w-5 h-5 mr-2" />
-                Refresh
+                <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="text-sm sm:text-base">Refresh</span>
               </div>
             </Button>
-            <Button variant="primary" size="md" onClick={handleCreate}>
+            <Button variant="primary" size="sm" onClick={handleCreate} className="w-full sm:w-auto flex items-center justify-center">
               <div className="flex items-center">
-                <Plus className="w-5 h-5 mr-2" />
-                New Return
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="text-sm sm:text-base">New Return</span>
               </div>
             </Button>
           </div>

@@ -39,7 +39,11 @@ const PaymentsList = ({ payments, loading }) => {
     }
   ]
 
-  return <SharedTable columns={columns} data={payments} loading={loading} pageSize={10} />
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <SharedTable columns={columns} data={payments} loading={loading} pageSize={10} />
+    </div>
+  )
 }
 
 export default PaymentsList

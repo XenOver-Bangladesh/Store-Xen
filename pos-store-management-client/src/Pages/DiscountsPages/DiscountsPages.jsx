@@ -123,27 +123,27 @@ const DiscountsPages = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-orange-50 via-red-50 to-pink-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex justify-between items-center">
+      <div className="bg-gradient-to-r from-orange-50 via-red-50 to-pink-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <Tag className="w-8 h-8 mr-3 text-orange-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
+              <Tag className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-orange-600" />
               Discounts & Offers
             </h1>
-            <p className="text-gray-600 mt-2">Manage promotional offers and discount codes</p>
+            <p className="text-sm sm:text-base text-gray-600 mt-2">Manage promotional offers and discount codes</p>
           </div>
 
-          <div className="flex gap-3">
-            <Button variant="secondary" size="md" onClick={fetchData}>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <Button variant="secondary" size="sm" onClick={fetchData} className="w-full sm:w-auto flex items-center justify-center">
               <div className="flex items-center">
-                <RefreshCw className="w-5 h-5 mr-2" />
-                Refresh
+                <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="text-sm sm:text-base">Refresh</span>
               </div>
             </Button>
-            <Button variant="primary" size="md" onClick={handleAdd}>
+            <Button variant="primary" size="sm" onClick={handleAdd} className="w-full sm:w-auto flex items-center justify-center">
               <div className="flex items-center">
-              <Plus className="w-5 h-5 mr-2" />
-              Add Discount
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="text-sm sm:text-base">Add Discount</span>
               </div>
             </Button>
           </div>

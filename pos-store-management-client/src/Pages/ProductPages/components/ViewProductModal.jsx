@@ -65,6 +65,14 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
             </p>
           </div>
 
+          {/* SKU */}
+          <div className="space-y-1">
+            <label className="text-sm font-semibold text-gray-700">SKU</label>
+            <p className="text-base text-gray-900 bg-gray-50 px-4 py-3 rounded-lg border border-gray-200 font-mono">
+              {product.sku || 'N/A'}
+            </p>
+          </div>
+
           {/* Supplier */}
           <div className="space-y-1">
             <label className="text-sm font-semibold text-gray-700">Supplier</label>

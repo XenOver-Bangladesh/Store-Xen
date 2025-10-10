@@ -489,44 +489,43 @@ const GRNManage = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex justify-between items-center">
+      <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <svg className="w-8 h-8 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
+              <svg className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
               Goods Receive Notes (GRN)
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
               Receive and manage goods from purchase orders
             </p>
-            
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <Button 
               variant="secondary" 
-              size="md"
+              size="sm"
               onClick={fetchAllData}
               disabled={fetchLoading}
               loading={fetchLoading}
-              className="flex items-center"
+              className="w-full sm:w-auto flex items-center justify-center"
             >
               <div className="flex items-center">
-                <RefreshCw className="w-5 h-5 mr-2" />
-                <span>Refresh</span>
+                <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="text-sm sm:text-base">Refresh</span>
               </div>
             </Button>
             <Button 
               variant="primary" 
-              size="md"
+              size="sm"
               onClick={handleOpenModal}
-              className="flex items-center"
+              className="w-full sm:w-auto flex items-center justify-center"
             >
               <div className="flex items-center">
-                <Plus className="w-5 h-5 mr-2" />
-                <span>New GRN</span>
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="text-sm sm:text-base">New GRN</span>
               </div>
             </Button>
           </div>

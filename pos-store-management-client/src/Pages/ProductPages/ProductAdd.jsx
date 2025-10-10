@@ -19,6 +19,7 @@ const ProductAdd = () => {
     productName: '',
     category: '',
     brand: '',
+    sku: '',
     description: '',
     qrCode: '',
     supplier: '',
@@ -146,7 +147,7 @@ const ProductAdd = () => {
         }
       }
 
-      const productData = prepareProductData(formData, imageUrl)
+      const productData = prepareProductData(formData, imageUrl, suppliers)
       await productsAPI.create(productData)
 
       await Swal.fire({
@@ -164,6 +165,7 @@ const ProductAdd = () => {
         productName: '',
         category: '',
         brand: '',
+        sku: '',
         description: '',
         qrCode: '',
         supplier: '',

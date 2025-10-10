@@ -24,10 +24,10 @@ const SharedModal = ({
 }) => {
   // Size configurations
   const sizeConfig = {
-    small: 'max-w-md',
-    medium: 'max-w-lg',
-    large: 'max-w-2xl',
-    full: 'max-w-full mx-4'
+    small: 'max-w-sm sm:max-w-md',
+    medium: 'max-w-sm sm:max-w-lg',
+    large: 'max-w-sm sm:max-w-2xl',
+    full: 'max-w-full mx-2 sm:mx-4'
   }
 
   // Default modal styles
@@ -40,19 +40,21 @@ const SharedModal = ({
       zIndex: Z_INDEX.MODAL_OVERLAY,
       ...customStyles.overlay
     },
-    content: {
-      position: 'relative',
-      top: 'auto',
-      left: 'auto',
-      right: 'auto',
-      bottom: 'auto',
-      border: 'none',
-      borderRadius: '0.5rem',
-      padding: '0',
-      maxHeight: '90vh',
-      overflow: 'auto',
-      ...customStyles.content
-    }
+      content: {
+        position: 'relative',
+        top: 'auto',
+        left: 'auto',
+        right: 'auto',
+        bottom: 'auto',
+        border: 'none',
+        borderRadius: '0.5rem',
+        padding: '0',
+        maxHeight: '95vh',
+        overflow: 'auto',
+        width: '95vw',
+        maxWidth: '100%',
+        ...customStyles.content
+      }
   }
 
 
@@ -71,18 +73,18 @@ const SharedModal = ({
       <div className="bg-white rounded-lg shadow-xl">
         {/* Header */}
         {showHeader && (
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 pr-2">
               {title}
             </h2>
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                className="text-gray-400 hover:text-gray-600 transition-colors duration-200 flex-shrink-0"
                 aria-label="Close modal"
               >
                 <svg
-                  className="w-6 h-6"
+                  className="w-5 h-5 sm:w-6 sm:h-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -100,13 +102,13 @@ const SharedModal = ({
         )}
 
         {/* Body */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {children}
         </div>
 
         {/* Footer */}
         {footer && (
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
             {footer}
           </div>
         )}

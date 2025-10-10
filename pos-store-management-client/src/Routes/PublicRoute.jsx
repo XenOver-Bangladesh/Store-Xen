@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { DashboardLayout } from "../Layouts/DashboardLayout";
 import { HomePage } from "../Pages/HomePage/HomePage";
+import { NotificationsPage } from "../Pages/HomePage/NotificationsPage";
+import ErrorBoundary from "../Components/ErrorBoundary/ErrorBoundary";
 import SupplierPages from "../Pages/SuppliersPages/SupplierPages";
 import ProductAdd from "../Pages/ProductPages/ProductAdd";
 import ProductManage from "../Pages/ProductPages/ProductManage";
@@ -32,10 +34,10 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <>
+      <ErrorBoundary>
         <ScrollToTop />
         <DashboardLayout />
-      </>
+      </ErrorBoundary>
     ),
     children: [
       {
@@ -45,7 +47,19 @@ const router = createBrowserRouter([
       //dashboard
       {
         path: "/dashboard/overview",
-        element: <HomePage /> 
+        element: (
+          <ErrorBoundary>
+            <HomePage />
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: "/dashboard/notifications",
+        element: (
+          <ErrorBoundary>
+            <NotificationsPage />
+          </ErrorBoundary>
+        )
       },
       //suppliers
       {

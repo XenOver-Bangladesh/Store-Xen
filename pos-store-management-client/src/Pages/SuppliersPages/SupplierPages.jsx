@@ -26,26 +26,27 @@ const SupplierPages = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-50 via-cyan-50 to-teal-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex justify-between items-center">
+      <div className="bg-gradient-to-r from-blue-50 via-cyan-50 to-teal-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <Users className="w-8 h-8 mr-3 text-blue-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
+              <Users className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-blue-600" />
               Suppliers Management
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
               Manage and track your suppliers easily
             </p>
           </div>
 
           <Button 
             variant="primary" 
-            size="md"
+            size="sm"
             onClick={handleOpenModal}
+            className="w-full sm:w-auto flex items-center justify-center"
           >
             <div className="flex items-center">
-              <Plus className="w-5 h-5 mr-2" />
-              <span>Add New Supplier</span>
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <span className="text-sm sm:text-base">Add New Supplier</span>
             </div>
           </Button>
         </div>

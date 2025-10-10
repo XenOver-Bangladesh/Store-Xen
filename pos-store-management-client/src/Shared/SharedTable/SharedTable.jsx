@@ -54,7 +54,7 @@ export const SharedTable = ({
                     <th 
                       key={header.id} 
                       colSpan={header.colSpan} 
-                      className="text-left font-semibold text-gray-700 px-6 py-4 text-sm uppercase tracking-wider"
+                      className="text-left font-semibold text-gray-700 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm uppercase tracking-wider"
                     >
                       {header.isPlaceholder ? null : (
                         <button
@@ -87,7 +87,7 @@ export const SharedTable = ({
                     </th>
                   ))}
                   {renderRowActions && (
-                    <th className="text-left font-semibold text-gray-700 px-6 py-4 text-sm uppercase tracking-wider">
+                    <th className="text-left font-semibold text-gray-700 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm uppercase tracking-wider">
                       {actionsHeader}
                     </th>
                   )}
@@ -111,12 +111,12 @@ export const SharedTable = ({
                     className="bg-white hover:bg-blue-50/30 transition-all duration-200 group border-b border-gray-50 last:border-b-0"
                   >
                     {row.getVisibleCells().map(cell => (
-                      <td key={cell.id} className="px-6 py-4 text-sm text-gray-900 group-hover:text-gray-700">
+                      <td key={cell.id} className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-900 group-hover:text-gray-700">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
                     {renderRowActions && (
-                      <td className="px-6 py-4 text-sm">
+                      <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm">
                         <div className="flex items-center justify-start">
                           {renderRowActions(row.original)}
                         </div>
@@ -148,53 +148,53 @@ export const SharedTable = ({
 
       {/* Pagination Controls */}
       {!loading && table.getPageCount() > 1 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-100 px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 px-4 sm:px-6 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             {/* Page Info */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-700">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <span className="text-xs sm:text-sm text-gray-700">
                 Showing page <span className="font-semibold text-gray-900">{table.getState().pagination.pageIndex + 1}</span> of{' '}
                 <span className="font-semibold text-gray-900">{table.getPageCount()}</span>
               </span>
-              <span className="text-sm text-gray-500">
+              <span className="text-xs sm:text-sm text-gray-500">
                 ({table.getFilteredRowModel().rows.length} total {table.getFilteredRowModel().rows.length === 1 ? 'record' : 'records'})
               </span>
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto">
               <button
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
-                className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors duration-200 flex items-center gap-1"
+                className="px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors duration-200 flex items-center gap-1 whitespace-nowrap"
                 title="First Page"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
                 </svg>
-                <span>First</span>
+                <span className="hidden sm:inline">First</span>
               </button>
               
               <button
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors duration-200 flex items-center gap-2"
+                className="px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors duration-200 flex items-center gap-1 sm:gap-2 whitespace-nowrap"
                 title="Previous Page"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                <span>Previous</span>
+                <span className="hidden sm:inline">Previous</span>
               </button>
 
               <button
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 transition-colors duration-200 flex items-center gap-2"
+                className="px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 transition-colors duration-200 flex items-center gap-1 sm:gap-2 whitespace-nowrap"
                 title="Next Page"
               >
-                <span>Next</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span className="hidden sm:inline">Next</span>
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
@@ -202,11 +202,11 @@ export const SharedTable = ({
               <button
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
-                className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors duration-200 flex items-center gap-1"
+                className="px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors duration-200 flex items-center gap-1 whitespace-nowrap"
                 title="Last Page"
               >
-                <span>Last</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span className="hidden sm:inline">Last</span>
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
                 </svg>
               </button>

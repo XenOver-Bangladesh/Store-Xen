@@ -11,6 +11,7 @@ import {
 
 const BarcodeList = ({
   inventory = [],
+  products = [],
   loading = false,
   onEditBarcode
 }) => {
@@ -32,9 +33,12 @@ const BarcodeList = ({
     { 
       header: "SKU", 
       accessorKey: "sku",
-      cell: ({ getValue }) => (
-        <div className="text-gray-700 font-mono text-sm">{getValue() || 'N/A'}</div>
-      )
+      cell: ({ row }) => {
+        const product = products.find(p => p._id === row.original.productId)
+        return (
+          <div className="text-gray-700 font-mono text-sm">{product?.sku || 'N/A'}</div>
+        )
+      }
     },
     { 
       header: "Location", 

@@ -437,39 +437,41 @@ const WarehouseStocktransfer = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex justify-between items-center">
+      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <ArrowRightLeft className="w-8 h-8 mr-3 text-blue-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
+              <ArrowRightLeft className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-blue-600" />
               Stock Transfer Management
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
               Move inventory between warehouse locations efficiently
             </p>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <Button 
               variant="secondary" 
-              size="md"
+              size="sm"
               onClick={fetchAllData}
               disabled={loading}
               loading={loading}
+              className="w-full sm:w-auto flex items-center justify-center"
             >
               <div className="flex items-center">
-                <RefreshCw className="w-5 h-5 mr-2" />
-                Refresh
+                <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="text-sm sm:text-base">Refresh</span>
               </div>
             </Button>
             <Button 
               variant="primary" 
-              size="md"
+              size="sm"
               onClick={handleViewHistory}
+              className="w-full sm:w-auto flex items-center justify-center"
             >
               <div className="flex items-center">
-                <Search className="w-5 h-5 mr-2" />
-                View History
+                <Search className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="text-sm sm:text-base">View History</span>
               </div>
             </Button>
           </div>

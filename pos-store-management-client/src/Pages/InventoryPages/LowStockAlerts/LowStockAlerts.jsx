@@ -271,10 +271,25 @@ const LowStockAlerts = () => {
 
   const handleReorderNow = async (item) => {
     const product = products.find(p => p._id === item.productId)
-    const supplier = suppliers.find(s => s._id === product?.supplierId)
+    
+    if (!product) {
+      Swal.fire('Error', 'Product not found', 'error')
+      return
+    }
+    
+    // Try to find supplier by ID first, then by name
+    let supplier = null
+    if (product.supplierId) {
+      supplier = suppliers.find(s => s._id === product.supplierId)
+    }
+    
+    // If not found by ID, try to find by name
+    if (!supplier && product.supplier) {
+      supplier = suppliers.find(s => s.supplierName === product.supplier || s.name === product.supplier)
+    }
     
     if (!supplier) {
-      Swal.fire('Error', 'No supplier found for this product', 'error')
+      Swal.fire('Error', 'No supplier found for this product. Please assign a supplier to this product first.', 'error')
       return
     }
 
@@ -317,29 +332,59 @@ const LowStockAlerts = () => {
 
   const handleBulkReorderConfirm = async () => {
     try {
-      const poData = {
-        supplierId: suppliers[0]?._id,
-        supplierName: suppliers[0]?.name,
-        items: selectedItems.map(item => {
-          const product = products.find(p => p._id === item.productId)
+      // Group items by supplier to create separate POs
+      const itemsBySupplier = {}
+      
+      selectedItems.forEach(item => {
+        const product = products.find(p => p._id === item.productId)
+        if (!product) return
+        
+        // Find supplier for this product
+        let supplier = null
+        if (product.supplierId) {
+          supplier = suppliers.find(s => s._id === product.supplierId)
+        }
+        if (!supplier && product.supplier) {
+          supplier = suppliers.find(s => s.supplierName === product.supplier || s.name === product.supplier)
+        }
+        
+        if (supplier) {
+          const supplierKey = supplier._id
+          if (!itemsBySupplier[supplierKey]) {
+            itemsBySupplier[supplierKey] = {
+              supplier: supplier,
+              items: []
+            }
+          }
+          
           const suggestedQty = Math.max(50, (product?.minStockLevel || 10) * 3)
-          return {
+          itemsBySupplier[supplierKey].items.push({
             productId: product._id,
             productName: product.productName,
             quantity: suggestedQty,
             unitPrice: product.costPrice || 0,
             totalPrice: suggestedQty * (product.costPrice || 0)
-          }
-        }),
-        status: 'Draft',
-        notes: 'Bulk reorder for low stock items'
-      }
-
-      await purchaseOrdersAPI.create(poData)
+          })
+        }
+      })
+      
+      // Create POs for each supplier
+      const poPromises = Object.values(itemsBySupplier).map(supplierData => {
+        const poData = {
+          supplierId: supplierData.supplier._id,
+          supplierName: supplierData.supplier.supplierName || supplierData.supplier.name,
+          items: supplierData.items,
+          status: 'Draft',
+          notes: `Bulk reorder for low stock items - ${supplierData.items.length} items`
+        }
+        return purchaseOrdersAPI.create(poData)
+      })
+      
+      await Promise.all(poPromises)
       
       Swal.fire({
         title: 'Success!',
-        text: `Bulk purchase order created for ${selectedItems.length} items`,
+        text: `Purchase orders created for ${Object.keys(itemsBySupplier).length} suppliers with ${selectedItems.length} total items`,
         icon: 'success'
       })
       
@@ -364,35 +409,37 @@ const LowStockAlerts = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-50 via-orange-50 to-yellow-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-r from-red-50 via-orange-50 to-yellow-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <AlertTriangle className="w-8 h-8 mr-3 text-red-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
+              <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-red-600" />
               Low Stock Alerts
             </h1>
-            <p className="text-gray-600 mt-2">Monitor products below minimum threshold and take action</p>
+            <p className="text-sm sm:text-base text-gray-600 mt-2">Monitor products below minimum threshold and take action</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             <Button
               variant="primary"
-              size="md"
+              size="sm"
               onClick={handleBulkReorder}
               disabled={filteredItems.length === 0}
+              className="w-full sm:w-auto flex items-center justify-center"
             >
               <div className="flex items-center">
-                <Plus className="w-5 h-5 mr-2" />
-                Bulk Reorder
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="text-sm sm:text-base">Bulk Reorder</span>
               </div>
             </Button>
             <Button
               variant="secondary"
-              size="md"
+              size="sm"
               onClick={fetchData}
+              className="w-full sm:w-auto flex items-center justify-center"
             >
               <div className="flex items-center">
-                <RefreshCw className="w-5 h-5 mr-2" />
-                Refresh
+                <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="text-sm sm:text-base">Refresh</span>
               </div>
             </Button>
           </div>
@@ -400,7 +447,7 @@ const LowStockAlerts = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatsCard
           label="Total Alerts"
           value={stats.totalAlerts}
@@ -448,8 +495,8 @@ const LowStockAlerts = () => {
       />
 
       {/* Low Stock Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="mb-6 pb-4 border-b border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center">
             <Package className="w-5 h-5 mr-2 text-red-600" />
             Low Stock Items

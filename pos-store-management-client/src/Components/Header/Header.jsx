@@ -1,10 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Menu, Search, Bell, User, Settings, LogOut } from 'lucide-react'
 import { Z_INDEX } from '../../constants/zIndex'
+import { dashboardAPI } from '../../Pages/HomePage/services/dashboardService'
 
 const Header = ({ onMenuClick }) => {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [notificationCount, setNotificationCount] = useState(0)
+  const [loading, setLoading] = useState(false)
   const userMenuRef = useRef(null)
+
+  // Fetch notification count
+  useEffect(() => {
+    fetchNotificationCount()
+  }, [])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -23,6 +34,35 @@ const Header = ({ onMenuClick }) => {
     }
   }, [showUserMenu])
 
+  const fetchNotificationCount = async () => {
+    try {
+      setLoading(true)
+      const alerts = await dashboardAPI.getAlerts()
+      setNotificationCount(alerts.length)
+    } catch (error) {
+      console.error('Error fetching notification count:', error)
+      setNotificationCount(0)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleNotificationClick = () => {
+    navigate('/dashboard/notifications')
+  }
+
+  const getPageTitle = () => {
+    const path = location.pathname
+    if (path === '/dashboard/overview') return 'Dashboard Overview'
+    if (path === '/dashboard/notifications') return 'Notifications'
+    if (path.startsWith('/suppliers')) return 'Suppliers Management'
+    if (path.startsWith('/products')) return 'Products Management'
+    if (path.startsWith('/warehouse')) return 'Warehouse Management'
+    if (path.startsWith('/sales')) return 'Sales & POS'
+    if (path.startsWith('/inventory')) return 'Inventory & Reports'
+    return 'Dashboard'
+  }
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 py-4 relative">
       <div className="flex items-center justify-between">
@@ -36,7 +76,7 @@ const Header = ({ onMenuClick }) => {
           </button>
           
           {/* Page Title */}
-          <h1 className="text-xl md:text-2xl font-semibold text-gray-800">Dashboard</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-800">{getPageTitle()}</h1>
         </div>
 
         <div className="flex items-center space-x-4">
@@ -53,11 +93,20 @@ const Header = ({ onMenuClick }) => {
           </div>
 
           {/* Notifications */}
-          <button className="p-2 text-gray-400 hover:text-gray-600 relative">
+          <button 
+            onClick={handleNotificationClick}
+            className="p-2 text-gray-400 hover:text-gray-600 relative transition-colors"
+            title="View notifications"
+          >
             <Bell className="w-6 h-6" />
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              3
-            </span>
+            {notificationCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                {notificationCount > 99 ? '99+' : notificationCount}
+              </span>
+            )}
+            {loading && (
+              <div className="absolute -top-1 -right-1 w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            )}
           </button>
 
           {/* User Menu */}

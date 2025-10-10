@@ -99,13 +99,15 @@ const DiscountsList = ({ discounts, onEdit, onDelete, onToggleStatus, loading })
   )
 
   return (
-    <SharedTable
-      columns={columns}
-      data={discounts}
-      loading={loading}
-      renderRowActions={renderRowActions}
-      pageSize={10}
-    />
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <SharedTable
+        columns={columns}
+        data={discounts}
+        loading={loading}
+        renderRowActions={renderRowActions}
+        pageSize={10}
+      />
+    </div>
   )
 }
 
