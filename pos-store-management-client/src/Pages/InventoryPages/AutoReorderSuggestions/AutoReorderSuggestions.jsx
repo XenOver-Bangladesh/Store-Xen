@@ -8,6 +8,7 @@ import { SharedTable } from '../../../Shared/SharedTable/SharedTable'
 import SharedModal from '../../../Shared/SharedModal/SharedModal'
 import { inventoryAPI, productsAPI, suppliersAPI, purchaseOrdersAPI, salesAPI } from '../services/inventoryService'
 import Swal from 'sweetalert2'
+import { InventoryLoading } from '../../../Components/UI/LoadingAnimation'
 
 const AutoReorderSuggestions = () => {
   const [suggestions, setSuggestions] = useState([])
@@ -433,12 +434,7 @@ const AutoReorderSuggestions = () => {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-        <p className="ml-3 text-gray-600">Generating reorder suggestions...</p>
-      </div>
-    )
+    return <InventoryLoading message="Generating reorder suggestions..." />
   }
 
   return (
@@ -595,7 +591,7 @@ const AutoReorderSuggestions = () => {
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-gray-600">Qty: {item.suggestedQty} units</div>
-                    <div className="text-sm text-gray-600">Value: ৳{item.totalValue.toFixed(2)}</div>
+                    <div className="text-sm text-gray-600">Value: BDT {item.totalValue.toFixed(2)}</div>
                   </div>
                 </div>
               )

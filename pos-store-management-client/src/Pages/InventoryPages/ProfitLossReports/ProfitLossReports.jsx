@@ -6,6 +6,7 @@ import InfoCard from '../../../Shared/InfoCard/InfoCard'
 import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
 import { SharedTable } from '../../../Shared/SharedTable/SharedTable'
 import { salesAPI, productsAPI, purchaseOrdersAPI, paymentsAPI } from '../services/inventoryService'
+import { ReportLoading } from '../../../Components/UI/LoadingAnimation'
 
 const ProfitLossReports = () => {
   const [pLData, setPLData] = useState([])
@@ -193,7 +194,7 @@ const ProfitLossReports = () => {
     })
   }
 
-  const formatCurrency = (amount) => `৳${amount.toFixed(2)}`
+  const formatCurrency = (amount) => `BDT ${amount.toFixed(2)}`
   const formatPercentage = (value) => `${value.toFixed(1)}%`
 
   const getProfitColor = (profit) => {
@@ -312,12 +313,7 @@ const ProfitLossReports = () => {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600"></div>
-        <p className="ml-3 text-gray-600">Calculating profit & loss...</p>
-      </div>
-    )
+    return <ReportLoading message="Calculating profit & loss..." />
   }
 
   const ProfitIcon = getProfitIcon(summary.netProfit)

@@ -76,7 +76,7 @@ const WarehouseForm = ({
         {/* Address */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Address
+            Address <span className="text-red-500">*</span>
           </label>
           <textarea
             value={formData.address}
@@ -84,13 +84,14 @@ const WarehouseForm = ({
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Full address"
             rows={3}
+            required
           />
         </div>
 
         {/* Contact Person */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Contact Person
+            Contact Person <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -98,6 +99,7 @@ const WarehouseForm = ({
             onChange={(e) => handleChange('contactPerson', e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Person in charge"
+            required
           />
         </div>
 
@@ -105,7 +107,7 @@ const WarehouseForm = ({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone
+              Phone <span className="text-red-500">*</span>
             </label>
             <input
               type="tel"
@@ -113,12 +115,13 @@ const WarehouseForm = ({
               onChange={(e) => handleChange('phone', e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Phone number"
+              required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email
+              Email <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
@@ -126,6 +129,7 @@ const WarehouseForm = ({
               onChange={(e) => handleChange('email', e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="email@example.com"
+              required
             />
           </div>
         </div>

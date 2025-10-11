@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Warehouse, Plus, Pencil, Trash2, Eye, Package, MapPin, Info } from 'lucide-react'
+import { Warehouse, Plus, Pencil, Trash2, Eye, Package, MapPin, Info, Layers, TrendingUp } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
 import StatsCard from '../../Shared/StatsCard/StatsCard'
@@ -399,41 +399,30 @@ const WarehouseList = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatsCard
-          title="Total Warehouses"
+          label="Total Warehouses"
           value={warehouses.length}
           icon={Warehouse}
           color="blue"
-          trend={null}
         />
         <StatsCard
-          title="Total Products"
+          label="Total Products"
           value={warehouses.reduce((sum, w) => sum + (w.totalProducts || 0), 0)}
           icon={Package}
           color="purple"
-          trend={null}
         />
         <StatsCard
-          title="Total Stock"
+          label="Total Stock"
           value={warehouses.reduce((sum, w) => sum + (w.totalStock || 0), 0)}
-          icon={Package}
+          icon={Layers}
           color="green"
-          trend={null}
         />
         <StatsCard
-          title="Active Locations"
+          label="Active Locations"
           value={warehouses.filter(w => w.location).length}
           icon={MapPin}
-          color="orange"
-          trend={null}
-        />
-        <StatsCard
-          title="Avg Products/Warehouse"
-          value={warehouses.length > 0 ? Math.round(warehouses.reduce((sum, w) => sum + (w.totalProducts || 0), 0) / warehouses.length) : 0}
-          icon={Package}
-          color="indigo"
-          trend={null}
+          color="yellow"
         />
       </div>
 
@@ -499,7 +488,7 @@ const WarehouseList = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Full Address
+              Full Address <span className="text-red-500">*</span>
             </label>
             <textarea
               value={formData.address}
@@ -507,12 +496,13 @@ const WarehouseList = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Full address"
               rows={3}
+              required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Contact Person
+              Contact Person <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -520,13 +510,14 @@ const WarehouseList = () => {
               onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Manager name"
+              required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone
+                Phone <span className="text-red-500">*</span>
               </label>
               <input
                 type="tel"
@@ -534,11 +525,12 @@ const WarehouseList = () => {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Phone number"
+                required
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
@@ -546,6 +538,7 @@ const WarehouseList = () => {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Email address"
+                required
               />
             </div>
           </div>

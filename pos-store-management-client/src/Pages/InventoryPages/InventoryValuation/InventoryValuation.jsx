@@ -6,6 +6,7 @@ import InfoCard from '../../../Shared/InfoCard/InfoCard'
 import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
 import { SharedTable } from '../../../Shared/SharedTable/SharedTable'
 import { inventoryAPI, productsAPI, warehousesAPI } from '../services/inventoryService'
+import { ChartLoading } from '../../../Components/UI/LoadingAnimation'
 
 const InventoryValuation = () => {
   const [valuationData, setValuationData] = useState([])
@@ -191,9 +192,9 @@ const InventoryValuation = () => {
       type: 'select',
       options: [
         { label: 'All Values', value: '' },
-        { label: 'High (≥৳10,000)', value: 'high' },
-        { label: 'Medium (৳1,000-9,999)', value: 'medium' },
-        { label: 'Low (<৳1,000)', value: 'low' }
+        { label: 'High (≥BDT 10,000)', value: 'high' },
+        { label: 'Medium (BDT 1,000-9,999)', value: 'medium' },
+        { label: 'Low (<BDT 1,000)', value: 'low' }
       ]
     }
   ]
@@ -228,7 +229,7 @@ const InventoryValuation = () => {
       header: 'Cost Price',
       cell: ({ row }) => (
         <div className="text-right">
-          <div className="font-medium text-gray-900">৳{row.original.costPrice.toFixed(2)}</div>
+          <div className="font-medium text-gray-900">BDT {row.original.costPrice.toFixed(2)}</div>
           <div className="text-xs text-gray-500">per unit</div>
         </div>
       )
@@ -236,10 +237,10 @@ const InventoryValuation = () => {
     {
       id: 'totalValue',
       accessorKey: 'totalValue',
-      header: 'Total Value (৳)',
+      header: 'Total Value (BDT)',
       cell: ({ row }) => (
         <div className="text-right">
-          <div className="text-lg font-semibold text-blue-600">৳{row.original.totalValue.toFixed(2)}</div>
+          <div className="text-lg font-semibold text-blue-600">BDT {row.original.totalValue.toFixed(2)}</div>
           <div className="text-xs text-gray-500">{getValueRange(row.original.totalValue)} Value</div>
         </div>
       )
@@ -253,7 +254,7 @@ const InventoryValuation = () => {
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${getMarginColor(row.original.marginPercentage)}`}>
             {row.original.marginPercentage.toFixed(1)}%
           </span>
-          <div className="text-xs text-gray-500 mt-1">৳{row.original.margin.toFixed(2)}</div>
+          <div className="text-xs text-gray-500 mt-1">BDT {row.original.margin.toFixed(2)}</div>
         </div>
       )
     },
@@ -263,7 +264,7 @@ const InventoryValuation = () => {
       header: 'Potential Value',
       cell: ({ row }) => (
         <div className="text-right">
-          <div className="font-medium text-green-600">৳{row.original.potentialValue.toFixed(2)}</div>
+          <div className="font-medium text-green-600">BDT {row.original.potentialValue.toFixed(2)}</div>
           <div className="text-xs text-gray-500">if sold</div>
         </div>
       )
@@ -288,12 +289,7 @@ const InventoryValuation = () => {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-        <p className="ml-3 text-gray-600">Calculating inventory valuation...</p>
-      </div>
-    )
+    return <ChartLoading message="Calculating inventory valuation..." />
   }
 
   return (
@@ -328,7 +324,7 @@ const InventoryValuation = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           label="Total Stock Value"
-          value={`৳${summary.totalValue.toFixed(2)}`}
+          value={`BDT ${summary.totalValue.toFixed(2)}`}
           icon={DollarSign}
           color="green"
         />
@@ -376,7 +372,7 @@ const InventoryValuation = () => {
               <div className="space-y-1">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Value:</span>
-                  <span className="font-medium">৳{category.value.toFixed(2)}</span>
+                  <span className="font-medium">BDT {category.value.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Margin:</span>

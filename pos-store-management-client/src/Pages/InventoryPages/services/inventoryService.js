@@ -4,27 +4,27 @@ import api from '../../../utils/api'
 export const inventoryAPI = {
   getAll: async () => {
     const response = await api.get('/inventory')
-    return response.data
+    return response.success ? response.data : []
   },
   
   getById: async (id) => {
     const response = await api.get(`/inventory/${id}`)
-    return response.data
+    return response.success ? response.data : null
   },
   
   create: async (inventoryData) => {
     const response = await api.post('/inventory', inventoryData)
-    return response.data
+    return response.success ? response.data : null
   },
   
   update: async (id, inventoryData) => {
     const response = await api.put(`/inventory/${id}`, inventoryData)
-    return response.data
+    return response.success ? response.data : null
   },
   
   delete: async (id) => {
     const response = await api.delete(`/inventory/${id}`)
-    return response.data
+    return response.success ? response.data : null
   }
 }
 
@@ -32,27 +32,27 @@ export const inventoryAPI = {
 export const productsAPI = {
   getAll: async () => {
     const response = await api.get('/products')
-    return response.data
+    return response.success ? response.data : []
   },
   
   getById: async (id) => {
     const response = await api.get(`/products/${id}`)
-    return response.data
+    return response.success ? response.data : null
   },
   
   create: async (productData) => {
     const response = await api.post('/products', productData)
-    return response.data
+    return response.success ? response.data : null
   },
   
   update: async (id, productData) => {
     const response = await api.put(`/products/${id}`, productData)
-    return response.data
+    return response.success ? response.data : null
   },
   
   delete: async (id) => {
     const response = await api.delete(`/products/${id}`)
-    return response.data
+    return response.success ? response.data : null
   }
 }
 
@@ -60,27 +60,27 @@ export const productsAPI = {
 export const warehousesAPI = {
   getAll: async () => {
     const response = await api.get('/warehouses')
-    return response.data
+    return response.success ? response.data : []
   },
   
   getById: async (id) => {
     const response = await api.get(`/warehouses/${id}`)
-    return response.data
+    return response.success ? response.data : null
   },
   
   create: async (warehouseData) => {
     const response = await api.post('/warehouses', warehouseData)
-    return response.data
+    return response.success ? response.data : null
   },
   
   update: async (id, warehouseData) => {
     const response = await api.put(`/warehouses/${id}`, warehouseData)
-    return response.data
+    return response.success ? response.data : null
   },
   
   delete: async (id) => {
     const response = await api.delete(`/warehouses/${id}`)
-    return response.data
+    return response.success ? response.data : null
   }
 }
 

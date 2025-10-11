@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BarChart3, PieChart, Package, TrendingUp, AlertTriangle, Clock, CreditCard, PlusCircle, ShoppingBag, FileText, Calendar, ArrowRight, RefreshCw, Loader2 } from 'lucide-react'
+import { BarChart3, PieChart, Package, TrendingUp, AlertTriangle, Clock, CreditCard, PlusCircle, ShoppingBag, FileText, Calendar, ArrowRight, RefreshCw } from 'lucide-react'
 import Swal from 'sweetalert2'
 import { dashboardAPI } from './services/dashboardService'
 import Button from '../../Components/UI/Button'
+import { DashboardLoading } from '../../Components/UI/LoadingAnimation'
 
 export const HomePage = () => {
   const navigate = useNavigate()
@@ -112,6 +113,7 @@ export const HomePage = () => {
   const metrics = {
     salesToday: salesToday > 0 ? salesToday : totalSales,
     totalStockItems: data.products.length,
+    totalStockValue: data.totalStockValue || 0,
     lowStockAlerts: data.lowStock.length,
     pendingPayments: calculatePendingPayments(data.suppliers)
   }
@@ -124,6 +126,7 @@ export const HomePage = () => {
     finalSalesToday: metrics.salesToday,
     productsData: data.products,
     totalStockItems: metrics.totalStockItems,
+    totalStockValue: metrics.totalStockValue,
     suppliersData: data.suppliers,
     pendingPayments: metrics.pendingPayments
   })
@@ -235,16 +238,7 @@ export const HomePage = () => {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-slate-50 to-white px-4 py-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-center min-h-96">
-          <div className="text-center">
-            <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-            <p className="text-gray-600">Loading dashboard data...</p>
-          </div>
-        </div>
-      </div>
-    )
+    return <DashboardLoading message="Loading dashboard data..." />
   }
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-slate-50 to-white px-4 py-6">
@@ -298,7 +292,7 @@ export const HomePage = () => {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {/* Sales Today */}
           <div className="group rounded-2xl bg-white/70 backdrop-blur ring-1 ring-slate-200/70 p-5 shadow-sm hover:shadow-xl transition-all">
             <div className="flex items-center justify-between">
@@ -330,6 +324,20 @@ export const HomePage = () => {
               </div>
               <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-700">
                 <Package />
+              </div>
+            </div>
+          </div>
+
+          {/* Total Stock Value */}
+          <div className="group rounded-2xl bg-white/70 backdrop-blur ring-1 ring-slate-200/70 p-5 shadow-sm hover:shadow-xl transition-all">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-slate-500">Total Stock Value</p>
+                <p className="text-3xl font-bold mt-1">{formatCurrency(metrics.totalStockValue)}</p>
+                <p className="text-xs text-slate-500 mt-1">Current inventory value</p>
+              </div>
+              <div className="p-3 rounded-xl bg-gradient-to-br from-green-50 to-green-100 text-green-700">
+                <TrendingUp />
               </div>
             </div>
           </div>

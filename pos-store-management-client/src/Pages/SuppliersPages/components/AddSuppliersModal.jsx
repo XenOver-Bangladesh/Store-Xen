@@ -85,7 +85,7 @@ const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
       isOpen={isOpen}
       onClose={onClose}
       title="Add New Supplier"
-      size="large"
+      size="medium"
       footer={modalFooter}
       closeOnOverlayClick={!isSubmitting}
       closeOnEscape={!isSubmitting}

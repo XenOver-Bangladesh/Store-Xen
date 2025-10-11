@@ -83,7 +83,7 @@ const ProductForm = ({
             {/* Brand */}
             <div className="space-y-1">
               <label className="text-sm font-semibold text-gray-700" htmlFor="brand">
-                Brand
+                Brand <span className="text-red-500">*</span>
               </label>
               <input
                 id="brand"
@@ -92,8 +92,11 @@ const ProductForm = ({
                 placeholder="e.g. Samsung"
                 value={formData.brand}
                 onChange={onInputChange}
-                className="block w-full rounded-xl border border-gray-300 hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm placeholder-gray-400"
+                className={`block w-full rounded-xl border ${errors.brand ? 'border-red-500' : 'border-gray-300'} hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm placeholder-gray-400`}
               />
+              {errors.brand && (
+                <p className="text-xs text-red-600">{errors.brand}</p>
+              )}
             </div>
 
             {/* SKU */}
@@ -118,14 +121,14 @@ const ProductForm = ({
             {/* Supplier */}
             <div className="space-y-1">
               <label className="text-sm font-semibold text-gray-700" htmlFor="supplier">
-                Supplier
+                Supplier <span className="text-red-500">*</span>
               </label>
               <select
                 id="supplier"
                 name="supplier"
                 value={formData.supplier}
                 onChange={onInputChange}
-                className="block w-full rounded-xl border border-gray-300 hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm placeholder-gray-400"
+                className={`block w-full rounded-xl border ${errors.supplier ? 'border-red-500' : 'border-gray-300'} hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm placeholder-gray-400`}
               >
                 <option value="">Select Supplier...</option>
                 {suppliers.map((supplier) => (
@@ -134,6 +137,9 @@ const ProductForm = ({
                   </option>
                 ))}
               </select>
+              {errors.supplier && (
+                <p className="text-xs text-red-600">{errors.supplier}</p>
+              )}
             </div>
 
             {/* Description - Full Width */}
@@ -159,7 +165,7 @@ const ProductForm = ({
           {/* QR Code */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b">
-              QR Code
+              QR Code <span className="text-red-500">*</span>
             </h3>
             <div className="space-y-3">
               <div className="flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg h-64">
@@ -190,7 +196,7 @@ const ProductForm = ({
           {/* Product Image */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b">
-              Product Image
+              Product Image <span className="text-red-500">*</span>
             </h3>
             <div className="space-y-3">
               {imagePreview ? (
@@ -232,6 +238,9 @@ const ProductForm = ({
                     disabled={isSubmitting}
                   />
                 </label>
+              )}
+              {errors.productImage && (
+                <p className="text-xs text-red-600">{errors.productImage}</p>
               )}
             </div>
           </div>

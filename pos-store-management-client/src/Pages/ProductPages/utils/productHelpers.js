@@ -53,6 +53,11 @@ export const validateProductForm = (formData, allProducts = []) => {
     errors.category = 'Category is required'
   }
   
+  // Brand is required
+  if (!formData.brand || !formData.brand.trim()) {
+    errors.brand = 'Brand is required'
+  }
+  
   // SKU is required
   if (!formData.sku || !formData.sku.trim()) {
     errors.sku = 'SKU is required'
@@ -64,12 +69,25 @@ export const validateProductForm = (formData, allProducts = []) => {
     }
   }
   
-  // Check for duplicate QR code
-  if (formData.qrCode) {
+  // Supplier is required
+  if (!formData.supplier) {
+    errors.supplier = 'Supplier is required'
+  }
+  
+  // QR Code is required
+  if (!formData.qrCode || !formData.qrCode.trim()) {
+    errors.qrCode = 'QR Code is required'
+  } else {
+    // Check for duplicate QR code
     const duplicateQR = allProducts.find(p => p.qrCode === formData.qrCode)
     if (duplicateQR && duplicateQR._id !== formData._id) {
       errors.qrCode = 'This QR Code already exists. Please generate a new one.'
     }
+  }
+  
+  // Product Image is required
+  if (!formData.productImage || !formData.productImage.trim()) {
+    errors.productImage = 'Product Image is required'
   }
   
   return {

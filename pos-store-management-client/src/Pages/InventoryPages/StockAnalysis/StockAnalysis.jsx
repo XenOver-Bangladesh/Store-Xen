@@ -6,6 +6,7 @@ import InfoCard from '../../../Shared/InfoCard/InfoCard'
 import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
 import { SharedTable } from '../../../Shared/SharedTable/SharedTable'
 import { inventoryAPI, productsAPI, salesAPI } from '../services/inventoryService'
+import { ChartLoading } from '../../../Components/UI/LoadingAnimation'
 
 const StockAnalysis = () => {
   const [analysisData, setAnalysisData] = useState([])
@@ -308,12 +309,7 @@ const StockAnalysis = () => {
   ]
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-600"></div>
-        <p className="ml-3 text-gray-600">Analyzing stock movement...</p>
-      </div>
-    )
+    return <ChartLoading message="Analyzing stock movement..." />
   }
 
   const filteredData = getFilteredData()

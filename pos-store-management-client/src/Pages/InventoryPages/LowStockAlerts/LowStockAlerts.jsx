@@ -8,6 +8,7 @@ import { SharedTable } from '../../../Shared/SharedTable/SharedTable'
 import SharedModal from '../../../Shared/SharedModal/SharedModal'
 import { inventoryAPI, productsAPI, suppliersAPI, purchaseOrdersAPI } from '../services/inventoryService'
 import Swal from 'sweetalert2'
+import { InventoryLoading } from '../../../Components/UI/LoadingAnimation'
 
 const LowStockAlerts = () => {
   const [lowStockItems, setLowStockItems] = useState([])
@@ -398,12 +399,7 @@ const LowStockAlerts = () => {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-        <p className="ml-3 text-gray-600">Loading low stock alerts...</p>
-      </div>
-    )
+    return <InventoryLoading message="Loading low stock alerts..." />
   }
 
   return (
@@ -468,7 +464,7 @@ const LowStockAlerts = () => {
         />
         <StatsCard
           label="Total Value at Risk"
-          value={`৳${stats.totalValue}`}
+          value={`BDT ${stats.totalValue}`}
           icon={Package}
           color="purple"
         />

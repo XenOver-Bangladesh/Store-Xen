@@ -6,6 +6,7 @@ import InfoCard from '../../../Shared/InfoCard/InfoCard'
 import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
 import { SharedTable } from '../../../Shared/SharedTable/SharedTable'
 import { inventoryAPI, productsAPI, warehousesAPI } from '../services/inventoryService'
+import { InventoryLoading } from '../../../Components/UI/LoadingAnimation'
 
 const StockDashboard = () => {
   const [inventory, setInventory] = useState([])
@@ -58,14 +59,33 @@ const StockDashboard = () => {
   }
 
   const calculateStats = (inventoryData, productsData) => {
+    console.log('StockDashboard - Calculating stats with data:', {
+      inventoryData: inventoryData,
+      productsData: productsData,
+      inventoryLength: inventoryData.length,
+      productsLength: productsData.length
+    })
+    
     const totalProducts = productsData.length
     const totalValue = inventoryData.reduce((sum, item) => {
       const product = productsData.find(p => p._id === item.productId)
-      return sum + (item.stockQty * (product?.costPrice || 0))
+      const stockQty = item.stockQty || item.quantity || item.stock || 0
+      const costPrice = product?.costPrice || product?.purchasePrice || 0
+      
+      console.log(`StockDashboard - Item: ${item.productName || 'Unknown'}, StockQty: ${stockQty}, CostPrice: ${costPrice}, Product:`, product)
+      
+      return sum + (stockQty * costPrice)
     }, 0)
     
     const lowStock = inventoryData.filter(item => item.stockQty < 10).length
     const fastMoving = inventoryData.filter(item => item.stockQty > 100).length
+    
+    console.log('StockDashboard - Calculated stats:', {
+      totalProducts,
+      totalValue,
+      lowStock,
+      fastMoving
+    })
     
     setStats({
       totalProducts,
@@ -208,8 +228,8 @@ const StockDashboard = () => {
         const value = item.stockQty * (product?.costPrice || 0)
         return (
           <div className="text-right">
-            <div className="font-medium text-gray-900">৳{value.toFixed(2)}</div>
-            <div className="text-xs text-gray-500">৳{product?.costPrice || 0} each</div>
+            <div className="font-medium text-gray-900">BDT {value.toFixed(2)}</div>
+            <div className="text-xs text-gray-500">BDT {product?.costPrice || 0} each</div>
           </div>
         )
       }
@@ -235,12 +255,7 @@ const StockDashboard = () => {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <p className="ml-3 text-gray-600">Loading stock data...</p>
-      </div>
-    )
+    return <InventoryLoading message="Loading stock data..." />
   }
 
   return (
@@ -281,7 +296,7 @@ const StockDashboard = () => {
         />
         <StatsCard
           label="Total Stock Value"
-          value={`৳${stats.totalValue}`}
+          value={`BDT ${stats.totalValue}`}
           icon={TrendingUp}
           color="green"
         />

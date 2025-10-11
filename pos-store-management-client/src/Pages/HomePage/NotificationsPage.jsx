@@ -3,6 +3,7 @@ import { Bell, AlertTriangle, Clock, CreditCard, Package, TrendingUp, X, CheckCi
 import Swal from 'sweetalert2'
 import { dashboardAPI } from './services/dashboardService'
 import Button from '../../Components/UI/Button'
+import { DashboardLoading } from '../../Components/UI/LoadingAnimation'
 
 export const NotificationsPage = () => {
   const [loading, setLoading] = useState(true)
@@ -128,16 +129,7 @@ export const NotificationsPage = () => {
   const unreadCount = notifications.filter(notif => !notif.read).length
 
   if (loading) {
-    return (
-      <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-slate-50 to-white px-4 py-6">
-        <div className="max-w-4xl mx-auto flex items-center justify-center min-h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading notifications...</p>
-          </div>
-        </div>
-      </div>
-    )
+    return <DashboardLoading message="Loading notifications..." />
   }
 
   return (

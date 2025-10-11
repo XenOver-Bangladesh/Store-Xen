@@ -107,6 +107,10 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
       newErrors.category = 'Category is required'
     }
 
+    if (!formData.brand.trim()) {
+      newErrors.brand = 'Brand is required'
+    }
+
     if (!formData.sku.trim()) {
       newErrors.sku = 'SKU is required'
     } else {
@@ -119,6 +123,10 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
       }
     }
 
+    if (!formData.supplier) {
+      newErrors.supplier = 'Supplier is required'
+    }
+
     if (!formData.qrCode.trim()) {
       newErrors.qrCode = 'QR Code is required'
     } else {
@@ -129,6 +137,10 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
       if (duplicateQR) {
         newErrors.qrCode = 'This QR Code already exists. Please generate a new one.'
       }
+    }
+
+    if (!formData.productImage.trim()) {
+      newErrors.productImage = 'Product Image is required'
     }
 
     setErrors(newErrors)
@@ -254,7 +266,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Product Image */}
         <div className="space-y-3">
-          <label className="text-sm font-semibold text-gray-700">Product Image</label>
+          <label className="text-sm font-semibold text-gray-700">Product Image <span className="text-red-500">*</span></label>
           {imagePreview ? (
             <div className="space-y-3">
               <div className="relative">
@@ -295,6 +307,9 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
               {imageFile && (
                 <p className="text-xs text-blue-600 font-medium">✓ New image selected - will upload on save</p>
               )}
+              {errors.productImage && (
+                <p className="text-xs text-red-600">{errors.productImage}</p>
+              )}
             </div>
           ) : (
             <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
@@ -315,6 +330,9 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                 disabled={isSubmitting}
               />
             </label>
+          )}
+          {errors.productImage && (
+            <p className="text-xs text-red-600">{errors.productImage}</p>
           )}
         </div>
 
@@ -363,7 +381,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
           {/* Brand */}
           <div className="space-y-1">
             <label className="text-sm font-semibold text-gray-700" htmlFor="brand">
-              Brand
+              Brand <span className="text-red-500">*</span>
             </label>
             <input
               id="brand"
@@ -371,8 +389,11 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
               type="text"
               value={formData.brand}
               onChange={handleInputChange}
-              className="block w-full rounded-xl border border-gray-300 hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm"
+              className={`block w-full rounded-xl border ${errors.brand ? 'border-red-500' : 'border-gray-300'} hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm`}
             />
+            {errors.brand && (
+              <p className="text-xs text-red-600">{errors.brand}</p>
+            )}
           </div>
 
           {/* SKU */}
@@ -397,14 +418,14 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
           {/* Supplier */}
           <div className="space-y-1">
             <label className="text-sm font-semibold text-gray-700" htmlFor="supplier">
-              Supplier
+              Supplier <span className="text-red-500">*</span>
             </label>
             <select
               id="supplier"
               name="supplier"
               value={formData.supplier}
               onChange={handleInputChange}
-              className="block w-full rounded-xl border border-gray-300 hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm"
+              className={`block w-full rounded-xl border ${errors.supplier ? 'border-red-500' : 'border-gray-300'} hover:border-gray-400 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm`}
             >
               <option value="">Select Supplier...</option>
               {suppliers.map((supplier) => (
@@ -413,6 +434,9 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                 </option>
               ))}
             </select>
+            {errors.supplier && (
+              <p className="text-xs text-red-600">{errors.supplier}</p>
+            )}
           </div>
 
           {/* QR Code - Full Width */}

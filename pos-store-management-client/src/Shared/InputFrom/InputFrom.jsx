@@ -43,7 +43,9 @@ const InputFrom = forwardRef(({
     if (type === 'select') {
       return (
         <div className="space-y-1" key={name}>
-          {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>{label}</label>}
+          {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>
+            {label} {validation?.required && <span className="text-red-500">*</span>}
+          </label>}
           <select id={name} className={baseInputClass} disabled={disabled} {...register(name, validation)}>
             <option value="" disabled={!!validation?.required}>Select...</option>
             {options.map(opt => (
@@ -58,7 +60,9 @@ const InputFrom = forwardRef(({
     if (type === 'textarea') {
       return (
         <div className="space-y-1" key={name}>
-          {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>{label}</label>}
+          {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>
+            {label} {validation?.required && <span className="text-red-500">*</span>}
+          </label>}
           <textarea id={name} rows={rows} placeholder={placeholder} className={baseInputClass} disabled={disabled} {...register(name, validation)} />
           {error && <p className="text-xs text-red-600">{error.message || 'This field is required'}</p>}
         </div>
@@ -69,7 +73,9 @@ const InputFrom = forwardRef(({
       return (
         <div className="flex items-center gap-2" key={name}>
           <input id={name} type="checkbox" className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" disabled={disabled} {...register(name, validation)} />
-          {label && <label className="text-sm text-slate-700" htmlFor={name}>{label}</label>}
+          {label && <label className="text-sm text-slate-700" htmlFor={name}>
+            {label} {validation?.required && <span className="text-red-500">*</span>}
+          </label>}
           {error && <p className="text-xs text-red-600">{error.message || 'This field is required'}</p>}
         </div>
       )
@@ -79,7 +85,9 @@ const InputFrom = forwardRef(({
       // Simple currency input using Controller to preserve numeric value
       return (
         <div className="space-y-1" key={name}>
-          {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>{label}</label>}
+          {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>
+            {label} {validation?.required && <span className="text-red-500">*</span>}
+          </label>}
           <Controller
             control={control}
             name={name}
@@ -115,7 +123,9 @@ const InputFrom = forwardRef(({
     // text | number | date
     return (
       <div className="space-y-1" key={name}>
-        {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>{label}</label>}
+        {label && <label className="text-sm font-semibold text-slate-700" htmlFor={name}>
+          {label} {validation?.required && <span className="text-red-500">*</span>}
+        </label>}
         <div className="flex items-center gap-2">
           {prefix && <span className="text-sm text-slate-500">{prefix}</span>}
           <input

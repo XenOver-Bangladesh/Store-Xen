@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { X, Plus, Edit } from 'lucide-react'
 import Button from '../../../Components/UI/Button'
 import SharedModal from '../../../Shared/SharedModal/SharedModal'
 import POItemsTable from './POItemsTable'
 import POSummary from './POSummary'
 import { validatePOForm, MAX_NOTES_LENGTH } from '../utils/poHelpers'
+import { getSupplierProducts } from '../../SuppliersPages/utils/supplierHelpers'
 import Swal from 'sweetalert2'
 
 const POForm = ({
@@ -26,7 +27,25 @@ const POForm = ({
     }
   }, [isOpen, isEditing, formData.poNumber, setFormData])
 
-  // No search needed for suppliers - they use normal dropdown
+  // Filter products based on selected supplier
+  const getFilteredProducts = () => {
+    if (!formData.supplier) {
+      return products // Show all products if no supplier selected
+    }
+    return getSupplierProducts(products, formData.supplier, suppliers)
+  }
+
+  const filteredProducts = getFilteredProducts()
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false)
+
+  // Clear items when supplier changes (since products will be different)
+  const handleSupplierChange = (supplierId) => {
+    setFormData(prev => ({
+      ...prev,
+      supplier: supplierId,
+      items: [] // Clear items when supplier changes
+    }))
+  }
 
   const handleAddItem = () => {
     const newItem = {
@@ -84,6 +103,19 @@ const POForm = ({
   const total = subtotal + taxAmount
 
   const handleFormSubmit = () => {
+    setHasAttemptedSubmit(true)
+    
+    // Check if no items first
+    if (!formData.items || formData.items.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Items Added',
+        text: 'Please add at least one product to create a purchase order.',
+        confirmButtonColor: '#3B82F6'
+      })
+      return
+    }
+
     // Validate form
     const validation = validatePOForm(formData)
     
@@ -137,7 +169,7 @@ const POForm = ({
               </label>
               <select
                 value={formData.supplier}
-                onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
+                onChange={(e) => handleSupplierChange(e.target.value)}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Select Supplier</option>
@@ -149,6 +181,11 @@ const POForm = ({
               </select>
               <p className="text-xs text-gray-500 mt-1">
                 Select from {suppliers.length} supplier{suppliers.length !== 1 ? 's' : ''}
+                {formData.supplier && (
+                  <span className="ml-2 text-blue-600 font-medium">
+                    • {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} available
+                  </span>
+                )}
               </p>
             </div>
 
@@ -204,11 +241,28 @@ const POForm = ({
         <div className="bg-white p-5 rounded-lg border border-gray-200">
           <POItemsTable
             items={formData.items}
-            products={products}
+            products={filteredProducts}
             onAddItem={handleAddItem}
             onRemoveItem={handleRemoveItem}
             onItemChange={handleItemChange}
+            hasAttemptedSubmit={hasAttemptedSubmit}
           />
+          {formData.supplier && filteredProducts.length === 0 && (
+            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <div>
+                  <p className="text-sm font-medium text-yellow-800">No Products Available</p>
+                  <p className="text-sm text-yellow-700 mt-1">
+                    The selected supplier doesn't have any products in their categories. 
+                    Please select a different supplier or add products to this supplier's categories.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Summary Section */}
@@ -267,7 +321,7 @@ const POForm = ({
               size="md"
               onClick={handleFormSubmit}
               loading={loading}
-              disabled={loading || formData.items.length === 0}
+              disabled={loading}
               type="button"
               className="flex items-center"
             >
