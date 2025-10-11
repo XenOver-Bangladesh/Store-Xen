@@ -29,7 +29,9 @@ const ReturnModal = ({ isOpen, onClose, onSave, invoices }) => {
       items: invoice ? invoice.items.map(item => ({
         ...item,
         returnQuantity: 0,
-        maxQuantity: item.quantity
+        maxQuantity: item.availableForReturn || (item.quantity - (item.returnedQuantity || 0)),
+        originalQuantity: item.quantity,
+        alreadyReturned: item.returnedQuantity || 0
       })) : []
     }))
   }
@@ -50,6 +52,13 @@ const ReturnModal = ({ isOpen, onClose, onSave, invoices }) => {
     
     if (returningItems.length === 0) {
       Swal.fire('Error', 'Please select at least one item to return', 'error')
+      return
+    }
+    
+    // Check if any items are available for return
+    const availableItems = formData.items.filter(item => item.maxQuantity > 0)
+    if (availableItems.length === 0) {
+      Swal.fire('Error', 'No items are available for return from this invoice', 'error')
       return
     }
 
@@ -86,11 +95,18 @@ const ReturnModal = ({ isOpen, onClose, onSave, invoices }) => {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Choose an invoice...</option>
-            {invoices.map(invoice => (
-              <option key={invoice._id} value={invoice.invoiceNo}>
-                {invoice.invoiceNo} - {invoice.customerName} - ${invoice.grandTotal}
-              </option>
-            ))}
+            {invoices.map(invoice => {
+              const availableItems = invoice.items?.filter(item => 
+                (item.availableForReturn || (item.quantity - (item.returnedQuantity || 0))) > 0
+              ).length || 0;
+              const totalItems = invoice.items?.length || 0;
+              
+              return (
+                <option key={invoice._id} value={invoice.invoiceNo}>
+                  {invoice.invoiceNo} - {invoice.customerName} - ${invoice.grandTotal} ({availableItems}/{totalItems} items available)
+                </option>
+              );
+            })}
           </select>
         </div>
 
@@ -108,7 +124,9 @@ const ReturnModal = ({ isOpen, onClose, onSave, invoices }) => {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-4 py-2 text-left text-sm">Product</th>
-                      <th className="px-4 py-2 text-right text-sm">Sold Qty</th>
+                      <th className="px-4 py-2 text-right text-sm">Original Qty</th>
+                      <th className="px-4 py-2 text-right text-sm">Already Returned</th>
+                      <th className="px-4 py-2 text-right text-sm">Available</th>
                       <th className="px-4 py-2 text-right text-sm">Return Qty</th>
                     </tr>
                   </thead>
@@ -116,7 +134,9 @@ const ReturnModal = ({ isOpen, onClose, onSave, invoices }) => {
                     {formData.items.map((item, index) => (
                       <tr key={index} className="border-t">
                         <td className="px-4 py-2 text-sm">{item.productName}</td>
-                        <td className="px-4 py-2 text-sm text-right">{item.maxQuantity}</td>
+                        <td className="px-4 py-2 text-sm text-right">{item.originalQuantity}</td>
+                        <td className="px-4 py-2 text-sm text-right text-orange-600">{item.alreadyReturned}</td>
+                        <td className="px-4 py-2 text-sm text-right text-green-600 font-medium">{item.maxQuantity}</td>
                         <td className="px-4 py-2 text-right">
                           <input
                             type="number"
@@ -125,6 +145,7 @@ const ReturnModal = ({ isOpen, onClose, onSave, invoices }) => {
                             value={item.returnQuantity}
                             onChange={(e) => handleItemQuantityChange(index, e.target.value)}
                             className="w-20 px-2 py-1 border border-gray-300 rounded text-center"
+                            disabled={item.maxQuantity === 0}
                           />
                         </td>
                       </tr>
@@ -132,6 +153,11 @@ const ReturnModal = ({ isOpen, onClose, onSave, invoices }) => {
                   </tbody>
                 </table>
               </div>
+              {formData.items.some(item => item.maxQuantity === 0) && (
+                <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+                  ⚠️ Some items cannot be returned as they have already been fully returned.
+                </div>
+              )}
             </div>
           </>
         )}

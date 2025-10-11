@@ -9,6 +9,12 @@ export const inventoryAPI = {
     return response.data
   },
   
+  // New method for product-centric inventory view
+  getProducts: async () => {
+    const response = await axios.get(`${API_BASE_URL}/inventory/products`)
+    return response.data
+  },
+  
   getByProductId: async (productId) => {
     const response = await axios.get(`${API_BASE_URL}/inventory/product/${productId}`)
     return response.data

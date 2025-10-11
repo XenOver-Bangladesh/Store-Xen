@@ -11,8 +11,7 @@ import GRNManage from "../Pages/GRNPages/GRNManage";
 import Payments from "../Pages/GENPaymentsPage/Payments";
 import { InStockProductPages } from "../Pages/InStockProductPages/InStockProductPages";
 import StockInPages from "../Pages/StockInPages/StockInPages";
-import WarehouseBarcode from "../Pages/WarehouseBarcode/WarehouseBarcode";
-import WarehouseBatchtracking from "../Pages/WarehouseBatchtracking/WarehouseBatchtracking";
+import InventoryTracking from "../Pages/WarehouseBarcode/InventoryTracking";
 import WarehouseStocktransfer from "../Pages/WarehouseStocktransfer/WarehouseStocktransfer";
 import WarehouseList from "../Pages/WarehouseList/WarehouseList";
 import ScrollToTop from "../Components/ScrollToTop/ScrollToTop";
@@ -97,12 +96,17 @@ const router = createBrowserRouter([
         element: <StockInPages />
       },
       {
+        path: "/warehouse/inventory-tracking",
+        element: <InventoryTracking />
+      },
+      // Redirect old routes to new combined page
+      {
         path: "/warehouse/barcode",
-        element: <WarehouseBarcode />
+        element: <Navigate to="/warehouse/inventory-tracking" replace />
       },
       {
         path: "/warehouse/batch-tracking",
-        element: <WarehouseBatchtracking />
+        element: <Navigate to="/warehouse/inventory-tracking" replace />
       },
       {
         path: "/warehouse/stock-transfer",

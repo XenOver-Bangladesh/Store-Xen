@@ -46,8 +46,17 @@ const WarehouseBarcode = () => {
         inventoryAPI.getAll(),
         productsAPI.getAll()
       ])
-      setInventory(inventoryData)
-      setProducts(productsData)
+      
+      // Normalize field names
+      const normalizedInventory = (inventoryData || []).map(item => ({
+        ...item,
+        batch: item.batch || item.batchNumber || '',
+        expiry: item.expiry || item.expiryDate || '',
+        qrCode: item.qrCode || ''
+      }))
+      
+      setInventory(normalizedInventory)
+      setProducts(productsData || [])
     } catch (error) {
       console.error('Error fetching data:', error)
       Swal.fire({
@@ -56,6 +65,8 @@ const WarehouseBarcode = () => {
         text: 'Failed to fetch inventory data',
         confirmButtonColor: '#3B82F6'
       })
+      setInventory([])
+      setProducts([])
     } finally {
       setLoading(false)
     }
@@ -113,10 +124,25 @@ const WarehouseBarcode = () => {
     }
 
     try {
+      // Update inventory item
       await inventoryAPI.update(selectedItem._id, {
-        barcode: formData.barcode || undefined,
-        qrCode: formData.qrCode || undefined
+        barcode: formData.barcode || null,
+        qrCode: formData.qrCode || null
       })
+
+      // Also update the product with barcode/QR if needed
+      const product = products.find(p => p._id === selectedItem.productId)
+      if (product && formData.qrCode) {
+        try {
+          await productsAPI.update(product._id, {
+            ...product,
+            qrCode: formData.qrCode,
+            barcode: formData.barcode || product.barcode
+          })
+        } catch (productError) {
+          console.warn('Could not update product QR code:', productError)
+        }
+      }
 
       Swal.fire({
         icon: 'success',
@@ -145,10 +171,14 @@ const WarehouseBarcode = () => {
   // Handle edit barcode
   const handleEditBarcode = (item) => {
     setSelectedItem(item)
+    
+    // Get product QR code if available
+    const product = products.find(p => p._id === item.productId)
+    
     setFormData({
-      barcode: item.barcode || '',
-      qrCode: item.qrCode || '',
-      autoGenerate: !item.barcode && !item.qrCode
+      barcode: item.barcode || product?.barcode || '',
+      qrCode: item.qrCode || product?.qrCode || '',
+      autoGenerate: !(item.barcode || item.qrCode || product?.barcode || product?.qrCode)
     })
     setModalOpen(true)
   }

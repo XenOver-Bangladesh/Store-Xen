@@ -169,14 +169,29 @@ const ProductForm = ({
             </h3>
             <div className="space-y-3">
               <div className="flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg h-64">
-                <div className="text-center p-6">
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${formData.qrCode}`}
-                    alt="QR Code"
-                    className="mx-auto mb-3"
-                  />
-                  <p className="text-xs text-gray-600 font-mono break-all">{formData.qrCode}</p>
-                </div>
+                {formData.qrCode ? (
+                  <div className="text-center p-6">
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(formData.qrCode)}`}
+                      alt="QR Code"
+                      className="mx-auto mb-3"
+                      onError={(e) => {
+                        e.target.onerror = null
+                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="180" height="180"%3E%3Crect width="180" height="180" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-size="14"%3EQR Error%3C/text%3E%3C/svg%3E'
+                      }}
+                    />
+                    <p className="text-xs text-gray-600 font-mono break-all max-w-full">{formData.qrCode}</p>
+                  </div>
+                ) : (
+                  <div className="text-center p-6">
+                    <div className="w-44 h-44 mx-auto mb-3 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                      </svg>
+                    </div>
+                    <p className="text-xs text-gray-500">Click button below to generate QR code</p>
+                  </div>
+                )}
               </div>
               <Button
                 type="button"
@@ -185,7 +200,7 @@ const ProductForm = ({
                 onClick={onGenerateQRCode}
                 className="w-full"
               >
-                Regenerate QR Code
+                {formData.qrCode ? 'Regenerate QR Code' : 'Generate QR Code'}
               </Button>
               {errors.qrCode && (
                 <p className="text-xs text-red-600">{errors.qrCode}</p>

@@ -127,7 +127,7 @@ const ProductList = ({ products, inventory, onAddToCart, onUpdateProductPrice, f
                         <div className="flex items-center gap-2">
                           {editingPrice === product._id ? (
                             <div className="flex items-center gap-1">
-                              <span className="text-sm text-gray-500">$</span>
+                              <span className="text-sm text-gray-500">BDT</span>
                               <input
                                 type="number"
                                 value={tempPrice}
@@ -154,7 +154,7 @@ const ProductList = ({ products, inventory, onAddToCart, onUpdateProductPrice, f
                             </div>
                           ) : (
                             <div className="flex items-center gap-1">
-                              <span className="text-lg font-bold text-blue-600">${price.toFixed(2)}</span>
+                              <span className="text-lg font-bold text-blue-600">BDT {price.toFixed(2)}</span>
                               <button
                                 onClick={() => handlePriceEdit(product, price)}
                                 className="text-gray-400 hover:text-blue-600 text-sm"

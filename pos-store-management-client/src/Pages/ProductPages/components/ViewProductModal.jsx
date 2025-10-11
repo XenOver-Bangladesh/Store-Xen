@@ -119,9 +119,13 @@ const ViewProductModal = ({ isOpen, onClose, product }) => {
           <div className="flex flex-col items-center space-y-3 bg-gray-50 p-6 rounded-lg border border-gray-200">
             <label className="text-sm font-semibold text-gray-700">QR Code Preview</label>
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${product.qrCode}`}
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(product.qrCode)}`}
               alt="QR Code"
               className="border-2 border-gray-300 rounded-lg p-2 bg-white"
+              onError={(e) => {
+                e.target.onerror = null
+                e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-size="14"%3EQR Error%3C/text%3E%3C/svg%3E'
+              }}
             />
             <p className="text-xs text-gray-500">Scan to view product details</p>
           </div>

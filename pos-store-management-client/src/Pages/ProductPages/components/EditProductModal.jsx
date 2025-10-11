@@ -467,16 +467,22 @@ const EditProductModal = ({ isOpen, onClose, product, onSuccess }) => {
             {errors.qrCode && (
               <p className="text-xs text-red-600">{errors.qrCode}</p>
             )}
-            <div className="flex items-center gap-3 mt-3">
-              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${formData.qrCode}`}
-                  alt="QR Code Preview"
-                  className="w-24 h-24"
-                />
+            {formData.qrCode && (
+              <div className="flex items-center gap-3 mt-3">
+                <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(formData.qrCode)}`}
+                    alt="QR Code Preview"
+                    className="w-24 h-24"
+                    onError={(e) => {
+                      e.target.onerror = null
+                      e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="120"%3E%3Crect width="120" height="120" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%239ca3af" font-size="12"%3EQR Error%3C/text%3E%3C/svg%3E'
+                    }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500">QR Code Preview</p>
               </div>
-              <p className="text-xs text-gray-500">QR Code Preview</p>
-            </div>
+            )}
           </div>
 
           {/* Description - Full Width */}

@@ -75,8 +75,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       subItems: [
         { title: 'Inhouse Products', path: '/warehouse/inhouse-products' },
         { title: 'Stock In (from GRN)', path: '/warehouse/stock-in' },
-        { title: 'Barcode / QR Assign', path: '/warehouse/barcode' },
-        { title: 'Batch & Expiry Tracking', path: '/warehouse/batch-tracking' },
+        { title: 'Inventory Tracking', path: '/warehouse/inventory-tracking' },
         { title: 'Stock Transfer', path: '/warehouse/stock-transfer' },
         { title: 'Warehouse List', path: '/warehouse/list' }
       ]

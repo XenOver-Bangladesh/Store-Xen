@@ -1,9 +1,9 @@
 // Format currency
 export const formatCurrency = (amount) => {
-  if (!amount && amount !== 0) return '$0.00'
-  return new Intl.NumberFormat('en-US', {
+  if (!amount && amount !== 0) return 'BDT 0.00'
+  return new Intl.NumberFormat('en-BD', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'BDT',
     minimumFractionDigits: 2
   }).format(amount)
 }

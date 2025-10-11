@@ -1,17 +1,22 @@
 import React from 'react'
-import { CheckCircle, XCircle, Trash2 } from 'lucide-react'
+import { CheckCircle, XCircle, Trash2, Eye } from 'lucide-react'
 import Button from '../../../Components/UI/Button'
 import { SharedTable } from '../../../Shared/SharedTable/SharedTable'
 import { getStatusColor, formatDateTime } from '../utils/returnsHelpers'
 
-const ReturnsList = ({ returns, onApprove, onReject, onDelete, loading }) => {
+const ReturnsList = ({ returns, onApprove, onReject, onDelete, onView, loading }) => {
   const columns = [
     {
       accessorKey: 'returnId',
       header: 'Return ID',
-      cell: ({ row }) => (
-        <span className="font-semibold text-blue-600">{row.original.returnId}</span>
-      )
+      cell: ({ row }) => {
+        const returnId = row.original.returnId || row.original._id?.toString().substring(0, 8) || 'N/A'
+        return (
+          <span className="font-semibold text-blue-600">
+            {returnId.startsWith('RET-') ? returnId : `RET-${returnId}`}
+          </span>
+        )
+      }
     },
     {
       accessorKey: 'invoiceNo',
@@ -27,7 +32,7 @@ const ReturnsList = ({ returns, onApprove, onReject, onDelete, loading }) => {
       accessorKey: 'reason',
       header: 'Reason',
       cell: ({ row }) => (
-        <span className="text-sm text-gray-600">{row.original.reason}</span>
+        <span className="text-sm text-gray-600">{row.original.reason || 'No reason'}</span>
       )
     },
     {
@@ -48,17 +53,26 @@ const ReturnsList = ({ returns, onApprove, onReject, onDelete, loading }) => {
 
   const renderRowActions = (returnItem) => (
     <div className="flex items-center gap-2">
+      {/* View button - always available */}
+      <Button variant="secondary" size="sm" onClick={() => onView(returnItem)}>
+        <div className="flex items-center">
+          <Eye className="w-4 h-4 mr-1" />
+          View
+        </div>
+      </Button>
+      
+      {/* Status-specific actions */}
       {returnItem.status === 'Pending' && (
         <>
           <Button variant="primary" size="sm" onClick={() => onApprove(returnItem)}>
             <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 mr-2" />
+              <CheckCircle className="w-4 h-4 mr-1" />
               Approve
             </div>
           </Button>
           <Button variant="delete" size="sm" onClick={() => onReject(returnItem)}>
             <div className="flex items-center">
-              <XCircle className="w-4 h-4 mr-2" />
+              <XCircle className="w-4 h-4 mr-1" />
               Reject
             </div>
           </Button>
@@ -67,7 +81,7 @@ const ReturnsList = ({ returns, onApprove, onReject, onDelete, loading }) => {
       {returnItem.status !== 'Approved' && (
         <Button variant="delete" size="sm" onClick={() => onDelete(returnItem)}>
           <div className="flex items-center">
-            <Trash2 className="w-4 h-4 mr-2" />
+            <Trash2 className="w-4 h-4 mr-1" />
             Delete
           </div>
         </Button>
@@ -77,7 +91,14 @@ const ReturnsList = ({ returns, onApprove, onReject, onDelete, loading }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <SharedTable columns={columns} data={returns} loading={loading} renderRowActions={renderRowActions} pageSize={10} />
+      <SharedTable 
+        columns={columns} 
+        data={returns} 
+        loading={loading} 
+        renderRowActions={renderRowActions} 
+        actionsHeader="Actions"
+        pageSize={10} 
+      />
     </div>
   )
 }

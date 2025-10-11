@@ -80,7 +80,7 @@ export const validatePOForm = (formData) => {
 }
 
 export const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-BD', {
     style: 'currency',
     currency: 'BDT'
   }).format(amount || 0)

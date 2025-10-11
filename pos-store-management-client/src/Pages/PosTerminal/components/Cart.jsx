@@ -92,7 +92,7 @@ const Cart = ({
                     <div className="flex items-center gap-2 mt-0.5">
                       {editingPrice === index ? (
                         <div className="flex items-center gap-1">
-                          <span className="text-xs text-gray-500">$</span>
+                          <span className="text-xs text-gray-500">BDT</span>
                           <input
                             type="number"
                             value={tempPrice}
@@ -121,7 +121,7 @@ const Cart = ({
                         <div className="flex items-center gap-1">
                           <div className="flex items-center gap-1">
                             <p className="text-xs text-gray-500">
-                              ${item.unitPrice.toFixed(2)} × {item.quantity}
+                              BDT {item.unitPrice.toFixed(2)} × {item.quantity}
                             </p>
                             {item.isCustomPrice && (
                               <span className="text-xs bg-orange-100 text-orange-600 px-1 py-0.5 rounded" title="Custom Price">
@@ -205,26 +205,26 @@ const Cart = ({
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Subtotal:</span>
-              <span className="font-medium">${totals.subtotal.toFixed(2)}</span>
+              <span className="font-medium">BDT {totals.subtotal.toFixed(2)}</span>
             </div>
             
             {totals.totalDiscount > 0 && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Discount:</span>
-                <span className="font-medium text-green-600">-${totals.totalDiscount.toFixed(2)}</span>
+                <span className="font-medium text-green-600">-BDT {totals.totalDiscount.toFixed(2)}</span>
               </div>
             )}
             
             {totals.tax > 0 && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Tax:</span>
-                <span className="font-medium">${totals.tax.toFixed(2)}</span>
+                <span className="font-medium">BDT {totals.tax.toFixed(2)}</span>
               </div>
             )}
             
             <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-300">
               <span>Grand Total:</span>
-              <span className="text-blue-600">${totals.grandTotal.toFixed(2)}</span>
+              <span className="text-blue-600">BDT {totals.grandTotal.toFixed(2)}</span>
             </div>
           </div>
         </div>
