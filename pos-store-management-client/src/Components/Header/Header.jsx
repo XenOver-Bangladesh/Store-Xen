@@ -3,10 +3,13 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { Menu, Search, Bell, User, Settings, LogOut } from 'lucide-react'
 import { Z_INDEX } from '../../constants/zIndex'
 import { dashboardAPI } from '../../Pages/HomePage/services/dashboardService'
+import { useAuth } from '../../contexts/AuthContext'
+import Swal from 'sweetalert2'
 
 const Header = ({ onMenuClick }) => {
   const navigate = useNavigate()
   const location = useLocation()
+  const { user, logout } = useAuth()
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [notificationCount, setNotificationCount] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -51,10 +54,47 @@ const Header = ({ onMenuClick }) => {
     navigate('/dashboard/notifications')
   }
 
+  const handleLogout = () => {
+    Swal.fire({
+      title: 'Logout',
+      text: 'Are you sure you want to logout?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3B82F6',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Yes, logout',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout()
+        navigate('/login')
+        Swal.fire({
+          icon: 'success',
+          title: 'Logged Out',
+          text: 'You have been logged out successfully!',
+          timer: 1500,
+          showConfirmButton: false
+        })
+      }
+    })
+  }
+
+  const handleProfileClick = () => {
+    setShowUserMenu(false)
+    navigate('/profile')
+  }
+
+  const handleSettingsClick = () => {
+    setShowUserMenu(false)
+    navigate('/settings')
+  }
+
   const getPageTitle = () => {
     const path = location.pathname
     if (path === '/dashboard/overview') return 'Dashboard Overview'
     if (path === '/dashboard/notifications') return 'Notifications'
+    if (path === '/profile') return 'Profile'
+    if (path === '/settings') return 'Settings'
     if (path.startsWith('/suppliers')) return 'Suppliers Management'
     if (path.startsWith('/products')) return 'Products Management'
     if (path.startsWith('/warehouse')) return 'Warehouse Management'
@@ -115,32 +155,43 @@ const Header = ({ onMenuClick }) => {
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100"
             >
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                 <User className="w-4 h-4 text-white" />
               </div>
-              <span className="hidden md:block text-sm font-medium text-gray-700">Admin</span>
+              <span className="hidden md:block text-sm font-medium text-gray-700">{user?.name || 'Admin'}</span>
             </button>
 
             {/* User Dropdown */}
             {showUserMenu && (
               <div 
-                className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl border border-gray-200 transform translate-y-0 opacity-100"
+                className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-xl border border-gray-200 transform translate-y-0 opacity-100"
                 style={{ zIndex: Z_INDEX.DROPDOWN }}
               >
                 <div className="py-1">
-                  <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
-                    <p className="font-medium">Admin User</p>
-                    <p className="text-xs text-gray-500">admin@store.com</p>
+                  <div className="px-4 py-3 text-sm text-gray-700 border-b border-gray-100">
+                    <p className="font-semibold text-gray-900">{user?.name || 'Admin User'}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{user?.email || 'admin@store-xen.com'}</p>
+                    <p className="text-xs text-blue-600 mt-1 font-medium">{user?.role || 'Administrator'}</p>
                   </div>
-                  <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <button 
+                    onClick={handleProfileClick}
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                  >
                     <User className="w-4 h-4 mr-3" />
                     Profile
                   </button>
-                  <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <button 
+                    onClick={handleSettingsClick}
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                  >
                     <Settings className="w-4 h-4 mr-3" />
                     Settings
                   </button>
-                  <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <div className="border-t border-gray-100 my-1"></div>
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  >
                     <LogOut className="w-4 h-4 mr-3" />
                     Sign out
                   </button>

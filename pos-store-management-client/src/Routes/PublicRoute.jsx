@@ -28,15 +28,26 @@ import InventoryValuation from "../Pages/InventoryPages/InventoryValuation/Inven
 import SalesReports from "../Pages/InventoryPages/SalesReports/SalesReports";
 import ProfitLossReports from "../Pages/InventoryPages/ProfitLossReports/ProfitLossReports";
 import StockAnalysis from "../Pages/InventoryPages/StockAnalysis/StockAnalysis";
+import LoginPage from "../Pages/LoginPage/LoginPage";
+import ProfilePage from "../Pages/ProfilePage/ProfilePage";
+import SettingsPage from "../Pages/SettingsPage/SettingsPage";
+import ProtectedRoute from "./ProtectedRoute";
+
 // Router config
 const router = createBrowserRouter([
   {
+    path: "/login",
+    element: <LoginPage />
+  },
+  {
     path: "/",
     element: (
-      <ErrorBoundary>
-        <ScrollToTop />
-        <DashboardLayout />
-      </ErrorBoundary>
+      <ProtectedRoute>
+        <ErrorBoundary>
+          <ScrollToTop />
+          <DashboardLayout />
+        </ErrorBoundary>
+      </ProtectedRoute>
     ),
     children: [
       {
@@ -170,7 +181,15 @@ const router = createBrowserRouter([
         path: "/inventory/stock-analysis",
         element: <StockAnalysis />
       },
-      
+      //profile and settings
+      {
+        path: "/profile",
+        element: <ProfilePage />
+      },
+      {
+        path: "/settings",
+        element: <SettingsPage />
+      },
     ],
   },
 ]);
