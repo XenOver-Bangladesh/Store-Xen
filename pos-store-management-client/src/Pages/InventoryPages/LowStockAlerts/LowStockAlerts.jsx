@@ -3,7 +3,7 @@ import { AlertTriangle, Package, RotateCcw, RefreshCw, Plus, Filter, Download } 
 import Button from '../../../Components/UI/Button'
 import StatsCard from '../../../Shared/StatsCard/StatsCard'
 import InfoCard from '../../../Shared/InfoCard/InfoCard'
-import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
+import { ReusableFilter } from '../../../Shared/ReusableFilter/ReusableFilter'
 import { SharedTable } from '../../../Shared/SharedTable/SharedTable'
 import SharedModal from '../../../Shared/SharedModal/SharedModal'
 import { inventoryAPI, productsAPI, suppliersAPI, purchaseOrdersAPI } from '../services/inventoryService'
@@ -479,7 +479,7 @@ const LowStockAlerts = () => {
       />
 
       {/* Filters */}
-      <ReuseableFilter
+      <ReusableFilter
         filters={filters}
         onFilterChange={handleFilterChange}
         onClearFilters={handleClearFilters}

@@ -6,7 +6,7 @@ import StatsCard from '../../Shared/StatsCard/StatsCard'
 import InfoCard from '../../Shared/InfoCard/InfoCard'
 import EmptyState from '../../Shared/EmptyState/EmptyState'
 import { SharedTable } from '../../Shared/SharedTable/SharedTable'
-import { ReuseableFilter } from '../../Shared/ReuseableFilter/ReuseableFilter'
+import { ReusableFilter } from '../../Shared/ReusableFilter/ReusableFilter'
 import TransferModal from './components/TransferModal'
 import TransferHistoryModal from './components/TransferHistoryModal'
 import { useStockTransferData } from './hooks/useStockTransferData'
@@ -272,7 +272,7 @@ const StockTransferImproved = () => {
       </InfoCard>
 
       {/* Filters */}
-      <ReuseableFilter
+      <ReusableFilter
         filters={filters}
         onFilterChange={handleFilterChange}
         onClearFilters={clearFilters}

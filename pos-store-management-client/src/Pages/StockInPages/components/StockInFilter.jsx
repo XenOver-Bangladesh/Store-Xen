@@ -1,5 +1,5 @@
 import React from 'react'
-import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
+import { ReusableFilter } from '../../../Shared/ReusableFilter/ReusableFilter'
 import { exportStockInToCSV, downloadCSV } from '../utils/stockInHelpers'
 
 const StockInFilter = ({ 
@@ -80,7 +80,7 @@ const StockInFilter = ({
   }
 
   return (
-    <ReuseableFilter
+    <ReusableFilter
       filters={filters}
       onFilterChange={handleFilterChangeInternal}
       onClearFilters={handleClearFilters}

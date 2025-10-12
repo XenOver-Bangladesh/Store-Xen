@@ -12,8 +12,8 @@ import Payments from "../Pages/GENPaymentsPage/Payments";
 import { InStockProductPages } from "../Pages/InStockProductPages/InStockProductPages";
 import StockInPages from "../Pages/StockInPages/StockInPages";
 import InventoryTracking from "../Pages/WarehouseBarcode/InventoryTracking";
-import WarehouseStocktransfer from "../Pages/WarehouseStocktransfer/WarehouseStocktransfer";
-import WarehouseList from "../Pages/WarehouseList/WarehouseList";
+import StockTransferImproved from "../Pages/WarehouseStocktransfer/StockTransferImproved";
+import WarehouseListRefactored from "../Pages/WarehouseList/WarehouseListRefactored";
 import ScrollToTop from "../Components/ScrollToTop/ScrollToTop";
 import PosTerminalPage from "../Pages/PosTerminal/PosTerminalPage";
 import DiscountsPages from "../Pages/DiscountsPages/DiscountsPages";
@@ -110,11 +110,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/warehouse/stock-transfer",
-        element: <WarehouseStocktransfer />
+        element: <StockTransferImproved />
       },
       {
         path: "/warehouse/list",
-        element: <WarehouseList />
+        element: <WarehouseListRefactored />
       },
       //sales
       {

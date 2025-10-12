@@ -5,7 +5,7 @@ import PageHeader from '../../Shared/PageHeader/PageHeader'
 import StatsCard from '../../Shared/StatsCard/StatsCard'
 import EmptyState from '../../Shared/EmptyState/EmptyState'
 import { SharedTable } from '../../Shared/SharedTable/SharedTable'
-import { ReuseableFilter } from '../../Shared/ReuseableFilter/ReuseableFilter'
+import { ReusableFilter } from '../../Shared/ReusableFilter/ReusableFilter'
 import WarehouseForm from './components/WarehouseForm'
 import WarehouseViewModal from './components/WarehouseViewModal'
 import { useWarehouseData } from './hooks/useWarehouseData'
@@ -232,7 +232,7 @@ const WarehouseListRefactored = () => {
       </div>
 
       {/* Filters */}
-      <ReuseableFilter
+      <ReusableFilter
         filters={filters}
         onFilterChange={handleFilterChange}
         onClearFilters={clearFilters}

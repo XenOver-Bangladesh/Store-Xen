@@ -1,5 +1,5 @@
 import React from 'react'
-import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
+import { ReusableFilter } from '../../../Shared/ReusableFilter/ReusableFilter'
 import { exportBarcodeToCSV, downloadCSV } from '../utils/barcodeHelpers'
 
 const BarcodeFilter = ({
@@ -46,7 +46,7 @@ const BarcodeFilter = ({
   }
 
   return (
-    <ReuseableFilter
+    <ReusableFilter
       filters={filters}
       onFilterChange={onFilterChange}
       onClearFilters={onClearFilters}

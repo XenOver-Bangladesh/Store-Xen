@@ -1,5 +1,5 @@
 import React from 'react'
-import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
+import { ReusableFilter } from '../../../Shared/ReusableFilter/ReusableFilter'
 
 const PaymentsFilter = ({ 
   filters, 
@@ -77,7 +77,7 @@ const PaymentsFilter = ({
   }
 
   return (
-    <ReuseableFilter
+    <ReusableFilter
       filters={filters}
       onFilterChange={handleFilterChangeInternal}
       onClearFilters={handleClearFilters}

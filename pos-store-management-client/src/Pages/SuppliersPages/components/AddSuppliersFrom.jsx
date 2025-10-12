@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react'
-import InputFrom from '../../../Shared/InputFrom/InputFrom'
+import InputForm from '../../../Shared/InputForm/InputForm'
 import { PAYMENT_TERMS_OPTIONS, STATUS_OPTIONS, SUPPLIER_CATEGORIES } from '../utils/supplierHelpers'
 
 export const AddSuppliersFrom = forwardRef(({ onSubmit, hideSubmitButton = false }, ref) => {
@@ -67,7 +67,7 @@ export const AddSuppliersFrom = forwardRef(({ onSubmit, hideSubmitButton = false
       <div className='mb-4'>
         <p className='text-sm text-slate-500'>Fill in the supplier information below</p>
       </div>
-      <InputFrom
+      <InputForm
         ref={ref}
         fields={fields}
         defaultValues={defaultValues}

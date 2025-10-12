@@ -186,42 +186,55 @@ export const InStockProductPages = () => {
     const product = inventory.find(p => p.productId === locationItem.productId)
     const expiryStatus = getExpiryStatus(locationItem.expiry)
 
+    // Safely get product name
+    const productName = locationItem.productName || product?.productName || 'Unknown Product'
+    
+    // Safely get product details
+    const productSku = locationItem.sku || product?.sku || 'N/A'
+    const productCategory = locationItem.category || product?.category || 'Uncategorized'
+    const productBatch = locationItem.batch || 'N/A'
+    const productExpiry = locationItem.expiry || 'N/A'
+    const productLocation = locationItem.location || 'Unknown Location'
+    const productQuantity = locationItem.quantity || 0
+    const productStatus = locationItem.status || 'Unknown'
+    const lastUpdated = locationItem.lastUpdated || product?.updatedAt || product?.createdAt
+
     Swal.fire({
-      title: `<div class="flex items-center justify-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>${locationItem.productName}</div>`,
+      title: `<div class="flex items-center justify-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>${productName}</div>`,
       html: `
         <div class="text-left space-y-4 max-h-96 overflow-y-auto">
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p class="text-gray-600 font-semibold">Product ID</p>
-              <p class="text-gray-900 font-mono text-xs">${locationItem.productId}</p>
+              <p class="text-gray-900 font-mono text-xs">${locationItem.productId || 'N/A'}</p>
             </div>
             <div>
               <p class="text-gray-600 font-semibold">SKU</p>
-              <p class="text-gray-900 font-mono">${locationItem.sku || 'N/A'}</p>
+              <p class="text-gray-900 font-mono">${productSku}</p>
             </div>
             <div>
               <p class="text-gray-600 font-semibold">Category</p>
-              <p class="text-gray-900">${locationItem.category || 'N/A'}</p>
+              <p class="text-gray-900">${productCategory}</p>
             </div>
             <div>
               <p class="text-gray-600 font-semibold">Batch Number</p>
-              <p class="text-gray-900 font-mono">${locationItem.batch || 'N/A'}</p>
+              <p class="text-gray-900 font-mono">${productBatch}</p>
             </div>
             <div>
               <p class="text-gray-600 font-semibold">Expiry Date</p>
-              <p class="text-gray-900">${locationItem.expiry ? formatDate(locationItem.expiry).split(',')[0] : 'N/A'}</p>
+              <p class="text-gray-900">${productExpiry !== 'N/A' ? formatDate(productExpiry).split(',')[0] : 'N/A'}</p>
               ${expiryStatus ? `<p class="${expiryStatus.color} text-xs font-semibold">${expiryStatus.status}</p>` : ''}
             </div>
             <div>
               <p class="text-gray-600 font-semibold">Location</p>
-              <p class="text-gray-900">${locationItem.location || 'Main Warehouse'}</p>
+              <p class="text-gray-900">${productLocation}</p>
             </div>
           </div>
           
           <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
             <div class="text-center">
               <p class="text-sm text-gray-600">Current Stock Quantity</p>
-              <p class="text-4xl font-bold text-blue-600 mt-2">${locationItem.quantity || 0}</p>
+              <p class="text-4xl font-bold text-blue-600 mt-2">${productQuantity}</p>
               <p class="text-xs text-gray-500 mt-1">units available</p>
             </div>
           </div>
@@ -229,31 +242,31 @@ export const InStockProductPages = () => {
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p class="text-gray-600 font-semibold">Last Updated</p>
-              <p class="text-gray-900 text-xs">${formatDate(locationItem.lastUpdated)}</p>
+              <p class="text-gray-900 text-xs">${formatDate(lastUpdated)}</p>
             </div>
             <div>
               <p class="text-gray-600 font-semibold">Status</p>
-              <p class="text-gray-900">${locationItem.status || 'Unknown'}</p>
+              <p class="text-gray-900">${productStatus}</p>
             </div>
           </div>
 
           ${product ? `
             <div class="bg-gray-50 p-3 rounded-lg">
               <p class="text-xs text-gray-600 font-semibold mb-2">Product Details</p>
-              <p class="text-sm text-gray-700">Price: <strong>BDT ${product.sellingPrice || 'N/A'}</strong></p>
-              <p class="text-sm text-gray-700">Cost Price: <strong>BDT ${product.costPrice || 'N/A'}</strong></p>
+              <p class="text-sm text-gray-700">Price: <strong>BDT ${product.sellingPrice ? parseFloat(product.sellingPrice).toFixed(2) : 'N/A'}</strong></p>
+              <p class="text-sm text-gray-700">Cost Price (Avg PO): <strong>BDT ${product.costPrice ? parseFloat(product.costPrice).toFixed(2) : 'N/A'}</strong></p>
               ${product.description ? `<p class="text-sm text-gray-700 mt-2">${product.description}</p>` : ''}
             </div>
           ` : ''}
 
-          ${product && product.locations.length > 1 ? `
+          ${product && product.locations && product.locations.length > 1 ? `
             <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
               <p class="text-xs text-gray-600 font-semibold mb-2">All Locations for this Product:</p>
               <div class="space-y-1">
                 ${product.locations.map(loc => `
                   <div class="flex justify-between text-xs">
-                    <span class="text-gray-600">${loc.location}</span>
-                    <span class="font-medium ${loc.quantity > 0 ? 'text-green-600' : 'text-red-600'}">${loc.quantity} units</span>
+                    <span class="text-gray-600">${loc.location || 'Unknown Location'}</span>
+                    <span class="font-medium ${(loc.quantity || 0) > 0 ? 'text-green-600' : 'text-red-600'}">${loc.quantity || 0} units</span>
                   </div>
                 `).join('')}
               </div>

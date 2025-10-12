@@ -22,7 +22,8 @@ const AddPaymentModal = ({
 
   useEffect(() => {
     if (isOpen && payment) {
-      const dueAmount = calculateDueAmount(payment.amountDue, payment.amountPaid)
+      const totalAmount = payment.totalAmount || payment.amountDue || 0
+      const dueAmount = payment.dueAmount || calculateDueAmount(totalAmount, payment.amountPaid)
       setFormData({
         paymentAmount: dueAmount.toFixed(2),
         paymentMethod: 'Cash',
@@ -42,7 +43,8 @@ const AddPaymentModal = ({
     e.preventDefault()
     
     const paymentAmount = parseFloat(formData.paymentAmount)
-    const dueAmount = calculateDueAmount(payment.amountDue, payment.amountPaid)
+    const totalAmount = payment.totalAmount || payment.amountDue || 0
+    const dueAmount = payment.dueAmount || calculateDueAmount(totalAmount, payment.amountPaid)
 
     if (!paymentAmount || paymentAmount <= 0) {
       setError('Please enter a valid payment amount')
@@ -63,7 +65,9 @@ const AddPaymentModal = ({
   if (!isOpen) return null
 
   const supplier = suppliers.find(s => s._id === payment?.supplierId)
-  const dueAmount = calculateDueAmount(payment?.amountDue, payment?.amountPaid)
+  const supplierName = payment?.supplierName || supplier?.supplierName || supplier?.name || 'N/A'
+  const totalAmount = payment?.totalAmount || payment?.amountDue || 0
+  const dueAmount = payment?.dueAmount || calculateDueAmount(totalAmount, payment?.amountPaid)
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -95,7 +99,7 @@ const AddPaymentModal = ({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Supplier</p>
-                <p className="font-semibold text-gray-900">{supplier?.supplierName || 'N/A'}</p>
+                <p className="font-semibold text-gray-900">{supplierName}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600 mb-1">PO Number</p>
@@ -103,7 +107,7 @@ const AddPaymentModal = ({
               </div>
               <div>
                 <p className="text-sm text-gray-600 mb-1">Total Amount</p>
-                <p className="text-lg font-bold text-gray-900">{formatCurrency(payment?.amountDue)}</p>
+                <p className="text-lg font-bold text-gray-900">{formatCurrency(totalAmount)}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600 mb-1">Already Paid</p>

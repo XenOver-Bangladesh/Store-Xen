@@ -2,7 +2,7 @@ import React from 'react'
 import Button from '../../Components/UI/Button'
 import { Filter, Download, RefreshCw } from 'lucide-react'
 
-export const ReuseableFilter = ({
+export const ReusableFilter = ({
   filters = {},
   onFilterChange = () => {},
   onClearFilters = () => {},

@@ -1,5 +1,5 @@
 import React from 'react'
-import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
+import { ReusableFilter } from '../../../Shared/ReusableFilter/ReusableFilter'
 import { exportBatchToCSV, downloadCSV } from '../utils/batchHelpers'
 
 const BatchFilter = ({
@@ -48,7 +48,7 @@ const BatchFilter = ({
   }
 
   return (
-    <ReuseableFilter
+    <ReusableFilter
       filters={filters}
       onFilterChange={onFilterChange}
       onClearFilters={onClearFilters}

@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 
-const InputFrom = forwardRef(({
+const InputForm = forwardRef(({
   fields = [],
   defaultValues = {},
   onSubmit = () => {},
@@ -162,4 +162,4 @@ const InputFrom = forwardRef(({
   )
 })
 
-export default InputFrom
+export default InputForm

@@ -15,16 +15,28 @@ const ProductInventoryList = ({
     const flattened = []
     
     inventory.forEach(product => {
-      product.locations.forEach(location => {
+      // Handle both old and new data structures
+      const locations = product.locations || []
+      
+      locations.forEach(location => {
         flattened.push({
           ...product,
           ...location,
-          // Add product info to each location row
-          productName: product.productName,
-          sku: product.sku,
-          category: product.category,
-          costPrice: product.costPrice,
-          sellingPrice: product.sellingPrice
+          // Ensure product info is available for each location row
+          productName: product.productName || 'Unknown Product',
+          sku: product.sku || 'N/A',
+          category: product.category || 'Uncategorized',
+          costPrice: product.costPrice || 0,
+          sellingPrice: product.sellingPrice || 0,
+          // Ensure location-specific data is properly mapped
+          quantity: location.quantity || 0,
+          location: location.location || 'Unknown Location',
+          batch: location.batch || 'N/A',
+          expiry: location.expiry || 'N/A',
+          status: location.status || 'Unknown',
+          lastUpdated: location.lastUpdated || product.updatedAt || product.createdAt,
+          barcode: location.barcode || product.barcode || '',
+          qrCode: location.qrCode || product.qrCode || ''
         })
       })
     })
