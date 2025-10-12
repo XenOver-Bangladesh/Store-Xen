@@ -96,26 +96,76 @@ export const inventoryAPI = {
   }
 }
 
-// Customers API
+// Customers API (with localStorage fallback until backend endpoint is ready)
 export const customersAPI = {
   getAll: async () => {
-    const response = await api.get('/customers')
-    return response.data
+    try {
+      const response = await api.get('/customers')
+      return response.data
+    } catch (error) {
+      console.warn('Backend customers endpoint not available, using localStorage:', error.message)
+      // Fallback to localStorage
+      const localCustomers = localStorage.getItem('pos_customers')
+      return localCustomers ? JSON.parse(localCustomers) : []
+    }
   },
   
   create: async (customerData) => {
-    const response = await api.post('/customers', customerData)
-    return response.data
+    try {
+      const response = await api.post('/customers', customerData)
+      return response.data
+    } catch (error) {
+      console.warn('Backend customers endpoint not available, using localStorage:', error.message)
+      // Fallback to localStorage
+      const localCustomers = localStorage.getItem('pos_customers')
+      const customers = localCustomers ? JSON.parse(localCustomers) : []
+      
+      const newCustomer = {
+        _id: `customer_${Date.now()}`,
+        ...customerData,
+        createdAt: new Date().toISOString()
+      }
+      
+      customers.push(newCustomer)
+      localStorage.setItem('pos_customers', JSON.stringify(customers))
+      return newCustomer
+    }
   },
   
   update: async (id, customerData) => {
-    const response = await api.put(`/customers/${id}`, customerData)
-    return response.data
+    try {
+      const response = await api.put(`/customers/${id}`, customerData)
+      return response.data
+    } catch (error) {
+      console.warn('Backend customers endpoint not available, using localStorage:', error.message)
+      // Fallback to localStorage
+      const localCustomers = localStorage.getItem('pos_customers')
+      const customers = localCustomers ? JSON.parse(localCustomers) : []
+      
+      const index = customers.findIndex(c => c._id === id)
+      if (index !== -1) {
+        customers[index] = { ...customers[index], ...customerData }
+        localStorage.setItem('pos_customers', JSON.stringify(customers))
+        return customers[index]
+      }
+      throw new Error('Customer not found')
+    }
   },
   
   delete: async (id) => {
-    const response = await api.delete(`/customers/${id}`)
-    return response.data
+    try {
+      const response = await api.delete(`/customers/${id}`)
+      return response.data
+    } catch (error) {
+      console.warn('Backend customers endpoint not available, using localStorage:', error.message)
+      // Fallback to localStorage
+      const localCustomers = localStorage.getItem('pos_customers')
+      const customers = localCustomers ? JSON.parse(localCustomers) : []
+      
+      const filtered = customers.filter(c => c._id !== id)
+      localStorage.setItem('pos_customers', JSON.stringify(filtered))
+      return { success: true }
+    }
   }
 }
 

@@ -104,12 +104,37 @@ const PosTerminalPage = () => {
       console.log('=== FETCHED DATA DEBUG ===')
       console.log('Products count:', productsData.length)
       console.log('Inventory count:', inventoryData.length)
+      console.log('Customers count:', customersData.length)
       console.log('Sample inventory item:', inventoryData[0])
       console.log('Sony PS5 inventory items:', inventoryData.filter(item => item.productName && item.productName.includes('Sony PS5')))
       
       setProducts(productsData)
       setInventory(inventoryData)
-      setCustomers(customersData)
+      
+      // Add default customers if none exist (for localStorage fallback)
+      if (customersData.length === 0) {
+        const defaultCustomers = [
+          {
+            _id: 'customer_default_1',
+            name: 'Walk-in Customer',
+            phone: '',
+            email: '',
+            createdAt: new Date().toISOString()
+          },
+          {
+            _id: 'customer_default_2',
+            name: 'Regular Customer',
+            phone: '01700000000',
+            email: 'customer@example.com',
+            createdAt: new Date().toISOString()
+          }
+        ]
+        localStorage.setItem('pos_customers', JSON.stringify(defaultCustomers))
+        setCustomers(defaultCustomers)
+      } else {
+        setCustomers(customersData)
+      }
+      
       setFilteredProducts(productsData)
     } catch (error) {
       console.error('Error fetching data:', error)
