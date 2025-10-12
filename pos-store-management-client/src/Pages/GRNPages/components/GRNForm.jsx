@@ -4,6 +4,7 @@ import Button from '../../../Components/UI/Button'
 import SharedModal from '../../../Shared/SharedModal/SharedModal'
 import GRNItemsTable from './GRNItemsTable'
 import { validateGRNForm, generateGRNNumber, MAX_NOTES_LENGTH } from '../utils/grnHelpers'
+import { grnAPI } from '../services/grnService'
 import Swal from 'sweetalert2'
 import axios from 'axios'
 
@@ -64,7 +65,6 @@ const GRNForm = ({
     if (selectedPO) {
       try {
         // Fetch cumulative received quantities for this PO
-        const { grnAPI } = await import('../services/grnService')
         const cumulativeReceived = await grnAPI.getCumulativeReceivedByPO(poId)
         
         // Create a map for quick lookup
