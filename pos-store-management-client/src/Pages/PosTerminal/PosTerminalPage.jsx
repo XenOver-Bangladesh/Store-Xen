@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ShoppingCart, Package, RefreshCw } from 'lucide-react'
+import { ShoppingCart, Package, RefreshCw, ChevronDown } from 'lucide-react'
 import Swal from 'sweetalert2'
 import ProductList from './components/ProductList'
 import Cart from './components/Cart'
@@ -22,6 +22,8 @@ const PosTerminalPage = () => {
   const [cartItems, setCartItems] = useState([])
   const [selectedCustomer, setSelectedCustomer] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [headerVisible, setHeaderVisible] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
   
   const [filters, setFilters] = useState({
     search: '',
@@ -69,6 +71,26 @@ const PosTerminalPage = () => {
     const newTotals = calculateCartTotals(cartItems, appliedDiscounts, taxRate)
     setTotals(newTotals)
   }, [cartItems, appliedDiscounts, taxRate])
+
+  // Handle scroll to hide/show header
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // Scrolling down
+        setHeaderVisible(false)
+      } else {
+        // Scrolling up
+        setHeaderVisible(true)
+      }
+      
+      setLastScrollY(currentScrollY)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [lastScrollY])
 
   const fetchData = async () => {
     setLoading(true)
@@ -427,9 +449,25 @@ const PosTerminalPage = () => {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+    <div className="space-y-4 relative">
+      {/* Toggle Header Button - Shows when header is hidden */}
+      {!headerVisible && (
+        <button
+          onClick={() => setHeaderVisible(true)}
+          className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transition-all animate-bounce"
+          title="Show Header"
+        >
+          <ChevronDown className="w-4 h-4" />
+          <span className="text-sm font-medium">Show Header</span>
+        </button>
+      )}
+
+      {/* Header with Auto-hide */}
+      <div 
+        className={`bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200 transition-all duration-300 ${
+          headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full h-0 overflow-hidden p-0'
+        }`}
+      >
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
@@ -472,10 +510,14 @@ const PosTerminalPage = () => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Left: Product List */}
-        <div className="lg:col-span-2">
+      {/* Main Content - Dynamic Height Based on Header Visibility */}
+      <div 
+        className={`grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-[600px] transition-all duration-300 ${
+          headerVisible ? 'h-[calc(100vh-280px)]' : 'h-[calc(100vh-80px)]'
+        }`}
+      >
+        {/* Left: Product List - Fixed Height with Scroll */}
+        <div className="lg:col-span-2 h-full overflow-hidden">
           <ProductList
             products={filteredProducts}
             inventory={inventory}
@@ -486,8 +528,8 @@ const PosTerminalPage = () => {
           />
         </div>
 
-        {/* Right: Cart & Payment */}
-        <div className="space-y-4">
+        {/* Right: Cart Only - Full Height */}
+        <div className="h-full overflow-hidden">
           <Cart
             cartItems={cartItems}
             onUpdateQuantity={handleUpdateQuantity}
@@ -500,20 +542,20 @@ const PosTerminalPage = () => {
             onApplyDiscount={handleApplyDiscount}
             onRemoveDiscount={handleRemoveDiscount}
           />
-
-          <PaymentSection
-            customers={customers}
-            selectedCustomer={selectedCustomer}
-            onSelectCustomer={setSelectedCustomer}
-            onCreateCustomer={handleCreateCustomer}
-            cartItems={cartItems}
-            totals={totals}
-            onCompleteSale={handleCompleteSale}
-            onHoldSale={handleHoldSale}
-            onClearCart={handleClearCart}
-          />
         </div>
       </div>
+
+      {/* Payment Modal */}
+      <PaymentSection
+        customers={customers}
+        selectedCustomer={selectedCustomer}
+        onSelectCustomer={setSelectedCustomer}
+        onCreateCustomer={handleCreateCustomer}
+        cartItems={cartItems}
+        totals={totals}
+        onCompleteSale={handleCompleteSale}
+        onHoldSale={handleHoldSale}
+      />
     </div>
   )
 }

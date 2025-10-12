@@ -63,7 +63,7 @@ const ProductList = ({ products, inventory, onAddToCart, onUpdateProductPrice, f
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-full flex flex-col">
       {/* Search and Filters */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 flex-shrink-0">
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
@@ -100,8 +100,8 @@ const ProductList = ({ products, inventory, onAddToCart, onUpdateProductPrice, f
         </div>
       </div>
 
-      {/* Products Grid */}
-      <div className="flex-1 overflow-y-auto p-4">
+      {/* Products Grid - Fixed Height with Scroll */}
+      <div className="flex-1 overflow-y-auto p-4 min-h-0">
         <div className="grid grid-cols-1 gap-3">
           {products.length > 0 ? (
             products.map(product => {

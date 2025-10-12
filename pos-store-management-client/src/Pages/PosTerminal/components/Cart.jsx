@@ -50,7 +50,7 @@ const Cart = ({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-full flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+      <div className="p-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
           <ShoppingCart className="w-5 h-5 text-blue-600" />
           <h3 className="font-semibold text-gray-900">Cart ({cartItems.length})</h3>
@@ -65,8 +65,8 @@ const Cart = ({
         )}
       </div>
 
-      {/* Cart Items */}
-      <div className="flex-1 overflow-y-auto p-4">
+      {/* Cart Items - Fixed Height with Scroll */}
+      <div className="flex-1 overflow-y-auto p-4 min-h-0">
         {cartItems.length > 0 ? (
           <div className="space-y-4">
             {/* Discount Selector */}
@@ -199,33 +199,48 @@ const Cart = ({
         )}
       </div>
 
-      {/* Totals Summary */}
+      {/* Totals Summary - Fixed at Bottom */}
       {cartItems.length > 0 && (
-        <div className="p-4 border-t border-gray-200 bg-gray-50">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Subtotal:</span>
-              <span className="font-medium">BDT {totals.subtotal.toFixed(2)}</span>
-            </div>
-            
-            {totals.totalDiscount > 0 && (
+        <div className="p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+          <div className="space-y-3">
+            <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Discount:</span>
-                <span className="font-medium text-green-600">-BDT {totals.totalDiscount.toFixed(2)}</span>
+                <span className="text-gray-600">Subtotal:</span>
+                <span className="font-medium">BDT {totals.subtotal.toFixed(2)}</span>
               </div>
-            )}
-            
-            {totals.tax > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Tax:</span>
-                <span className="font-medium">BDT {totals.tax.toFixed(2)}</span>
+              
+              {totals.totalDiscount > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Discount:</span>
+                  <span className="font-medium text-green-600">-BDT {totals.totalDiscount.toFixed(2)}</span>
+                </div>
+              )}
+              
+              {totals.tax > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Tax:</span>
+                  <span className="font-medium">BDT {totals.tax.toFixed(2)}</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-300">
+                <span>Grand Total:</span>
+                <span className="text-blue-600">BDT {totals.grandTotal.toFixed(2)}</span>
               </div>
-            )}
-            
-            <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-300">
-              <span>Grand Total:</span>
-              <span className="text-blue-600">BDT {totals.grandTotal.toFixed(2)}</span>
             </div>
+
+            {/* Checkout Button */}
+            <button
+              onClick={() => {
+                // Trigger payment modal
+                const event = new CustomEvent('openPaymentModal')
+                window.dispatchEvent(event)
+              }}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              <span>Proceed to Checkout</span>
+            </button>
           </div>
         </div>
       )}

@@ -12,15 +12,29 @@ const PaymentSection = ({
   cartItems,
   totals,
   onCompleteSale,
-  onHoldSale,
-  onClearCart 
+  onHoldSale
 }) => {
+  const [isOpen, setIsOpen] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('Cash')
   const [showCustomerModal, setShowCustomerModal] = useState(false)
   const [showCustomerHistory, setShowCustomerHistory] = useState(false)
   const [newCustomer, setNewCustomer] = useState({ name: '', phone: '', email: '' })
 
   const paymentMethods = ['Cash', 'Card', 'bKash', 'Nagad', 'Rocket', 'Bank Transfer']
+
+  // Listen for open modal event
+  useEffect(() => {
+    const handleOpenModal = () => {
+      if (cartItems.length > 0) {
+        setIsOpen(true)
+      } else {
+        Swal.fire('Empty Cart', 'Please add items to cart before checkout', 'warning')
+      }
+    }
+
+    window.addEventListener('openPaymentModal', handleOpenModal)
+    return () => window.removeEventListener('openPaymentModal', handleOpenModal)
+  }, [cartItems])
 
   const handleCreateCustomer = async () => {
     if (!newCustomer.name.trim()) {
@@ -32,15 +46,65 @@ const PaymentSection = ({
       await onCreateCustomer(newCustomer)
       setShowCustomerModal(false)
       setNewCustomer({ name: '', phone: '', email: '' })
-    } catch (error) {
+    } catch {
       Swal.fire('Error', 'Failed to create customer', 'error')
     }
   }
 
+  if (!isOpen) return null
+
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+    <>
+      {/* Modal Overlay */}
+      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        {/* Modal Content */}
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          {/* Modal Header */}
+          <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-gray-900">Checkout</h2>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <XCircle className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Modal Body */}
+          <div className="p-4 space-y-4">
+            {/* Order Summary */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
+              <h3 className="font-semibold text-gray-900 mb-2">Order Summary</h3>
+              <div className="space-y-1 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Items:</span>
+                  <span className="font-medium">{cartItems.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Subtotal:</span>
+                  <span className="font-medium">BDT {totals.subtotal.toFixed(2)}</span>
+                </div>
+                {totals.totalDiscount > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Discount:</span>
+                    <span className="font-medium text-green-600">-BDT {totals.totalDiscount.toFixed(2)}</span>
+                  </div>
+                )}
+                {totals.tax > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Tax:</span>
+                    <span className="font-medium">BDT {totals.tax.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-lg font-bold pt-2 border-t border-blue-300 mt-2">
+                  <span>Grand Total:</span>
+                  <span className="text-blue-600">BDT {totals.grandTotal.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
       {/* Customer Selection */}
-      <div className="mb-4">
+      <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">
           <User className="w-4 h-4 inline mr-1" />
           Customer
@@ -109,50 +173,56 @@ const PaymentSection = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="grid grid-cols-3 gap-2">
-        <Button
-          variant="secondary"
-          size="md"
-          onClick={onHoldSale}
-          disabled={cartItems.length === 0}
-          className="w-full"
-        >
-          <div className="flex items-center">
-            <Clock className="w-4 h-4 mr-2" />
-            Hold
-          </div>
-        </Button>
-
-        <Button
-          variant="delete"
-          size="md"
-          onClick={onClearCart}
-          disabled={cartItems.length === 0}
-          className="w-full"
-        >
-          <div className="flex items-center">
-            <XCircle className="w-4 h-4 mr-2" />
-            Clear
-          </div>
-        </Button>
-
+      <div className="space-y-3 pt-4 border-t border-gray-200">
         <Button
           variant="primary"
-          size="md"
-          onClick={() => onCompleteSale(paymentMethod)}
+          size="lg"
+          onClick={async () => {
+            await onCompleteSale(paymentMethod)
+            setIsOpen(false)
+          }}
           disabled={cartItems.length === 0 || !selectedCustomer}
           className="w-full"
         >
-          <div className="flex items-center">
-            <CheckCircle className="w-4 h-4 mr-2" />
-            Complete
+          <div className="flex items-center justify-center">
+            <CheckCircle className="w-5 h-5 mr-2" />
+            <span className="text-lg">Complete Payment</span>
           </div>
         </Button>
+
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={async () => {
+              await onHoldSale()
+              setIsOpen(false)
+            }}
+            disabled={cartItems.length === 0}
+            className="w-full"
+          >
+            <div className="flex items-center justify-center">
+              <Clock className="w-4 h-4 mr-2" />
+              Hold
+            </div>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="md"
+            onClick={() => setIsOpen(false)}
+            className="w-full"
+          >
+            <div className="flex items-center justify-center">
+              Cancel
+            </div>
+          </Button>
+        </div>
       </div>
 
       {/* New Customer Modal */}
       {showCustomerModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60]">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Add New Customer</h3>
             
@@ -226,13 +296,17 @@ const PaymentSection = ({
         </div>
       )}
 
+          </div>
+        </div>
+      </div>
+
       {/* Customer History Modal */}
       <CustomerHistory
         customer={selectedCustomer}
         isOpen={showCustomerHistory}
         onClose={() => setShowCustomerHistory(false)}
       />
-    </div>
+    </>
   )
 }
 
