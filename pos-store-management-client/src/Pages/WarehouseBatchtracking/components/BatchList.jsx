@@ -3,6 +3,7 @@ import { SharedTable } from '../../../Shared/SharedTable/SharedTable'
 import Button from '../../../Components/UI/Button'
 import { Calendar, Clock, Pencil } from 'lucide-react'
 import { 
+  getExpiryStatus,
   getExpiryStatusColor, 
   getExpiryStatusDisplay,
   getDaysUntilExpiry,
@@ -14,6 +15,13 @@ const BatchList = ({
   loading = false,
   onEditBatch
 }) => {
+  // Debug logging
+  console.log('🗂️ BatchList render - Items:', inventory.length)
+  console.log('Loading state:', loading)
+  if (inventory.length > 0) {
+    console.log('First item structure:', inventory[0])
+  }
+  
   const columns = [
     { 
       header: "Product Name", 
@@ -32,16 +40,27 @@ const BatchList = ({
     { 
       header: "Batch Number", 
       accessorKey: "batch",
-      cell: ({ getValue }) => (
-        <div className="font-mono text-sm text-blue-600">{getValue() || 'N/A'}</div>
-      )
+      cell: ({ getValue }) => {
+        const value = getValue()
+        return value ? (
+          <div className="font-mono text-sm text-blue-600">{value}</div>
+        ) : (
+          <div className="text-gray-400 text-sm italic">No Batch</div>
+        )
+      }
     },
     { 
+      id: "expiryDate",
       header: "Expiry Date", 
       accessorKey: "expiry",
-      cell: ({ getValue }) => (
-        <div className="text-gray-700">{formatDate(getValue())}</div>
-      )
+      cell: ({ getValue }) => {
+        const value = getValue()
+        return value ? (
+          <div className="text-gray-700">{formatDate(value)}</div>
+        ) : (
+          <div className="text-gray-400 text-sm italic">No Expiry</div>
+        )
+      }
     },
     { 
       header: "Location", 
@@ -58,24 +77,30 @@ const BatchList = ({
       )
     },
     { 
+      id: "expiryStatus",
       header: "Status", 
       accessorKey: "expiry",
       cell: ({ getValue }) => {
-        const status = getExpiryStatusDisplay(getValue())
-        const colorClasses = getExpiryStatusColor(getValue())
+        const expiryDate = getValue()
+        const statusKey = getExpiryStatus(expiryDate) // Convert date to status key
+        const statusDisplay = getExpiryStatusDisplay(statusKey)
+        const colorClasses = getExpiryStatusColor(statusKey)
         return (
           <span className={`px-2 py-1 rounded-full text-xs font-medium border ${colorClasses}`}>
-            {status}
+            {statusDisplay}
           </span>
         )
       }
     },
     { 
+      id: "daysUntilExpiry",
       header: "Days Until Expiry", 
       accessorKey: "expiry",
       cell: ({ getValue }) => {
         const days = getDaysUntilExpiry(getValue())
-        if (days === null) return <span className="text-gray-400 text-sm">N/A</span>
+        if (days === null) {
+          return <span className="text-gray-400 text-sm italic">Not Applicable</span>
+        }
         
         const colorClass = days < 0 ? 'text-red-600' : days <= 30 ? 'text-yellow-600' : 'text-green-600'
         return (

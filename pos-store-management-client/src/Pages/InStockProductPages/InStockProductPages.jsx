@@ -3,7 +3,7 @@ import { RefreshCw, Package, AlertTriangle, TrendingUp, XCircle, Clock, Info } f
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
 import StatsCard from '../../Shared/StatsCard/StatsCard'
-import InventoryList from './components/InventoryList'
+import ProductInventoryList from './components/ProductInventoryList'
 import InventoryFilter from './components/InventoryFilter'
 import { inventoryAPI, productsAPI } from './services/inventoryService'
 import { formatDate, getExpiryStatus } from './utils/inventoryHelpers'
@@ -38,7 +38,13 @@ export const InStockProductPages = () => {
   const fetchInventory = async () => {
     try {
       setFetchLoading(true)
-      const data = await inventoryAPI.getAll()
+      const data = await inventoryAPI.getProducts()
+      console.log("=== FETCHED PRODUCT-CENTRIC INVENTORY ===");
+      console.log("Total products found:", data.length);
+      if (data.length > 0) {
+        console.log("Sample product data:", data[0]);
+        console.log("Locations for first product:", data[0].locations);
+      }
       setInventory(data || [])
     } catch (error) {
       console.error('Error fetching inventory:', error)
@@ -73,149 +79,197 @@ export const InStockProductPages = () => {
     return [...new Set(cats)]
   }, [products])
 
-  // Filtered and sorted inventory
+  // Filtered and sorted inventory (now product-centric)
   const filteredInventory = useMemo(() => {
-    const filtered = inventory.filter(item => {
+    const filtered = inventory.filter(product => {
       // Search filter
       if (filters.search) {
         const searchLower = filters.search.toLowerCase()
-        if (!item.productName?.toLowerCase().includes(searchLower)) {
+        if (!product.productName?.toLowerCase().includes(searchLower) && 
+            !product.sku?.toLowerCase().includes(searchLower)) {
           return false
         }
       }
 
       // Category filter
       if (filters.category) {
-        const product = products.find(p => p._id === item.productId)
-        if (product?.category !== filters.category) {
+        if (product.category !== filters.category) {
           return false
         }
       }
 
-      // Stock status filter
+      // Stock status filter - check if any location matches
       if (filters.stockStatus) {
-        const stockQty = item.stockQty || 0
-        const product = products.find(p => p._id === item.productId)
-        const lowStockThreshold = product?.lowStockThreshold || 10
+        const hasMatchingLocation = product.locations.some(location => {
+          const stockQty = location.quantity || 0
+          const lowStockThreshold = 10 // Default threshold
 
-        if (filters.stockStatus === 'out-of-stock' && stockQty !== 0) return false
-        if (filters.stockStatus === 'low-stock' && (stockQty === 0 || stockQty > lowStockThreshold)) return false
-        if (filters.stockStatus === 'in-stock' && stockQty <= lowStockThreshold) return false
+          if (filters.stockStatus === 'out-of-stock' && stockQty === 0) return true
+          if (filters.stockStatus === 'low-stock' && stockQty > 0 && stockQty <= lowStockThreshold) return true
+          if (filters.stockStatus === 'in-stock' && stockQty > lowStockThreshold) return true
+          return false
+        })
+        
+        if (!hasMatchingLocation) return false
       }
 
-      // Expiry status filter
+      // Expiry status filter - check if any location matches
       if (filters.expiryStatus) {
-        const expiryStatus = getExpiryStatus(item.expiry)
-        if (!expiryStatus) return false
+        const hasMatchingLocation = product.locations.some(location => {
+          const expiryStatus = getExpiryStatus(location.expiry)
+          if (!expiryStatus) return false
 
-        if (filters.expiryStatus === 'expired' && expiryStatus.status !== 'Expired') return false
-        if (filters.expiryStatus === 'expiring-soon' && expiryStatus.status !== 'Expiring Soon') return false
-        if (filters.expiryStatus === 'valid' && expiryStatus.status !== 'Valid') return false
+          if (filters.expiryStatus === 'expired' && expiryStatus.status === 'Expired') return true
+          if (filters.expiryStatus === 'expiring-soon' && expiryStatus.status === 'Expiring Soon') return true
+          if (filters.expiryStatus === 'valid' && expiryStatus.status === 'Valid') return true
+          return false
+        })
+        
+        if (!hasMatchingLocation) return false
       }
 
-      // Location filter
+      // Location filter - check if any location matches
       if (filters.location) {
         const locationLower = filters.location.toLowerCase()
-        if (!item.location?.toLowerCase().includes(locationLower)) {
-          return false
-        }
+        const hasMatchingLocation = product.locations.some(location => 
+          location.location?.toLowerCase().includes(locationLower)
+        )
+        
+        if (!hasMatchingLocation) return false
       }
 
       return true
     })
 
-    // Sort by updatedAt (newest first)
-    return filtered.sort((a, b) => {
-      if (a.updatedAt && b.updatedAt) {
-        return new Date(b.updatedAt) - new Date(a.updatedAt)
-      }
-      return 0
-    })
-  }, [inventory, products, filters])
+    // Sort by product name
+    return filtered.sort((a, b) => a.productName.localeCompare(b.productName))
+  }, [inventory, filters])
 
-  // Calculate summary stats
+  // Calculate summary stats (now product-centric)
   const stats = useMemo(() => {
     const totalProducts = inventory.length
-    const totalStock = inventory.reduce((sum, item) => sum + (item.stockQty || 0), 0)
     
-    const lowStock = inventory.filter(item => {
-      const stockQty = item.stockQty || 0
-      const product = products.find(p => p._id === item.productId)
-      const lowStockThreshold = product?.lowStockThreshold || 10
-      return stockQty > 0 && stockQty <= lowStockThreshold
+    // Calculate total stock across all locations
+    const totalStock = inventory.reduce((sum, product) => {
+      return sum + product.locations.reduce((locationSum, location) => {
+        return locationSum + (location.quantity || 0)
+      }, 0)
+    }, 0)
+    
+    // Count products with low stock in any location
+    const lowStock = inventory.filter(product => {
+      return product.locations.some(location => {
+        const stockQty = location.quantity || 0
+        const lowStockThreshold = 10 // Default threshold
+        return stockQty > 0 && stockQty <= lowStockThreshold
+      })
     }).length
 
-    const outOfStock = inventory.filter(item => (item.stockQty || 0) === 0).length
+    // Count products that are out of stock in all locations
+    const outOfStock = inventory.filter(product => {
+      return product.locations.every(location => (location.quantity || 0) === 0)
+    }).length
     
-    const expiring = inventory.filter(item => {
-      const expiryStatus = getExpiryStatus(item.expiry)
-      return expiryStatus && (expiryStatus.status === 'Expired' || expiryStatus.status === 'Expiring Soon')
+    // Count products with expiring items in any location
+    const expiring = inventory.filter(product => {
+      return product.locations.some(location => {
+        const expiryStatus = getExpiryStatus(location.expiry)
+        return expiryStatus && (expiryStatus.status === 'Expired' || expiryStatus.status === 'Expiring Soon')
+      })
     }).length
 
     return { totalProducts, totalStock, lowStock, outOfStock, expiring }
-  }, [inventory, products])
+  }, [inventory])
 
-  const handleView = (item) => {
-    const product = products.find(p => p._id === item.productId)
-    const expiryStatus = getExpiryStatus(item.expiry)
+  const handleView = (locationItem) => {
+    // Find the product this location belongs to
+    const product = inventory.find(p => p.productId === locationItem.productId)
+    const expiryStatus = getExpiryStatus(locationItem.expiry)
+
+    // Safely get product name
+    const productName = locationItem.productName || product?.productName || 'Unknown Product'
+    
+    // Safely get product details
+    const productSku = locationItem.sku || product?.sku || 'N/A'
+    const productCategory = locationItem.category || product?.category || 'Uncategorized'
+    const productBatch = locationItem.batch || 'N/A'
+    const productExpiry = locationItem.expiry || 'N/A'
+    const productLocation = locationItem.location || 'Unknown Location'
+    const productQuantity = locationItem.quantity || 0
+    const productStatus = locationItem.status || 'Unknown'
+    const lastUpdated = locationItem.lastUpdated || product?.updatedAt || product?.createdAt
 
     Swal.fire({
-      title: `<div class="flex items-center justify-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>${item.productName}</div>`,
+      title: `<div class="flex items-center justify-center"><svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>${productName}</div>`,
       html: `
         <div class="text-left space-y-4 max-h-96 overflow-y-auto">
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p class="text-gray-600 font-semibold">Product ID</p>
-              <p class="text-gray-900 font-mono text-xs">${item.productId}</p>
+              <p class="text-gray-900 font-mono text-xs">${locationItem.productId || 'N/A'}</p>
             </div>
             <div>
               <p class="text-gray-600 font-semibold">SKU</p>
-              <p class="text-gray-900 font-mono">${product?.sku || 'N/A'}</p>
+              <p class="text-gray-900 font-mono">${productSku}</p>
             </div>
             <div>
               <p class="text-gray-600 font-semibold">Category</p>
-              <p class="text-gray-900">${product?.category || 'N/A'}</p>
+              <p class="text-gray-900">${productCategory}</p>
             </div>
             <div>
               <p class="text-gray-600 font-semibold">Batch Number</p>
-              <p class="text-gray-900 font-mono">${item.batch || 'N/A'}</p>
+              <p class="text-gray-900 font-mono">${productBatch}</p>
             </div>
             <div>
               <p class="text-gray-600 font-semibold">Expiry Date</p>
-              <p class="text-gray-900">${item.expiry ? formatDate(item.expiry).split(',')[0] : 'N/A'}</p>
+              <p class="text-gray-900">${productExpiry !== 'N/A' ? formatDate(productExpiry).split(',')[0] : 'N/A'}</p>
               ${expiryStatus ? `<p class="${expiryStatus.color} text-xs font-semibold">${expiryStatus.status}</p>` : ''}
             </div>
             <div>
               <p class="text-gray-600 font-semibold">Location</p>
-              <p class="text-gray-900">${item.location || 'Main Warehouse'}</p>
+              <p class="text-gray-900">${productLocation}</p>
             </div>
           </div>
           
           <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
             <div class="text-center">
               <p class="text-sm text-gray-600">Current Stock Quantity</p>
-              <p class="text-4xl font-bold text-blue-600 mt-2">${item.stockQty || 0}</p>
+              <p class="text-4xl font-bold text-blue-600 mt-2">${productQuantity}</p>
               <p class="text-xs text-gray-500 mt-1">units available</p>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <p class="text-gray-600 font-semibold">Created At</p>
-              <p class="text-gray-900 text-xs">${formatDate(item.createdAt)}</p>
+              <p class="text-gray-600 font-semibold">Last Updated</p>
+              <p class="text-gray-900 text-xs">${formatDate(lastUpdated)}</p>
             </div>
             <div>
-              <p class="text-gray-600 font-semibold">Last Updated</p>
-              <p class="text-gray-900 text-xs">${formatDate(item.updatedAt)}</p>
+              <p class="text-gray-600 font-semibold">Status</p>
+              <p class="text-gray-900">${productStatus}</p>
             </div>
           </div>
 
           ${product ? `
             <div class="bg-gray-50 p-3 rounded-lg">
               <p class="text-xs text-gray-600 font-semibold mb-2">Product Details</p>
-              <p class="text-sm text-gray-700">Price: <strong>$${product.sellingPrice || 'N/A'}</strong></p>
-              <p class="text-sm text-gray-700">Low Stock Alert: <strong>${product.lowStockThreshold || 10} units</strong></p>
+              <p class="text-sm text-gray-700">Price: <strong>BDT ${product.sellingPrice ? parseFloat(product.sellingPrice).toFixed(2) : 'N/A'}</strong></p>
+              <p class="text-sm text-gray-700">Cost Price (Avg PO): <strong>BDT ${product.costPrice ? parseFloat(product.costPrice).toFixed(2) : 'N/A'}</strong></p>
               ${product.description ? `<p class="text-sm text-gray-700 mt-2">${product.description}</p>` : ''}
+            </div>
+          ` : ''}
+
+          ${product && product.locations && product.locations.length > 1 ? `
+            <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+              <p class="text-xs text-gray-600 font-semibold mb-2">All Locations for this Product:</p>
+              <div class="space-y-1">
+                ${product.locations.map(loc => `
+                  <div class="flex justify-between text-xs">
+                    <span class="text-gray-600">${loc.location || 'Unknown Location'}</span>
+                    <span class="font-medium ${(loc.quantity || 0) > 0 ? 'text-green-600' : 'text-red-600'}">${loc.quantity || 0} units</span>
+                  </div>
+                `).join('')}
+              </div>
             </div>
           ` : ''}
         </div>
@@ -272,7 +326,7 @@ export const InStockProductPages = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
         <StatsCard
           label="Total Products"
           value={stats.totalProducts}
@@ -314,10 +368,9 @@ export const InStockProductPages = () => {
         totalCount={inventory.length}
       />
 
-      {/* Inventory List */}
-      <InventoryList
+      {/* Product Inventory List */}
+      <ProductInventoryList
         inventory={filteredInventory}
-        products={products}
         loading={fetchLoading}
         onView={handleView}
       />

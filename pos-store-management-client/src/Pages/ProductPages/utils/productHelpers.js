@@ -53,12 +53,41 @@ export const validateProductForm = (formData, allProducts = []) => {
     errors.category = 'Category is required'
   }
   
-  // Check for duplicate QR code
-  if (formData.qrCode) {
+  // Brand is required
+  if (!formData.brand || !formData.brand.trim()) {
+    errors.brand = 'Brand is required'
+  }
+  
+  // SKU is required
+  if (!formData.sku || !formData.sku.trim()) {
+    errors.sku = 'SKU is required'
+  } else {
+    // Check for duplicate SKU
+    const duplicateSKU = allProducts.find(p => p.sku === formData.sku.trim())
+    if (duplicateSKU && duplicateSKU._id !== formData._id) {
+      errors.sku = 'This SKU already exists. Please use a different SKU.'
+    }
+  }
+  
+  // Supplier is required
+  if (!formData.supplier) {
+    errors.supplier = 'Supplier is required'
+  }
+  
+  // QR Code is required
+  if (!formData.qrCode || !formData.qrCode.trim()) {
+    errors.qrCode = 'QR Code is required'
+  } else {
+    // Check for duplicate QR code
     const duplicateQR = allProducts.find(p => p.qrCode === formData.qrCode)
     if (duplicateQR && duplicateQR._id !== formData._id) {
       errors.qrCode = 'This QR Code already exists. Please generate a new one.'
     }
+  }
+  
+  // Product Image is required
+  if (!formData.productImage || !formData.productImage.trim()) {
+    errors.productImage = 'Product Image is required'
   }
   
   return {
@@ -74,11 +103,12 @@ export const validateProductForm = (formData, allProducts = []) => {
  */
 export const exportProductsToCSV = (products) => {
   const csv = [
-    ['Product Name', 'Category', 'Brand', 'Supplier', 'QR Code', 'Created At'],
+    ['Product Name', 'Category', 'Brand', 'SKU', 'Supplier', 'QR Code', 'Created At'],
     ...products.map(p => [
       p.productName || '',
       p.category || '',
       p.brand || '',
+      p.sku || '',
       p.supplier || '',
       p.qrCode || '',
       p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ''
@@ -117,6 +147,7 @@ export const applyProductFilters = (products, filters) => {
     const searchLower = filters.search.toLowerCase()
     filtered = filtered.filter(product => 
       product.productName?.toLowerCase().includes(searchLower) ||
+      product.sku?.toLowerCase().includes(searchLower) ||
       product.brand?.toLowerCase().includes(searchLower) ||
       product.qrCode?.toLowerCase().includes(searchLower)
     )
@@ -173,14 +204,21 @@ export const formatDate = (date) => {
  * @param {string} imageUrl - Uploaded image URL
  * @returns {Object} Product data ready for API submission
  */
-export const prepareProductData = (formData, imageUrl = '') => {
+export const prepareProductData = (formData, imageUrl = '', suppliers = []) => {
+  // Find supplier ID if supplier name is provided
+  const selectedSupplier = suppliers.find(s => 
+    s.supplierName === formData.supplier || s.name === formData.supplier
+  )
+  
   return {
     productName: formData.productName.trim(),
     category: formData.category,
     brand: formData.brand?.trim() || '',
+    sku: formData.sku?.trim() || '',
     description: formData.description?.trim() || '',
     qrCode: formData.qrCode,
-    supplier: formData.supplier || '',
+    supplier: formData.supplier || '', // Keep supplier name for backward compatibility
+    supplierId: selectedSupplier?._id || null, // Add supplier ID for better data integrity
     productImage: imageUrl || formData.productImage || '',
     createdAt: formData.createdAt || new Date().toISOString()
   }

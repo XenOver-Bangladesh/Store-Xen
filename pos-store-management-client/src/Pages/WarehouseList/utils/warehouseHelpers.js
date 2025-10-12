@@ -38,6 +38,22 @@ export const validateWarehouseForm = (formData) => {
     errors.push('Location is required')
   }
 
+  if (!formData.address || formData.address.trim() === '') {
+    errors.push('Address is required')
+  }
+
+  if (!formData.contactPerson || formData.contactPerson.trim() === '') {
+    errors.push('Contact person is required')
+  }
+
+  if (!formData.phone || formData.phone.trim() === '') {
+    errors.push('Phone number is required')
+  }
+
+  if (!formData.email || formData.email.trim() === '') {
+    errors.push('Email address is required')
+  }
+
   if (formData.email && !isValidEmail(formData.email)) {
     errors.push('Invalid email format')
   }

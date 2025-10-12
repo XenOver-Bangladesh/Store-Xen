@@ -18,6 +18,13 @@ A comprehensive, full-stack Point of Sale (POS) Store Management System with adv
 
 ## ✨ Key Features
 
+### 🔐 Authentication & User Management
+- **Secure Login System** - Username/password authentication with session management
+- **User Profile Management** - View and edit user information
+- **Settings & Preferences** - Customize language, timezone, notifications, and display options
+- **Protected Routes** - All dashboard features require authentication
+- **Session Persistence** - Stay logged in across browser sessions
+
 ### 📦 Complete Procurement & Supply Chain Management
 - **Purchase Order (PO) System** - Create, track, and send POs to suppliers
 - **Goods Receive Notes (GRN)** - Multi-receipt support with batch & expiry tracking
@@ -49,11 +56,13 @@ A comprehensive, full-stack Point of Sale (POS) Store Management System with adv
 
 ### Frontend
 - **React 19.1.1** - Modern UI library with hooks
-- **React Router DOM 7.9.3** - Client-side routing
+- **React Router DOM 7.9.3** - Client-side routing with protected routes
 - **Tailwind CSS 4.1.14** - Utility-first styling
 - **TanStack Table 8.21.3** - Advanced data tables with sorting/pagination
 - **Axios 1.12.2** - HTTP client
 - **SweetAlert2 11.23.0** - Beautiful alerts & modals
+- **Context API** - Authentication state management
+- **LocalStorage** - Session persistence
 
 ### Backend
 - **Node.js + Express** - REST API server
@@ -252,11 +261,14 @@ Store-Xen/
 
 ## 🔐 Security Features
 
-- Input validation and sanitization
-- MongoDB injection prevention
-- CORS configuration
-- Error handling and logging
-- Data integrity checks
+- **Authentication System** - Username/password login with session management
+- **Protected Routes** - All dashboard features require authentication
+- **Session Security** - Secure localStorage-based session persistence
+- **Input Validation** - Client-side and server-side validation
+- **MongoDB Injection Prevention** - Secure database queries
+- **CORS Configuration** - Cross-origin request security
+- **Error Handling** - Comprehensive error logging and user feedback
+- **Data Integrity Checks** - Validation and sanitization
 
 ---
 
@@ -282,6 +294,10 @@ Store-Xen/
 - [x] Supplier Payments
 - [x] Stock In History
 - [x] Pagination & Sorting
+- [x] Authentication System
+- [x] User Profile Management
+- [x] Settings & Preferences
+- [x] Protected Routes
 - [ ] Sales POS Terminal
 - [ ] Customer Management
 - [ ] Invoice Generation

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { RefreshCw, Receipt, DollarSign, CheckCircle, AlertCircle, Info } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
@@ -26,19 +26,7 @@ const Payments = () => {
     search: ''
   })
 
-  // Fetch data on mount
-  useEffect(() => {
-    fetchAllData()
-  }, [])
-
-  const fetchAllData = async () => {
-    await Promise.all([
-      fetchPayments(),
-      fetchSuppliers()
-    ])
-  }
-
-  const fetchPayments = async () => {
+  const fetchPayments = useCallback(async () => {
     try {
       setFetchLoading(true)
       const data = await paymentsAPI.getAll()
@@ -54,16 +42,28 @@ const Payments = () => {
     } finally {
       setFetchLoading(false)
     }
-  }
+  }, [])
 
-  const fetchSuppliers = async () => {
+  const fetchSuppliers = useCallback(async () => {
     try {
       const data = await suppliersAPI.getAll()
       setSuppliers(data || [])
     } catch (error) {
       console.error('Error fetching suppliers:', error)
     }
-  }
+  }, [])
+
+  const fetchAllData = useCallback(async () => {
+    await Promise.all([
+      fetchPayments(),
+      fetchSuppliers()
+    ])
+  }, [fetchPayments, fetchSuppliers])
+
+  // Fetch data on mount
+  useEffect(() => {
+    fetchAllData()
+  }, [fetchAllData])
 
   // Filter handler
   const handleFilterChange = (newFilters) => {
@@ -131,9 +131,12 @@ const Payments = () => {
 
   // Calculate summary stats
   const stats = useMemo(() => {
-    const totalDue = payments.reduce((sum, p) => sum + (calculateDueAmount(p.amountDue, p.amountPaid)), 0)
+    const totalDue = payments.reduce((sum, p) => {
+      const total = p.totalAmount || p.amountDue || 0
+      return sum + (p.dueAmount || calculateDueAmount(total, p.amountPaid))
+    }, 0)
     const totalPaid = payments.reduce((sum, p) => sum + (p.amountPaid || 0), 0)
-    const totalAmount = payments.reduce((sum, p) => sum + (p.amountDue || 0), 0)
+    const totalAmount = payments.reduce((sum, p) => sum + (p.totalAmount || p.amountDue || 0), 0)
     const overdue = payments.filter(p => {
       const dueDate = new Date(p.dueDate)
       const today = new Date()
@@ -157,12 +160,15 @@ const Payments = () => {
     try {
       setLoading(true)
       
+      const totalAmount = selectedPayment.totalAmount || selectedPayment.amountDue || 0
       const newAmountPaid = (selectedPayment.amountPaid || 0) + paymentData.paymentAmount
-      const newStatus = determinePaymentStatus(selectedPayment.amountDue, newAmountPaid)
+      const newDueAmount = totalAmount - newAmountPaid
+      const newStatus = determinePaymentStatus(totalAmount, newAmountPaid)
 
       const updateData = {
         ...selectedPayment,
         amountPaid: newAmountPaid,
+        dueAmount: newDueAmount,
         status: newStatus,
         lastPaymentDate: paymentData.paymentDate,
         lastPaymentMethod: paymentData.paymentMethod,
@@ -190,7 +196,7 @@ const Payments = () => {
             <div class="bg-green-50 p-3 rounded-lg border border-green-200 text-sm">
               <p class="text-gray-700">✅ New Status: <strong>${newStatus}</strong></p>
               <p class="text-gray-700">✅ Total Paid: <strong>${formatCurrency(newAmountPaid)}</strong></p>
-              <p class="text-gray-700">✅ Remaining: <strong>${formatCurrency(calculateDueAmount(selectedPayment.amountDue, newAmountPaid))}</strong></p>
+              <p class="text-gray-700">✅ Remaining: <strong>${formatCurrency(newDueAmount)}</strong></p>
             </div>
           </div>
         `,
@@ -216,7 +222,9 @@ const Payments = () => {
 
   const handleView = (payment) => {
     const supplier = suppliers.find(s => s._id === payment.supplierId)
-    const dueAmount = calculateDueAmount(payment.amountDue, payment.amountPaid)
+    const supplierName = payment.supplierName || supplier?.supplierName || supplier?.name || 'N/A'
+    const totalAmount = payment.totalAmount || payment.amountDue || 0
+    const dueAmount = payment.dueAmount || calculateDueAmount(totalAmount, payment.amountPaid)
 
     Swal.fire({
       title: `<div class="flex items-center justify-center"><svg class="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Payment Details</div>`,
@@ -225,7 +233,7 @@ const Payments = () => {
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p class="text-gray-600 font-semibold">Supplier</p>
-              <p class="text-gray-900">${supplier?.supplierName || 'N/A'}</p>
+              <p class="text-gray-900">${supplierName}</p>
             </div>
             <div>
               <p class="text-gray-600 font-semibold">PO Number</p>
@@ -245,7 +253,7 @@ const Payments = () => {
             <div class="grid grid-cols-3 gap-3 text-center">
               <div>
                 <p class="text-xs text-gray-600">Total Amount</p>
-                <p class="text-lg font-bold text-gray-900">${formatCurrency(payment.amountDue)}</p>
+                <p class="text-lg font-bold text-gray-900">${formatCurrency(totalAmount)}</p>
               </div>
               <div>
                 <p class="text-xs text-gray-600">Paid</p>

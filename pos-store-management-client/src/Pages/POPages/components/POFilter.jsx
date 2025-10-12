@@ -1,5 +1,5 @@
 import React from 'react'
-import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
+import { ReusableFilter } from '../../../Shared/ReusableFilter/ReusableFilter'
 
 const POFilter = ({ filters, onFilterChange, suppliers, resultsCount, totalCount }) => {
   const filterConfig = [
@@ -72,7 +72,7 @@ const POFilter = ({ filters, onFilterChange, suppliers, resultsCount, totalCount
   }
 
   return (
-    <ReuseableFilter
+    <ReusableFilter
       filters={filters}
       onFilterChange={handleFilterChangeInternal}
       onClearFilters={handleClearFilters}

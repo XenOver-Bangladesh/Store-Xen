@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { LayoutGrid, List, Eye, Pencil, Trash2, Plus, Package, Info, RefreshCw } from 'lucide-react'
 import Swal from 'sweetalert2'
 import Button from '../../Components/UI/Button'
+import InfoCard from '../../Shared/InfoCard/InfoCard'
 import { SharedTable } from '../../Shared/SharedTable/SharedTable'
 import ViewProductModal from './components/ViewProductModal'
 import EditProductModal from './components/EditProductModal'
@@ -156,6 +157,15 @@ const ProductManage = () => {
       )
     },
     {
+      accessorKey: 'sku',
+      header: 'SKU',
+      cell: ({ row }) => (
+        <div className="font-mono text-sm text-gray-700">
+          {row.original.sku || '-'}
+        </div>
+      )
+    },
+    {
       accessorKey: 'category',
       header: 'Category',
       cell: ({ row }) => (
@@ -254,82 +264,82 @@ const ProductManage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-red-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex justify-between items-center">
+      <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-red-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <Package className="w-8 h-8 mr-3 text-purple-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
+              <Package className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-purple-600" />
               Manage Products
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
               View, search, and manage your product inventory
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* View Toggle */}
-            <div className="flex items-center bg-white rounded-lg border border-gray-200 p-1">
+            <div className="flex items-center bg-white rounded-lg border border-gray-200 p-1 self-center sm:self-auto">
               <button
                 onClick={() => setViewMode('table')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
+                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-md transition-all text-xs sm:text-sm ${
                   viewMode === 'table' 
                     ? 'bg-purple-600 text-white shadow-sm' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                <List className="w-4 h-4" />
-                <span className="text-sm font-medium">Table</span>
+                <List className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="font-medium">Table</span>
               </button>
               <button
                 onClick={() => setViewMode('card')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md transition-all ${
+                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-md transition-all text-xs sm:text-sm ${
                   viewMode === 'card' 
                     ? 'bg-purple-600 text-white shadow-sm' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                <LayoutGrid className="w-4 h-4" />
-                <span className="text-sm font-medium">Cards</span>
+                <LayoutGrid className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="font-medium">Cards</span>
               </button>
             </div>
 
-            <Button 
-              variant="secondary" 
-              size="md"
-              onClick={fetchProducts}
-              disabled={loading}
-            >
-              <div className="flex items-center">
-                <RefreshCw className="w-5 h-5 mr-2" />
-                Refresh
-              </div>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <Button 
+                variant="secondary" 
+                size="sm"
+                onClick={fetchProducts}
+                disabled={loading}
+                className="w-full sm:w-auto flex items-center justify-center"
+              >
+                <div className="flex items-center">
+                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="text-sm sm:text-base">Refresh</span>
+                </div>
+              </Button>
 
-            <Button 
-              variant="primary" 
-              size="md"
-              onClick={() => navigate('/products/add')}
-            >
-              <div className="flex items-center">
-                <Plus className="w-5 h-5 mr-2" />
-                Add Product
-              </div>
-            </Button>
+              <Button 
+                variant="primary" 
+                size="sm"
+                onClick={() => navigate('/products/add')}
+                className="w-full sm:w-auto flex items-center justify-center"
+              >
+                <div className="flex items-center">
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="text-sm sm:text-base">Add Product</span>
+                </div>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Info Card */}
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
-        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-        <div>
-          <p className="text-sm font-semibold text-blue-900">Product Catalog Management</p>
-          <p className="text-sm text-blue-700 mt-1">
-            Maintain your complete product catalog with detailed information, categories, suppliers, and QR codes.
-            Products are linked to purchase orders, inventory, and sales transactions for complete traceability.
-          </p>
-        </div>
-      </div>
+      <InfoCard
+        type="info"
+        title="Product Catalog Management"
+        message="Maintain your complete product catalog with detailed information, categories, suppliers, and QR codes. Products are linked to purchase orders, inventory, and sales transactions for complete traceability."
+        icon={Info}
+      />
 
       {/* Filters */}
       <ProductFilter
@@ -340,17 +350,21 @@ const ProductManage = () => {
         filteredProducts={filteredProducts}
         categories={categories}
         suppliers={suppliers}
+        resultsCount={filteredProducts.length}
+        totalCount={products.length}
       />
 
       {/* Content - Table or Card View */}
       {viewMode === 'table' ? (
-        <SharedTable
-          columns={columns}
-          data={filteredProducts}
-          loading={loading}
-          renderRowActions={renderRowActions}
-          pageSize={10}
-        />
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <SharedTable
+            columns={columns}
+            data={filteredProducts}
+            loading={loading}
+            renderRowActions={renderRowActions}
+            pageSize={10}
+          />
+        </div>
       ) : (
         <CardView />
       )}

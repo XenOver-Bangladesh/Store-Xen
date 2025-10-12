@@ -1,5 +1,5 @@
 import React from 'react'
-import { ReuseableFilter } from '../../../Shared/ReuseableFilter/ReuseableFilter'
+import { ReusableFilter } from '../../../Shared/ReusableFilter/ReusableFilter'
 import { exportProductsToCSV, downloadCSV } from '../utils/productHelpers'
 
 const ProductFilter = ({
@@ -21,7 +21,7 @@ const ProductFilter = ({
       key: 'search',
       label: 'Search',
       type: 'search',
-      placeholder: 'Search by name, brand, or QR code...',
+      placeholder: 'Search by name, SKU, brand, or QR code...',
       span: 2
     },
     {
@@ -45,7 +45,7 @@ const ProductFilter = ({
   ]
 
   return (
-    <ReuseableFilter
+    <ReusableFilter
       filters={filters}
       onFilterChange={onFilterChange}
       onClearFilters={onClearFilters}

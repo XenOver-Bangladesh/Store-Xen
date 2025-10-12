@@ -43,7 +43,15 @@ const WarehouseBatchtracking = () => {
     setLoading(true)
     try {
       const inventoryData = await inventoryAPI.getAll()
-      setInventory(inventoryData)
+      
+      // Normalize field names (handle both batch/batchNumber and expiry/expiryDate)
+      const normalizedInventory = (inventoryData || []).map(item => ({
+        ...item,
+        batch: item.batch || item.batchNumber || '',
+        expiry: item.expiry || item.expiryDate || ''
+      }))
+      
+      setInventory(normalizedInventory)
     } catch (error) {
       console.error('Error fetching data:', error)
       Swal.fire({
@@ -52,6 +60,7 @@ const WarehouseBatchtracking = () => {
         text: 'Failed to fetch data',
         confirmButtonColor: '#3B82F6'
       })
+      setInventory([])
     } finally {
       setLoading(false)
     }

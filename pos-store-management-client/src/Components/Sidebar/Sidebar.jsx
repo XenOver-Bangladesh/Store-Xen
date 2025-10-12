@@ -10,7 +10,8 @@ import {
   ChevronDown,
   ChevronRight,
   Store,
-  PackageIcon
+  PackageIcon,
+  UserCircle
 } from 'lucide-react'
 import { Z_INDEX } from '../../constants/zIndex'
 
@@ -75,8 +76,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       subItems: [
         { title: 'Inhouse Products', path: '/warehouse/inhouse-products' },
         { title: 'Stock In (from GRN)', path: '/warehouse/stock-in' },
-        { title: 'Barcode / QR Assign', path: '/warehouse/barcode' },
-        { title: 'Batch & Expiry Tracking', path: '/warehouse/batch-tracking' },
+        { title: 'Inventory Tracking', path: '/warehouse/inventory-tracking' },
         { title: 'Stock Transfer', path: '/warehouse/stock-transfer' },
         { title: 'Warehouse List', path: '/warehouse/list' }
       ]
@@ -110,15 +110,16 @@ const Sidebar = ({ isOpen, onClose }) => {
       ]
     },
     {
+      id: 'profile',
+      title: 'Profile',
+      icon: UserCircle,
+      path: '/profile'
+    },
+    {
       id: 'settings',
-      title: 'Settings (System)',
+      title: 'Settings',
       icon: Settings,
-      path: '/settings',
-      subItems: [
-        { title: 'User Management', path: '/settings/users'},
-        { title: 'System Setup', path: '/settings/system'},
-        { title: 'Printer & Receipt Settings', path: '/settings/printer' }
-      ]
+      path: '/settings'
     }
   ]
 
@@ -207,38 +208,60 @@ const Sidebar = ({ isOpen, onClose }) => {
               return (
                 <div key={item.id} className="space-y-1 group relative">
                   {/* Main Menu Item */}
-                  <button
-                    onClick={() => handleDropdownToggle(item.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        handleDropdownToggle(item.id)
-                      }
-                    }}
-                    className={`w-full flex items-center ${
-                      sidebarCollapsed ? 'justify-center px-2 py-3' : 'px-3 py-2'
-                    } rounded-md text-sm font-medium transition-colors duration-200 relative ${
-                      active
-                        ? 'bg-blue-50 text-blue-700'
-                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    title={sidebarCollapsed ? item.title : ''}
-                    aria-expanded={activeDropdown === item.id}
-                    aria-controls={`menu-${item.id}`}
-                  >
-                    <span className={`absolute left-0 top-0 h-full w-1 rounded-r ${active ? 'bg-blue-600' : 'bg-transparent'}`} />
-                    <Icon size={18} className="flex-shrink-0" />
-                    {!sidebarCollapsed && (
-                      <>
+                  {item.subItems ? (
+                    <button
+                      onClick={() => handleDropdownToggle(item.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          handleDropdownToggle(item.id)
+                        }
+                      }}
+                      className={`w-full flex items-center ${
+                        sidebarCollapsed ? 'justify-center px-2 py-3' : 'px-3 py-2'
+                      } rounded-md text-sm font-medium transition-colors duration-200 relative ${
+                        active
+                          ? 'bg-blue-50 text-blue-700'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      title={sidebarCollapsed ? item.title : ''}
+                      aria-expanded={activeDropdown === item.id}
+                      aria-controls={`menu-${item.id}`}
+                    >
+                      <span className={`absolute left-0 top-0 h-full w-1 rounded-r ${active ? 'bg-blue-600' : 'bg-transparent'}`} />
+                      <Icon size={18} className="flex-shrink-0" />
+                      {!sidebarCollapsed && (
+                        <>
+                          <span className="ml-3 flex-1 text-left">{item.title}</span>
+                          {activeDropdown === item.id ? (
+                            <ChevronDown size={16} className="flex-shrink-0" />
+                          ) : (
+                            <ChevronRight size={16} className="flex-shrink-0" />
+                          )}
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <Link
+                      to={item.path}
+                      onClick={handleLinkClick}
+                      className={`w-full flex items-center ${
+                        sidebarCollapsed ? 'justify-center px-2 py-3' : 'px-3 py-2'
+                      } rounded-md text-sm font-medium transition-colors duration-200 relative ${
+                        active
+                          ? 'bg-blue-50 text-blue-700'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      title={sidebarCollapsed ? item.title : ''}
+                      aria-current={active ? 'page' : undefined}
+                    >
+                      <span className={`absolute left-0 top-0 h-full w-1 rounded-r ${active ? 'bg-blue-600' : 'bg-transparent'}`} />
+                      <Icon size={18} className="flex-shrink-0" />
+                      {!sidebarCollapsed && (
                         <span className="ml-3 flex-1 text-left">{item.title}</span>
-                        {activeDropdown === item.id ? (
-                          <ChevronDown size={16} className="flex-shrink-0" />
-                        ) : (
-                          <ChevronRight size={16} className="flex-shrink-0" />
-                        )}
-                      </>
-                    )}
-                  </button>
+                      )}
+                    </Link>
+                  )}
 
                   {/* Tooltip when collapsed */}
                   {sidebarCollapsed && (
@@ -250,7 +273,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                   )}
 
                   {/* Sub Menu Items */}
-                  {!sidebarCollapsed && activeDropdown === item.id && (
+                  {!sidebarCollapsed && activeDropdown === item.id && item.subItems && (
                     <div id={`menu-${item.id}`} className="ml-6 space-y-1">
                       {item.subItems.map((subItem, index) => (
                         <Link

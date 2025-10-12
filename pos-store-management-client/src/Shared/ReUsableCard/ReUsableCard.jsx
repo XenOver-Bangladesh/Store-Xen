@@ -1,9 +1,9 @@
 import React from 'react'
 
-const ReUsableCard = () => {
+const ReusableCard = () => {
   return (
-    <div>ReUsableCard</div>
+    <div>ReusableCard</div>
   )
 }
 
-export default ReUsableCard
+export default ReusableCard

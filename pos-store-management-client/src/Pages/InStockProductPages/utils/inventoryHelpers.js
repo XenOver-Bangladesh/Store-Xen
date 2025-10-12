@@ -1,13 +1,24 @@
 // Format date
 export const formatDate = (date) => {
-  if (!date) return 'N/A'
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  if (!date || date === 'N/A' || date === 'Invalid Date') return 'N/A'
+  
+  try {
+    const dateObj = new Date(date)
+    if (isNaN(dateObj.getTime())) {
+      return 'N/A'
+    }
+    
+    return dateObj.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  } catch (error) {
+    console.error('Error formatting date:', date, error)
+    return 'N/A'
+  }
 }
 
 // Get stock status color
@@ -42,18 +53,28 @@ export const isExpired = (expiryDate) => {
 
 // Get expiry status
 export const getExpiryStatus = (expiryDate) => {
-  if (!expiryDate) return null
+  if (!expiryDate || expiryDate === 'N/A' || expiryDate === 'Invalid Date') return null
   
-  const today = new Date()
-  const expiry = new Date(expiryDate)
-  const daysUntilExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24))
-  
-  if (daysUntilExpiry < 0) {
-    return { status: 'Expired', color: 'text-red-600', days: Math.abs(daysUntilExpiry) }
-  } else if (daysUntilExpiry <= 30) {
-    return { status: 'Expiring Soon', color: 'text-orange-600', days: daysUntilExpiry }
-  } else {
-    return { status: 'Valid', color: 'text-green-600', days: daysUntilExpiry }
+  try {
+    const today = new Date()
+    const expiry = new Date(expiryDate)
+    
+    if (isNaN(expiry.getTime())) {
+      return null
+    }
+    
+    const daysUntilExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24))
+    
+    if (daysUntilExpiry < 0) {
+      return { status: 'Expired', color: 'text-red-600', days: Math.abs(daysUntilExpiry) }
+    } else if (daysUntilExpiry <= 30) {
+      return { status: 'Expiring Soon', color: 'text-orange-600', days: daysUntilExpiry }
+    } else {
+      return { status: 'Valid', color: 'text-green-600', days: daysUntilExpiry }
+    }
+  } catch (error) {
+    console.error('Error checking expiry status:', expiryDate, error)
+    return null
   }
 }
 

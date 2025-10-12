@@ -46,27 +46,37 @@ api.interceptors.response.use(
 // Products API
 export const productsAPI = {
   getAll: async () => {
-    const response = await api.get('/Products')
+    const response = await api.get('/products')
     return response.data
   },
   
   getById: async (id) => {
-    const response = await api.get(`/Products/${id}`)
+    const response = await api.get(`/products/${id}`)
+    return response.data
+  },
+  
+  getByBarcode: async (barcode) => {
+    const response = await api.get(`/products/barcode/${barcode}`)
     return response.data
   },
   
   create: async (productData) => {
-    const response = await api.post('/Products', productData)
+    const response = await api.post('/products', productData)
     return response.data
   },
   
   update: async (id, productData) => {
-    const response = await api.put(`/Products/${id}`, productData)
+    const response = await api.put(`/products/${id}`, productData)
+    return response.data
+  },
+  
+  updatePrice: async (id, price) => {
+    const response = await api.patch(`/products/${id}/price`, { sellingPrice: price })
     return response.data
   },
   
   delete: async (id) => {
-    const response = await api.delete(`/Products/${id}`)
+    const response = await api.delete(`/products/${id}`)
     return response.data
   }
 }
@@ -80,6 +90,21 @@ export const suppliersAPI = {
   
   getById: async (id) => {
     const response = await api.get(`/suppliers/${id}`)
+    return response.data
+  },
+  
+  create: async (supplierData) => {
+    const response = await api.post('/suppliers', supplierData)
+    return response.data
+  },
+  
+  update: async (id, supplierData) => {
+    const response = await api.put(`/suppliers/${id}`, supplierData)
+    return response.data
+  },
+  
+  delete: async (id) => {
+    const response = await api.delete(`/suppliers/${id}`)
     return response.data
   }
 }

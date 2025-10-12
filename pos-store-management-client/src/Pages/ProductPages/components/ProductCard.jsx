@@ -26,6 +26,11 @@ const ProductCard = ({ product, onView, onEdit, onDelete }) => {
         </h3>
         
         <div className="space-y-2 mb-4">
+          {product.sku && (
+            <p className="text-sm text-gray-600">
+              <span className="font-medium">SKU:</span> <span className="font-mono">{product.sku}</span>
+            </p>
+          )}
           {product.brand && (
             <p className="text-sm text-gray-600">
               <span className="font-medium">Brand:</span> {product.brand}

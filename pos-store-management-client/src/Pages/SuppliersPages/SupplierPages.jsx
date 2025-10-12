@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Plus, Users, Info } from "lucide-react";
 import SuppliersList from "./components/SuppliersList";
 import Button from "../../Components/UI/Button";
+import InfoCard from "../../Shared/InfoCard/InfoCard";
 import AddSuppliersModal from "./components/AddSuppliersModal";
 
 const SupplierPages = () => {
@@ -25,42 +26,39 @@ const SupplierPages = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-50 via-cyan-50 to-teal-50 p-6 rounded-lg shadow-md border border-gray-200">
-        <div className="flex justify-between items-center">
+      <div className="bg-gradient-to-r from-blue-50 via-cyan-50 to-teal-50 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-              <Users className="w-8 h-8 mr-3 text-blue-600" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center">
+              <Users className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-blue-600" />
               Suppliers Management
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
               Manage and track your suppliers easily
             </p>
           </div>
 
           <Button 
             variant="primary" 
-            size="md"
+            size="sm"
             onClick={handleOpenModal}
+            className="w-full sm:w-auto flex items-center justify-center"
           >
             <div className="flex items-center">
-              <Plus className="w-5 h-5 mr-2" />
-              <span>Add New Supplier</span>
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <span className="text-sm sm:text-base">Add New Supplier</span>
             </div>
           </Button>
         </div>
       </div>
 
       {/* Info Card */}
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex items-start gap-3">
-        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-        <div>
-          <p className="text-sm font-semibold text-blue-900">Supplier Database Management</p>
-          <p className="text-sm text-blue-700 mt-1">
-            Maintain a comprehensive database of your suppliers with contact information, payment terms, and status tracking.
-            Suppliers are linked to purchase orders, GRNs, and payments for complete supply chain visibility.
-          </p>
-        </div>
-      </div>
+      <InfoCard
+        type="info"
+        title="Supplier Database Management"
+        message="Maintain a comprehensive database of your suppliers with contact information, payment terms, and status tracking. Suppliers are linked to purchase orders, GRNs, and payments for complete supply chain visibility."
+        icon={Info}
+      />
 
       {/* Suppliers List */}
       <SuppliersList key={refreshKey} />

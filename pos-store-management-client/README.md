@@ -9,6 +9,15 @@ A modern, full-featured React application for comprehensive store management wit
 
 ## 🌟 Complete Feature Set
 
+### 🔐 Authentication & User Management
+- **Secure Login System** - Username/password authentication with xenuser/xenuser123
+- **User Profile Management** - View and edit personal information
+- **Settings & Preferences** - Customize language, timezone, notifications, display, and security
+- **Protected Routes** - All dashboard features require authentication
+- **Session Persistence** - Stay logged in across browser sessions
+- **Logout Functionality** - Secure logout with confirmation
+- **Password Management** - Change password with validation
+
 ### 📦 Product Management
 - **Add Products** - Comprehensive form with image upload and QR code generation
 - **View Products** - Table and card view toggle for flexible visualization
@@ -179,6 +188,15 @@ pos-store-management-client/
 │   │   ├── HomePage/
 │   │   │   └── HomePage.jsx             # Dashboard home
 │   │   │
+│   │   ├── LoginPage/
+│   │   │   └── LoginPage.jsx            # Authentication page
+│   │   │
+│   │   ├── ProfilePage/
+│   │   │   └── ProfilePage.jsx          # User profile management
+│   │   │
+│   │   ├── SettingsPage/
+│   │   │   └── SettingsPage.jsx         # Application settings
+│   │   │
 │   │   ├── ProductPages/
 │   │   │   ├── ProductAdd.jsx           # Add new products
 │   │   │   ├── ProductManage.jsx        # Manage all products
@@ -258,7 +276,11 @@ pos-store-management-client/
 │   │   └── DashboardLayout.jsx          # Main layout
 │   │
 │   ├── Routes/
-│   │   └── PublicRoute.jsx              # Route configuration
+│   │   ├── PublicRoute.jsx              # Route configuration
+│   │   └── ProtectedRoute.jsx           # Authentication guard
+│   │
+│   ├── contexts/
+│   │   └── AuthContext.jsx              # Authentication state management
 │   │
 │   ├── constants/
 │   │   └── zIndex.js                    # Z-index constants
@@ -279,9 +301,11 @@ pos-store-management-client/
 
 ### Core
 - **React 19.1.1** - UI library with hooks
-- **React Router DOM 7.9.3** - Client-side routing
+- **React Router DOM 7.9.3** - Client-side routing with protected routes
 - **Tailwind CSS 4.1.14** - Utility-first CSS
 - **Vite 7.1.7** - Build tool and dev server
+- **Context API** - Authentication state management
+- **LocalStorage** - Session persistence
 
 ### UI Libraries
 - **TanStack React Table 8.21.3** - Powerful table component
@@ -304,6 +328,19 @@ All pages communicate with the backend API:
 - **GRN**: `/grn`
 - **Inventory**: `/inventory`
 - **Payments**: `/payments`
+
+## 🔐 Authentication System
+
+### Login Credentials
+- **Username**: `xenuser`
+- **Password**: `xenuser123`
+
+### Features
+- **Protected Routes** - All dashboard features require authentication
+- **Session Management** - Persistent login across browser sessions
+- **User Profile** - View and edit personal information
+- **Settings** - Customize application preferences
+- **Logout** - Secure logout with confirmation
 
 ## 🎨 Component Library
 
@@ -372,6 +409,14 @@ npm run build        # Creates dist/ folder
 ```
 
 ## 📊 Key Workflows
+
+### Authentication Flow
+1. Visit application → Redirected to login page
+2. Enter credentials (xenuser/xenuser123)
+3. Login successful → Redirected to dashboard
+4. Access all protected features
+5. Manage profile and settings
+6. Logout when done
 
 ### Purchase to Receipt Flow
 1. Create Supplier

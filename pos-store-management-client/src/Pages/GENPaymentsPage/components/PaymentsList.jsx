@@ -16,12 +16,13 @@ const PaymentsList = ({
   const columns = React.useMemo(() => [
     {
       header: 'Supplier Name',
-      accessorKey: 'supplierId',
+      accessorKey: 'supplierName',
       cell: ({ row }) => {
         const supplier = suppliers.find(s => s._id === row.original.supplierId)
+        const supplierName = row.original.supplierName || supplier?.supplierName || supplier?.name || 'N/A'
         return (
           <div>
-            <p className="font-medium text-gray-900">{supplier?.supplierName || 'N/A'}</p>
+            <p className="font-medium text-gray-900">{supplierName}</p>
             <p className="text-xs text-gray-500">{supplier?.email || ''}</p>
           </div>
         )
@@ -47,10 +48,10 @@ const PaymentsList = ({
     },
     {
       header: 'Total Amount',
-      accessorKey: 'amountDue',
+      accessorKey: 'totalAmount',
       cell: ({ row }) => (
         <span className="font-bold text-gray-900">
-          {formatCurrency(row.original.amountDue)}
+          {formatCurrency(row.original.totalAmount || row.original.amountDue || 0)}
         </span>
       )
     },
@@ -67,7 +68,8 @@ const PaymentsList = ({
       header: 'Due Amount',
       accessorKey: 'dueAmount',
       cell: ({ row }) => {
-        const dueAmount = calculateDueAmount(row.original.amountDue, row.original.amountPaid)
+        const totalAmount = row.original.totalAmount || row.original.amountDue || 0
+        const dueAmount = row.original.dueAmount || calculateDueAmount(totalAmount, row.original.amountPaid)
         return (
           <span className="font-semibold text-red-600">
             {formatCurrency(dueAmount)}

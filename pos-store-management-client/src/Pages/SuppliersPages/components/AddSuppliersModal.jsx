@@ -62,7 +62,9 @@ const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
         onClick={onClose}
         disabled={isSubmitting}
       >
-        Cancel
+        <div className="flex items-center">
+          Cancel
+        </div>
       </Button>
       <Button
         variant="primary"
@@ -71,7 +73,9 @@ const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
         loading={isSubmitting}
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Adding Supplier...' : 'Add Supplier'}
+        <div className="flex items-center">
+          {isSubmitting ? 'Adding Supplier...' : 'Add Supplier'}
+        </div>
       </Button>
     </div>
   )
@@ -81,7 +85,7 @@ const AddSuppliersModal = ({ isOpen, onClose, onSuccess }) => {
       isOpen={isOpen}
       onClose={onClose}
       title="Add New Supplier"
-      size="large"
+      size="medium"
       footer={modalFooter}
       closeOnOverlayClick={!isSubmitting}
       closeOnEscape={!isSubmitting}

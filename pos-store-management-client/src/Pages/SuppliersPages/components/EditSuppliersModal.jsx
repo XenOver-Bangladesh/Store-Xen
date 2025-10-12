@@ -77,7 +77,9 @@ const EditSuppliersModal = ({ isOpen, onClose, onSuccess, supplierData }) => {
         onClick={onClose}
         disabled={isSubmitting}
       >
-        Cancel
+        <div className="flex items-center">
+          Cancel
+        </div>
       </Button>
       <Button
         variant="primary"
@@ -86,7 +88,9 @@ const EditSuppliersModal = ({ isOpen, onClose, onSuccess, supplierData }) => {
         loading={isSubmitting}
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Updating Supplier...' : 'Update Supplier'}
+        <div className="flex items-center">
+          {isSubmitting ? 'Updating Supplier...' : 'Update Supplier'}
+        </div>
       </Button>
     </div>
   )
